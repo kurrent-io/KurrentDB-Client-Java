@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.grpc.ManagedChannel;
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.*;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
+import io.opentelemetry.context.propagation.TextMapPropagator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,10 @@ import java.util.concurrent.CompletionException;
 import java.util.function.BiFunction;
 
 class ClientTelemetry {
+    protected static boolean isEnabled() {
+        return OpenTelemetry.noop().getPropagators().getTextMapPropagator() == TextMapPropagator.noop();
+    }
+
     private static final ClientTelemetryTags DEFAULT_ATTRIBUTES = new ClientTelemetryTags() {{
         put(ClientTelemetryAttributes.Database.SYSTEM, ClientTelemetryConstants.INSTRUMENTATION_NAME);
     }};

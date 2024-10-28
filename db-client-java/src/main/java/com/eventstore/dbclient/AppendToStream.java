@@ -31,13 +31,18 @@ class AppendToStream {
     }
 
     public CompletableFuture<WriteResult> execute() {
-        return this.client.run(channel -> ClientTelemetry.traceAppend(
-                this::append,
-                channel,
-                events,
-                this.streamName,
-                this.client.getSettings(),
-                this.options.getCredentials()));
+        return this.client.run(channel -> {
+            if (ClientTelemetry.isEnabled())
+                return append(channel, events);
+
+            return ClientTelemetry.traceAppend(
+                    this::append,
+                    channel,
+                    events,
+                    this.streamName,
+                    this.client.getSettings(),
+                    this.options.getCredentials());
+        });
     }
 
     private CompletableFuture<WriteResult> append(ManagedChannel channel, List<EventData> events) {

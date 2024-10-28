@@ -92,13 +92,17 @@ abstract class AbstractSubscribePersistentSubscription {
 
                         try {
                             ResolvedEvent resolvedEvent = ResolvedEvent.fromWire(readResp.getEvent());
-                            ClientTelemetry.traceSubscribe(
-                                    () -> listener.onEvent(this._subscription, retryCount, resolvedEvent),
-                                    _subscription.getSubscriptionId(),
-                                    args.getChannel(),
-                                    client.getSettings(),
-                                    options.getCredentials(),
-                                    resolvedEvent.getEvent());
+                            if (ClientTelemetry.isEnabled()) {
+                                listener.onEvent(this._subscription, retryCount, resolvedEvent);
+                            } else {
+                                ClientTelemetry.traceSubscribe(
+                                        () -> listener.onEvent(this._subscription, retryCount, resolvedEvent),
+                                        _subscription.getSubscriptionId(),
+                                        args.getChannel(),
+                                        client.getSettings(),
+                                        options.getCredentials(),
+                                        resolvedEvent.getEvent());
+                            }
                         } catch (Exception e) {
                             onError(e);
                         }
