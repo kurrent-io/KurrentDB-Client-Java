@@ -122,6 +122,11 @@ class ClientTelemetry {
     static void traceSubscribe(Runnable tracedOperation, String subscriptionId, ManagedChannel channel,
                                EventStoreDBClientSettings settings,
                                UserCredentials optionalCallCredentials, RecordedEvent event) {
+        if (event == null) {
+            tracedOperation.run();
+            return;
+        }
+
         SpanContext remoteParentContext = tryExtractTracingContext(event.getUserMetadata());
 
         if (remoteParentContext == null) {

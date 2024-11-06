@@ -74,6 +74,7 @@ public class DockerContainerDatabase extends GenericContainer<DockerContainerDat
         addExposedPorts(1113, 2113);
 
         withEnv("EVENTSTORE_RUN_PROJECTIONS", "ALL");
+        withEnv("EVENTSTORE_START_STANDARD_PROJECTIONS", "true");
         withEnv("EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP", "true");
 
         if (builder.secure) {

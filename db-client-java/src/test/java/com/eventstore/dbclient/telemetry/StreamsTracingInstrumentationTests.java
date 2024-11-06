@@ -244,4 +244,49 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
         assertErroneousSpanHasExpectedAttributes(subscribeSpans.get(0), expectedException);
     }
+
+    @Test
+    @Timeout(value = 2, unit = TimeUnit.MINUTES)
+    default void testCatchupSubscriptionTracingIsNotRestoredOnDeletedEvents() throws Throwable {
+        EventStoreDBClient client = getDefaultClient();
+
+        String category = UUID.randomUUID().toString().replace("-", "");
+        String streamName = category + "-test";
+        String eventType = category + "-TestEvent";
+
+        EventData[] events = {
+                EventData.builderAsJson(eventType, mapper.writeValueAsBytes(new Foo()))
+                        .eventId(UUID.randomUUID())
+                        .build()
+        };
+
+        WriteResult appendResult = client.appendToStream(streamName, events).get();
+        Assertions.assertNotNull(appendResult);
+
+        DeleteResult deleteResult = client.deleteStream(streamName, DeleteStreamOptions.get().expectedRevision(ExpectedRevision.streamExists())).get();
+        Assertions.assertNotNull(deleteResult);
+
+        CountDownLatch subscribeSpansLatch = new CountDownLatch(events.length);
+        onOperationSpanEnded(ClientTelemetryConstants.Operations.SUBSCRIBE, span -> subscribeSpansLatch.countDown());
+
+        Subscription subscription = client.subscribeToStream(
+                "$ce-" + category,
+                new SubscriptionListener() {
+                    @Override
+                    public void onEvent(Subscription subscription, ResolvedEvent event) {
+                        subscribeSpansLatch.countDown();
+                    }
+                },
+                SubscribeToStreamOptions.get().resolveLinkTos()
+        ).get();
+
+        subscribeSpansLatch.await();
+        subscription.stop();
+
+        List<ReadableSpan> appendSpans = getSpansForOperation(ClientTelemetryConstants.Operations.APPEND);
+        Assertions.assertEquals(1, appendSpans.size());
+
+        List<ReadableSpan> subscribeSpans = getSpansForOperation(ClientTelemetryConstants.Operations.SUBSCRIBE);
+        Assertions.assertTrue(subscribeSpans.isEmpty(), "No spans should be recorded for deleted events");
+    }
 }
