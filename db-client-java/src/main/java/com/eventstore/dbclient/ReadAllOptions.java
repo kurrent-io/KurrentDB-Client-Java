@@ -4,6 +4,7 @@ package com.eventstore.dbclient;
  * Options of the read $all stream request.
  */
 public class ReadAllOptions extends OptionsWithPositionAndResolveLinkTosBase<ReadAllOptions> {
+    private SubscriptionFilter filter;
     private Direction direction;
     private long maxCount;
 
@@ -55,6 +56,18 @@ public class ReadAllOptions extends OptionsWithPositionAndResolveLinkTosBase<Rea
      */
     public ReadAllOptions maxCount(long maxCount) {
         this.maxCount = maxCount;
+        return this;
+    }
+
+    SubscriptionFilter getFilter() {
+        return filter;
+    }
+
+    /**
+     * Applies a server-side filter to determine if an event of the read should be yielded.
+     */
+    public ReadAllOptions filter(SubscriptionFilter filter) {
+        this.filter = filter;
         return this;
     }
 }

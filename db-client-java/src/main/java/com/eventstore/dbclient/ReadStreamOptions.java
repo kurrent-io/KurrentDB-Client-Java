@@ -4,6 +4,7 @@ package com.eventstore.dbclient;
  * Options of the read stream request.
  */
 public class ReadStreamOptions extends OptionsWithStartRevisionAndResolveLinkTosBase<ReadStreamOptions> {
+    private SubscriptionFilter filter;
     private Direction direction;
     private long maxCount;
 
@@ -58,6 +59,18 @@ public class ReadStreamOptions extends OptionsWithStartRevisionAndResolveLinkTos
      */
     public ReadStreamOptions maxCount(long maxCount) {
         this.maxCount = maxCount;
+        return this;
+    }
+
+    SubscriptionFilter getFilter() {
+        return filter;
+    }
+
+    /**
+     * Applies a server-side filter to determine if an event of the read should be yielded.
+     */
+    public ReadStreamOptions filter(SubscriptionFilter filter) {
+        this.filter = filter;
         return this;
     }
 }

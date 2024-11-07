@@ -20,14 +20,21 @@ class ReadStream extends AbstractRead {
 
     @Override
     public StreamsOuterClass.ReadReq.Options.Builder createOptions() {
-        return defaultReadOptions.clone()
+        StreamsOuterClass.ReadReq.Options.Builder optionsBuilder =
+            defaultReadOptions.clone()
                 .setStream(GrpcUtils.toStreamOptions(this.streamName, this.options.getStartingRevision()))
                 .setResolveLinks(this.options.shouldResolveLinkTos())
                 .setCount(this.options.getMaxCount())
                 .setControlOption(StreamsOuterClass.ReadReq.Options.ControlOption.newBuilder().setCompatibility(1))
-                .setNoFilter(Shared.Empty.getDefaultInstance())
+                //.setNoFilter(Shared.Empty.getDefaultInstance())
                 .setReadDirection(this.options.getDirection() == Direction.Forwards ?
                         StreamsOuterClass.ReadReq.Options.ReadDirection.Forwards :
                         StreamsOuterClass.ReadReq.Options.ReadDirection.Backwards);
+        if (this.options.getFilter() != null) {
+            this.options.getFilter().addToWireStreamsReadReq(optionsBuilder);
+        } else {
+            optionsBuilder.setNoFilter(Shared.Empty.getDefaultInstance());
+        }
+        return optionsBuilder;
     }
 }

@@ -33,10 +33,16 @@ class ReadAll extends AbstractRead {
                 .setResolveLinks(this.options.shouldResolveLinkTos())
                 .setControlOption(StreamsOuterClass.ReadReq.Options.ControlOption.newBuilder().setCompatibility(1))
                 .setCount(this.options.getMaxCount())
-                .setNoFilter(Shared.Empty.getDefaultInstance())
+                //.setNoFilter(Shared.Empty.getDefaultInstance())
                 .setReadDirection(this.options.getDirection() == Direction.Forwards ?
                         StreamsOuterClass.ReadReq.Options.ReadDirection.Forwards :
                         StreamsOuterClass.ReadReq.Options.ReadDirection.Backwards);
+
+        if (this.options.getFilter() != null) {
+            this.options.getFilter().addToWireStreamsReadReq(builder);
+        } else {
+            builder.setNoFilter(Shared.Empty.getDefaultInstance());
+        }
 
         return builder;
     }
