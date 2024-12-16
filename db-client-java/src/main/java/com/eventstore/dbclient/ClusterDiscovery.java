@@ -19,7 +19,7 @@ class ClusterDiscovery implements Discovery {
     private final NodeSelector nodeSelector;
     private final NodeResolution resolution;
 
-    ClusterDiscovery(EventStoreDBClientSettings settings) {
+    ClusterDiscovery(KurrentDBClientSettings settings) {
         this.nodeSelector = new NodeSelector(settings.getNodePreference());
 
         if (settings.isDnsDiscover()) {

@@ -15,7 +15,7 @@ public class ClientTracker {
     private ArrayList<EventStoreDBClientBase> otherClients = new ArrayList<>();
     private EventStoreDBClient defaultClient = null;
 
-    public synchronized EventStoreDBClient createClient(EventStoreDBClientSettings settings) {
+    public synchronized EventStoreDBClient createClient(KurrentDBClientSettings settings) {
         EventStoreDBClient client = EventStoreDBClient.create(settings);
         otherClients.add(client);
         return client;
@@ -23,7 +23,7 @@ public class ClientTracker {
 
     public synchronized EventStoreDBClient getDefaultClient(Database database) {
         if (defaultClient == null) {
-            EventStoreDBClientSettings settings = database.defaultSettingsBuilder().buildConnectionSettings();
+            KurrentDBClientSettings settings = database.defaultSettingsBuilder().buildConnectionSettings();
             defaultClient = EventStoreDBClient.create(settings);
 
             if (settings.isTls() && settings.getDefaultCredentials() != null) {

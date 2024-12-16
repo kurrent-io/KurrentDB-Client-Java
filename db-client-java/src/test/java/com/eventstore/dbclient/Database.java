@@ -3,9 +3,7 @@ package com.eventstore.dbclient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 public interface Database {
@@ -29,7 +27,7 @@ public interface Database {
         return getClientTracker().getDefaultClient(this);
     }
 
-    default EventStoreDBClient createClient(EventStoreDBClientSettings settings) {
+    default EventStoreDBClient createClient(KurrentDBClientSettings settings) {
         return getClientTracker().createClient(settings);
     }
 

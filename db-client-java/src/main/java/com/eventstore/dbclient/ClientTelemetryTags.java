@@ -33,7 +33,7 @@ class ClientTelemetryTags extends HashMap<String, String> {
             return withServerTags(authorityParts[0], authorityParts[1]);
         }
 
-        Builder withServerTagsFromClientSettings(EventStoreDBClientSettings settings) {
+        Builder withServerTagsFromClientSettings(KurrentDBClientSettings settings) {
             if (settings == null || !settings.isDnsDiscover()) return this;
 
             InetSocketAddress dns = settings.getHosts()[0];

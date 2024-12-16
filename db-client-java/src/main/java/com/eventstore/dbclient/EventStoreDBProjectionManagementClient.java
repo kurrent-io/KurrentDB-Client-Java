@@ -13,7 +13,7 @@ import java.util.function.Function;
  */
 public class EventStoreDBProjectionManagementClient {
     final EventStoreDBClientBase inner;
-    private EventStoreDBProjectionManagementClient(EventStoreDBClientSettings settings) {
+    private EventStoreDBProjectionManagementClient(KurrentDBClientSettings settings) {
         inner = new EventStoreDBClientBase(settings);
     }
 
@@ -25,7 +25,7 @@ public class EventStoreDBProjectionManagementClient {
      * Returns the Projection Management client based on the settings.
      * @param settings The settings to use for constructing the client.
      */
-    public static EventStoreDBProjectionManagementClient create(EventStoreDBClientSettings settings) {
+    public static EventStoreDBProjectionManagementClient create(KurrentDBClientSettings settings) {
         return new EventStoreDBProjectionManagementClient(settings);
     }
 

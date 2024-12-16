@@ -14,8 +14,8 @@ public final class EventStoreDBConnectionString {
      * malformed.
      * @return a client settings.
      */
-    public static EventStoreDBClientSettings parseOrThrow(String connectionString) {
-        ConnectionSettingsBuilder builder = EventStoreDBClientSettings.builder();
+    public static KurrentDBClientSettings parseOrThrow(String connectionString) {
+        ConnectionSettingsBuilder builder = KurrentDBClientSettings.builder();
 
         try {
             URL url = new URL(null, connectionString, new EsdbUrlHandler());

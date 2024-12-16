@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 class ConnectionState {
     private final static Logger logger = LoggerFactory.getLogger(ConnectionState.class);
     private final static int MAX_INBOUND_MESSAGE_LENGTH = 17 * 1_024 * 1_024; // 17MiB
-    private final EventStoreDBClientSettings settings;
+    private final KurrentDBClientSettings settings;
     private final SslContext sslContext;
     private InetSocketAddress previous;
     private ManagedChannel currentChannel;
@@ -28,7 +28,7 @@ class ConnectionState {
     // * If we managed to read the server features (if not, it was a not found error then it's not fatal, just old node version)
     private boolean confirmedChannel;
 
-    ConnectionState(EventStoreDBClientSettings settings) {
+    ConnectionState(KurrentDBClientSettings settings) {
         this.settings = settings;
 
         if (settings.isTls()) {
@@ -68,7 +68,7 @@ class ConnectionState {
         return this.currentChannel;
     }
 
-    EventStoreDBClientSettings getSettings() {
+    KurrentDBClientSettings getSettings() {
         return this.settings;
     }
 

@@ -13,7 +13,7 @@ import java.util.function.Function;
 public class EventStoreDBPersistentSubscriptionsClient {
     private final EventStoreDBClientBase inner;
 
-    private EventStoreDBPersistentSubscriptionsClient(EventStoreDBClientSettings settings) {
+    private EventStoreDBPersistentSubscriptionsClient(KurrentDBClientSettings settings) {
         inner = new EventStoreDBClientBase(settings);
     }
 
@@ -24,7 +24,7 @@ public class EventStoreDBPersistentSubscriptionsClient {
     /**
      * Creates a persistent subscription client instance.
      */
-    public static EventStoreDBPersistentSubscriptionsClient create(EventStoreDBClientSettings settings) {
+    public static EventStoreDBPersistentSubscriptionsClient create(KurrentDBClientSettings settings) {
         return new EventStoreDBPersistentSubscriptionsClient(settings);
     }
 

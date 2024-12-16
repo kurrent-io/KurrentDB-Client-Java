@@ -5,14 +5,13 @@ import com.eventstore.dbclient.samples.TestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class QuickStart {
     public static void Run() throws ConnectionStringParsingException, ExecutionException, InterruptedException, JsonProcessingException {
         // region createClient
-        EventStoreDBClientSettings settings = EventStoreDBConnectionString.parseOrThrow("{connectionString}");
+        KurrentDBClientSettings settings = EventStoreDBConnectionString.parseOrThrow("{connectionString}");
         EventStoreDBClient client = EventStoreDBClient.create(settings);
         // endregion createClient
 

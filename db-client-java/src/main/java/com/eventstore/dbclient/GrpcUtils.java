@@ -112,11 +112,11 @@ final class GrpcUtils {
                 .build();
     }
 
-    static public <S extends AbstractAsyncStub<S>, O> S configureStub(S stub, EventStoreDBClientSettings settings, OptionsBase<O> options) {
+    static public <S extends AbstractAsyncStub<S>, O> S configureStub(S stub, KurrentDBClientSettings settings, OptionsBase<O> options) {
         return configureStub(stub, settings, options, null);
     }
 
-    static public <S extends AbstractAsyncStub<S>, O> S configureStub(S stub, EventStoreDBClientSettings settings, OptionsBase<O> options, Long forceDeadlineInMs) {
+    static public <S extends AbstractAsyncStub<S>, O> S configureStub(S stub, KurrentDBClientSettings settings, OptionsBase<O> options, Long forceDeadlineInMs) {
         S finalStub = stub;
         ConnectionMetadata metadata = new ConnectionMetadata();
 

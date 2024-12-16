@@ -1,8 +1,5 @@
 package com.eventstore.dbclient;
 
-import com.eventstore.dbclient.EventStoreDBClientSettings;
-import com.eventstore.dbclient.OptionsBase;
-import com.eventstore.dbclient.ServerInfo;
 import io.grpc.ManagedChannel;
 
 import java.io.IOException;
@@ -46,7 +43,7 @@ class WorkItemArgs {
         return info != null && info.supportFeature(feature);
     }
 
-    public <A> HttpURLConnection getHttpConnection(OptionsBase<A> options, EventStoreDBClientSettings settings, String path) {
+    public <A> HttpURLConnection getHttpConnection(OptionsBase<A> options, KurrentDBClientSettings settings, String path) {
         try {
             HttpURLConnection conn = (HttpURLConnection) getURL(settings.isTls(), this.endpoint, path).openConnection();
             conn.setRequestProperty("Accept", ContentType.JSON);

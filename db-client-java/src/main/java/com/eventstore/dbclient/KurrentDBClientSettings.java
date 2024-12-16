@@ -24,7 +24,7 @@ import java.util.Set;
  *     <li>keepAliveInterval: 10000</li>
  * </ul>
  */
-public class EventStoreDBClientSettings {
+public class KurrentDBClientSettings {
     private final boolean dnsDiscover;
     private final int maxDiscoverAttempts;
     private final int discoveryInterval;
@@ -167,7 +167,7 @@ public class EventStoreDBClientSettings {
      */
     public Set<String> getFeatures() { return features; }
 
-    EventStoreDBClientSettings(
+    KurrentDBClientSettings(
             boolean dnsDiscover,
             int maxDiscoverAttempts,
             int discoveryInterval,

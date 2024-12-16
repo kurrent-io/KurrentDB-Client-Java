@@ -3,11 +3,10 @@ package com.eventstore.dbclient.streams;
 import com.eventstore.dbclient.ConnectionAware;
 import com.eventstore.dbclient.ConnectionShutdownException;
 import com.eventstore.dbclient.EventStoreDBClient;
-import com.eventstore.dbclient.EventStoreDBClientSettings;
+import com.eventstore.dbclient.KurrentDBClientSettings;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -33,7 +32,7 @@ public interface ClientLifecycleTests extends ConnectionAware {
 
     @Test
     default void testProvidesShutdownStatusAfterAutomaticShutdown() throws Throwable {
-        EventStoreDBClientSettings settings = EventStoreDBClientSettings.builder()
+        KurrentDBClientSettings settings = KurrentDBClientSettings.builder()
                 .addHost("unknown.host.name", 2113)
                 .buildConnectionSettings();
         EventStoreDBClient client = EventStoreDBClient.create(settings);

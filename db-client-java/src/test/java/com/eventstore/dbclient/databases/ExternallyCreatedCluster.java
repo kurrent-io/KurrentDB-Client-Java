@@ -13,7 +13,7 @@ public class ExternallyCreatedCluster implements Database {
 
     @Override
     public ConnectionSettingsBuilder defaultSettingsBuilder() {
-        return EventStoreDBClientSettings
+        return KurrentDBClientSettings
                 .builder()
                 .dnsDiscover(true)
                 .defaultCredentials("admin", "changeit")

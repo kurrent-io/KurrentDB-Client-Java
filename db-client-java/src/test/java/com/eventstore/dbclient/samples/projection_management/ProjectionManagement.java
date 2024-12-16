@@ -37,7 +37,7 @@ public class ProjectionManagement {
 
     private static EventStoreDBProjectionManagementClient createClient(String connection) {
         // region createClient
-        EventStoreDBClientSettings settings = EventStoreDBConnectionString.parseOrThrow(connection);
+        KurrentDBClientSettings settings = EventStoreDBConnectionString.parseOrThrow(connection);
         EventStoreDBProjectionManagementClient client = EventStoreDBProjectionManagementClient.create(settings);
         // endregion createClient
 

@@ -15,14 +15,14 @@ import java.util.concurrent.CompletableFuture;
  * Many threads can use the EventStoreDB client simultaneously, or a single thread can make many asynchronous requests.
  */
 public class EventStoreDBClient extends EventStoreDBClientBase {
-    private EventStoreDBClient(EventStoreDBClientSettings settings) {
+    private EventStoreDBClient(KurrentDBClientSettings settings) {
         super(settings);
     }
 
     /**
      * Creates a gRPC client to EventStoreDB database.
      */
-    public static EventStoreDBClient create(EventStoreDBClientSettings settings) {
+    public static EventStoreDBClient create(KurrentDBClientSettings settings) {
         return new EventStoreDBClient(settings);
     }
 

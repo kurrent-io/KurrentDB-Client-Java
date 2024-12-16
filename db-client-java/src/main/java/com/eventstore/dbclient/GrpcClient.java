@@ -17,9 +17,9 @@ class GrpcClient {
     private static final Logger logger = LoggerFactory.getLogger(GrpcClient.class);
     private final AtomicBoolean closed;
     private final LinkedBlockingQueue<Msg> queue;
-    private final EventStoreDBClientSettings settings;
+    private final KurrentDBClientSettings settings;
 
-    GrpcClient(EventStoreDBClientSettings settings, AtomicBoolean closed, LinkedBlockingQueue<Msg> queue) {
+    GrpcClient(KurrentDBClientSettings settings, AtomicBoolean closed, LinkedBlockingQueue<Msg> queue) {
         this.settings = settings;
         this.closed = closed;
         this.queue = queue;
@@ -112,7 +112,7 @@ class GrpcClient {
         return this.push(new Shutdown(completion::complete)).thenComposeAsync(x -> completion);
     }
 
-    public EventStoreDBClientSettings getSettings() {
+    public KurrentDBClientSettings getSettings() {
         return this.settings;
     }
 }

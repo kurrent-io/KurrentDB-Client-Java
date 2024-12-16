@@ -19,12 +19,12 @@ class ConnectionService implements Runnable {
     private final AtomicBoolean closed;
     private final LinkedBlockingQueue<Msg> queue;
     private final Discovery discovery;
-    private final EventStoreDBClientSettings settings;
+    private final KurrentDBClientSettings settings;
     private final ConnectionState connection;
     private UUID channelId = UUID.randomUUID();
     private ServerInfo serverInfo = null;
 
-    ConnectionService(EventStoreDBClientSettings settings, Discovery discovery) {
+    ConnectionService(KurrentDBClientSettings settings, Discovery discovery) {
         this.settings = settings;
         this.discovery = discovery;
         this.connection = new ConnectionState(settings);

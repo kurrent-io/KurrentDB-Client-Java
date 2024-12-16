@@ -87,7 +87,7 @@ class ClientTelemetry {
     static CompletableFuture<WriteResult> traceAppend(
             BiFunction<ManagedChannel, List<EventData>, CompletableFuture<WriteResult>> appendOperation,
             ManagedChannel channel,
-            List<EventData> events, String streamId, EventStoreDBClientSettings settings,
+            List<EventData> events, String streamId, KurrentDBClientSettings settings,
             UserCredentials optionalCallCredentials) {
         Span span = createSpan(
                 ClientTelemetryConstants.Operations.APPEND,
@@ -120,7 +120,7 @@ class ClientTelemetry {
     }
 
     static void traceSubscribe(Runnable tracedOperation, String subscriptionId, ManagedChannel channel,
-                               EventStoreDBClientSettings settings,
+                               KurrentDBClientSettings settings,
                                UserCredentials optionalCallCredentials, RecordedEvent event) {
         if (event == null) {
             tracedOperation.run();

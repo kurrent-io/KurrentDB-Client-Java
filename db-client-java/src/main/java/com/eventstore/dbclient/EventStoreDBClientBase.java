@@ -15,7 +15,7 @@ public class EventStoreDBClientBase {
     final Logger logger = LoggerFactory.getLogger(EventStoreDBClientBase.class);
     final private GrpcClient client;
 
-    EventStoreDBClientBase(EventStoreDBClientSettings settings) {
+    EventStoreDBClientBase(KurrentDBClientSettings settings) {
         Discovery discovery;
 
         if (settings.getHosts().length == 1 && !settings.isDnsDiscover()) {

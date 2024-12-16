@@ -106,7 +106,7 @@ public class DockerContainerDatabase extends GenericContainer<DockerContainerDat
 
     @Override
     public ConnectionSettingsBuilder defaultSettingsBuilder() {
-        ConnectionSettingsBuilder settingsBuilder = EventStoreDBClientSettings.builder().addHost(getHost(), getMappedPort(2113));
+        ConnectionSettingsBuilder settingsBuilder = KurrentDBClientSettings.builder().addHost(getHost(), getMappedPort(2113));
 
         if (!builder.anonymous)
             settingsBuilder.defaultCredentials("admin", "changeit");

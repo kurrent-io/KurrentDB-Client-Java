@@ -37,11 +37,11 @@ public class ConnectionSettingsBuilder {
 
     /**
      * Returns configured connection settings.
-     * @see EventStoreDBClientSettings
+     * @see KurrentDBClientSettings
      * @return configured settings.
      */
-    public EventStoreDBClientSettings buildConnectionSettings() {
-        return new EventStoreDBClientSettings(_dnsDiscover,
+    public KurrentDBClientSettings buildConnectionSettings() {
+        return new KurrentDBClientSettings(_dnsDiscover,
                 _maxDiscoverAttempts,
                 _discoveryInterval,
                 _gossipTimeout,
@@ -256,7 +256,7 @@ public class ConnectionSettingsBuilder {
         }
     }
 
-    static EventStoreDBClientSettings parseFromUrl(ConnectionSettingsBuilder builder, URL url) {
+    static KurrentDBClientSettings parseFromUrl(ConnectionSettingsBuilder builder, URL url) {
         if (!url.getProtocol().equals("esdb") && !url.getProtocol().equals("esdb+discover"))
             throw new RuntimeException(String.format("Unknown URL scheme: %s", url.getProtocol()));
 
