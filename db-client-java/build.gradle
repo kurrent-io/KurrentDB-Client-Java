@@ -208,9 +208,9 @@ publishing {
                 url = 'https://kurrent.io'
 
                 scm {
-                    connection = 'https://github.com/Kurrent/Kurrent-Client-Java.git'
-                    developerConnection = 'https://github.com/Kurrent/Kurrent-Client-Java.git'
-                    url = 'https://github.com/Kurrent/Kurrent-Client-Java'
+                    connection = 'https://github.com/EventStore/Kurrent-Client-Java.git'
+                    developerConnection = 'https://github.com/EventStore/Kurrent-Client-Java.git'
+                    url = 'https://github.com/EventStore/Kurrent-Client-Java'
                 }
 
                 licenses {

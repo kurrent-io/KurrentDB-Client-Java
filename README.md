@@ -193,8 +193,8 @@ review our [Contributing Guide][contributing] and [Code of Conduct][code-of-cond
 
 [kurrent]: https://kurrent.io
 [gradle]: https://gradle.org
-[contributing]: https://github.com/Kurrent/Kurrent-Client-Java/tree/master/CONTRIBUTING.md
-[code-of-conduct]: https://github.com/Kurrent/Kurrent-Client-Java/tree/master/CODE-OF-CONDUCT.md
+[contributing]: https://github.com/EventStore/Kurrent-Client-Java/tree/master/CONTRIBUTING.md
+[code-of-conduct]: https://github.com/EventStore/Kurrent-Client-Java/tree/master/CODE-OF-CONDUCT.md
 [support]: https://kurrent.io/support/
 [docs]: https://developers.eventstore.com/server/v24.6/quick-start/installation/
 [discuss]: https://discuss.eventstore.com/
