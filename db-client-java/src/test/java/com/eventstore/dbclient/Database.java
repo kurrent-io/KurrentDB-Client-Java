@@ -1,4 +1,4 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

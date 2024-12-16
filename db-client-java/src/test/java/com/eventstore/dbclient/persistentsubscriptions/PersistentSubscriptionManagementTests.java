@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.persistentsubscriptions;
+package io.kurrent.dbclient.persistentsubscriptions;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.*;
 

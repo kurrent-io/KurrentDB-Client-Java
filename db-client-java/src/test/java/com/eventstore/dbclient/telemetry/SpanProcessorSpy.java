@@ -1,4 +1,4 @@
-package com.eventstore.dbclient.telemetry;
+package io.kurrent.dbclient.telemetry;
 
 import io.opentelemetry.context.Context;
 import io.opentelemetry.sdk.trace.ReadWriteSpan;

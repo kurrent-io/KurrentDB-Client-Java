@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.telemetry;
+package io.kurrent.dbclient.telemetry;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.sdk.trace.ReadableSpan;
 import org.junit.jupiter.api.Assertions;

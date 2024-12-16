@@ -1,7 +1,7 @@
-package com.eventstore.dbclient.samples.quick_start;
+package io.kurrent.dbclient.samples.quick_start;
 
-import com.eventstore.dbclient.*;
-import com.eventstore.dbclient.samples.TestEvent;
+import io.kurrent.dbclient.*;
+import io.kurrent.dbclient.samples.TestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 

@@ -1,9 +1,9 @@
-package com.eventstore.dbclient.streams;
+package io.kurrent.dbclient.streams;
 
-import com.eventstore.dbclient.ConnectionAware;
-import com.eventstore.dbclient.ConnectionShutdownException;
-import com.eventstore.dbclient.KurrentDBClient;
-import com.eventstore.dbclient.KurrentDBClientSettings;
+import io.kurrent.dbclient.ConnectionAware;
+import io.kurrent.dbclient.ConnectionShutdownException;
+import io.kurrent.dbclient.KurrentDBClient;
+import io.kurrent.dbclient.KurrentDBClientSettings;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutionException;

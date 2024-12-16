@@ -1,8 +1,8 @@
-package com.eventstore.dbclient.samples.authentication;
+package io.kurrent.dbclient.samples.authentication;
 
-import com.eventstore.dbclient.KurrentDBClient;
-import com.eventstore.dbclient.KurrentDBClientSettings;
-import com.eventstore.dbclient.KurrentDBConnectionString;
+import io.kurrent.dbclient.KurrentDBClient;
+import io.kurrent.dbclient.KurrentDBClientSettings;
+import io.kurrent.dbclient.KurrentDBConnectionString;
 
 public class UserCertificate {
     private static void tracing() {

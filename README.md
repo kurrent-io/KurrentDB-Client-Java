@@ -80,14 +80,14 @@ class AccountCreated {
 }
 ```
 ```java
-import com.eventstore.dbclient.KurrentDBClient;
-import com.eventstore.dbclient.KurrentDBClientSettings;
-import com.eventstore.dbclient.KurrentDBConnectionString;
-import com.eventstore.dbclient.EventData;
-import com.eventstore.dbclient.ReadStreamOptions;
-import com.eventstore.dbclient.ResolvedEvent;
-import com.eventstore.dbclient.WriteResult;
-import com.eventstore.dbclient.ReadResult;
+import io.kurrent.dbclient.KurrentDBClient;
+import io.kurrent.dbclient.KurrentDBClientSettings;
+import io.kurrent.dbclient.KurrentDBConnectionString;
+import io.kurrent.dbclient.EventData;
+import io.kurrent.dbclient.ReadStreamOptions;
+import io.kurrent.dbclient.ResolvedEvent;
+import io.kurrent.dbclient.WriteResult;
+import io.kurrent.dbclient.ReadResult;
 
 public class Main {
     public static void main(String args[]) {
@@ -168,7 +168,7 @@ For further details please see [the projection management tests](src/test/java/c
 
 ## Support
 
-Information on support can be found on our website: [Event Store Support][support]
+Information on support can be found on our website: [Kurrent Support][support]
 
 ## Documentation
 
@@ -199,5 +199,5 @@ review our [Contributing Guide][contributing] and [Code of Conduct][code-of-cond
 [support]: https://kurrent.io/support/
 [docs]: https://developers.eventstore.com/server/v24.6/quick-start/installation/
 [discuss]: https://discuss.eventstore.com/
-[Maven Central]: https://search.maven.org/artifact/com.eventstore/db-client-java
+[Maven Central]: https://search.maven.org/artifact/io.kurrent/db-client-java
 [Kurrent GRPC Docs]: https://developers.eventstore.com/clients/grpc

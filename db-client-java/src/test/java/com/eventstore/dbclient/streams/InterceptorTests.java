@@ -1,8 +1,8 @@
-package com.eventstore.dbclient.streams;
+package io.kurrent.dbclient.streams;
 
-import com.eventstore.dbclient.ConnectionAware;
-import com.eventstore.dbclient.KurrentDBClient;
-import com.eventstore.dbclient.ReadStreamOptions;
+import io.kurrent.dbclient.ConnectionAware;
+import io.kurrent.dbclient.KurrentDBClient;
+import io.kurrent.dbclient.ReadStreamOptions;
 import io.grpc.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

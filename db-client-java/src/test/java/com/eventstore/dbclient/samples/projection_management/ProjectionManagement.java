@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.samples.projection_management;
+package io.kurrent.dbclient.samples.projection_management;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 import org.junit.*;
 import org.junit.jupiter.api.Test;
 

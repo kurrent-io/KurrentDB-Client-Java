@@ -1,8 +1,8 @@
-package com.eventstore.dbclient.misc;
+package io.kurrent.dbclient.misc;
 
-import com.eventstore.dbclient.ClusterInfo;
-import com.eventstore.dbclient.NodePreference;
-import com.eventstore.dbclient.NodeSelector;
+import io.kurrent.dbclient.ClusterInfo;
+import io.kurrent.dbclient.NodePreference;
+import io.kurrent.dbclient.NodeSelector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

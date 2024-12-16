@@ -1,7 +1,7 @@
-package com.eventstore.dbclient.misc;
+package io.kurrent.dbclient.misc;
 
-import com.eventstore.dbclient.EventData;
-import com.eventstore.dbclient.EventDataBuilder;
+import io.kurrent.dbclient.EventData;
+import io.kurrent.dbclient.EventDataBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

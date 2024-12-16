@@ -1,7 +1,7 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.persistentsubscriptions.*;
-import com.eventstore.dbclient.persistentsubscriptions.PersistentSubscriptionToAllWithFilterTests;
+import io.kurrent.dbclient.persistentsubscriptions.*;
+import io.kurrent.dbclient.persistentsubscriptions.PersistentSubscriptionToAllWithFilterTests;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;

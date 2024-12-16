@@ -1,7 +1,7 @@
-package com.eventstore.dbclient.misc;
+package io.kurrent.dbclient.misc;
 
 
-import com.eventstore.dbclient.ExpectedRevision;
+import io.kurrent.dbclient.ExpectedRevision;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

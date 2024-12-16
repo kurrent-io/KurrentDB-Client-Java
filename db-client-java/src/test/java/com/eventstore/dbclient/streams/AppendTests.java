@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.streams;
+package io.kurrent.dbclient.streams;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

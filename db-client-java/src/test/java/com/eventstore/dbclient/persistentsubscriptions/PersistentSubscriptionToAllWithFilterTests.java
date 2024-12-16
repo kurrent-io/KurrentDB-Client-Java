@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.persistentsubscriptions;
+package io.kurrent.dbclient.persistentsubscriptions;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -18,7 +18,7 @@ tasks.withType(JavaCompile) {
     options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
-group = 'com.eventstore'
+group = 'io.kurrent'
 version = '5.4.3'
 
 java {

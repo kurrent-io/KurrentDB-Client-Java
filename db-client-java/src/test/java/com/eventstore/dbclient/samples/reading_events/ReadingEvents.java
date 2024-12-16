@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.samples.reading_events;
+package io.kurrent.dbclient.samples.reading_events;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

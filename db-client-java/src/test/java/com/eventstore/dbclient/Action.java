@@ -1,4 +1,4 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
 @FunctionalInterface
 public interface Action<A> {

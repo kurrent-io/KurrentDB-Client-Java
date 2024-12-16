@@ -1,7 +1,7 @@
-package com.eventstore.dbclient.misc;
+package io.kurrent.dbclient.misc;
 
-import com.eventstore.dbclient.ConnectionStringParsingException;
-import com.eventstore.dbclient.KurrentDBConnectionString;
+import io.kurrent.dbclient.ConnectionStringParsingException;
+import io.kurrent.dbclient.KurrentDBConnectionString;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

@@ -1,10 +1,10 @@
-package com.eventstore.dbclient.misc;
+package io.kurrent.dbclient.misc;
 
 import java.net.InetSocketAddress;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;

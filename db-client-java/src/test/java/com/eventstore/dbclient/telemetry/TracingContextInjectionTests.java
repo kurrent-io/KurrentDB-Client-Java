@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.telemetry;
+package io.kurrent.dbclient.telemetry;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;

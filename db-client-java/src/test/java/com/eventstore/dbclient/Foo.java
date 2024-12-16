@@ -1,4 +1,4 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
 import java.util.Objects;
 

@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.samples.persistent_subscriptions;
+package io.kurrent.dbclient.samples.persistent_subscriptions;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 
 import java.util.List;
 import java.util.Optional;

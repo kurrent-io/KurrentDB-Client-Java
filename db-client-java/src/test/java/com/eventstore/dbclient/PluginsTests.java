@@ -1,6 +1,6 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.plugins.ClientCertificateAuthenticationTests;
+import io.kurrent.dbclient.plugins.ClientCertificateAuthenticationTests;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;

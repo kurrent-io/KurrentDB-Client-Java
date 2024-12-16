@@ -1,7 +1,7 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.databases.DockerContainerDatabase;
-import com.eventstore.dbclient.databases.ExternallyCreatedCluster;
+import io.kurrent.dbclient.databases.DockerContainerDatabase;
+import io.kurrent.dbclient.databases.ExternallyCreatedCluster;
 
 import java.util.Optional;
 

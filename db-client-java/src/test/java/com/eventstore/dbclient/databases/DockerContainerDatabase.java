@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.databases;
+package io.kurrent.dbclient.databases;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 import com.github.dockerjava.api.model.HealthCheck;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;

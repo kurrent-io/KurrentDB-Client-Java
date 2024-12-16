@@ -1,7 +1,7 @@
-package com.eventstore.dbclient.samples.appending_events;
+package io.kurrent.dbclient.samples.appending_events;
 
-import com.eventstore.dbclient.*;
-import com.eventstore.dbclient.samples.TestEvent;
+import io.kurrent.dbclient.*;
+import io.kurrent.dbclient.samples.TestEvent;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;

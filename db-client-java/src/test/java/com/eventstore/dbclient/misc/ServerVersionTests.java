@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.misc;
+package io.kurrent.dbclient.misc;
 
-import com.eventstore.dbclient.ServerVersion;
+import io.kurrent.dbclient.ServerVersion;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -1,8 +1,8 @@
-package com.eventstore.dbclient.telemetry;
+package io.kurrent.dbclient.telemetry;
 
-import com.eventstore.dbclient.ClientTelemetryAttributes;
-import com.eventstore.dbclient.ClientTelemetryConstants;
-import com.eventstore.dbclient.ConnectionAware;
+import io.kurrent.dbclient.ClientTelemetryAttributes;
+import io.kurrent.dbclient.ClientTelemetryConstants;
+import io.kurrent.dbclient.ConnectionAware;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;

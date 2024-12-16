@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.streams;
+package io.kurrent.dbclient.streams;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.junit.jupiter.api.Assertions;

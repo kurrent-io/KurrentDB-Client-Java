@@ -1,9 +1,9 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.telemetry.PersistentSubscriptionsTracingInstrumentationTests;
-import com.eventstore.dbclient.telemetry.SpanProcessorSpy;
-import com.eventstore.dbclient.telemetry.StreamsTracingInstrumentationTests;
-import com.eventstore.dbclient.telemetry.TracingContextInjectionTests;
+import io.kurrent.dbclient.telemetry.PersistentSubscriptionsTracingInstrumentationTests;
+import io.kurrent.dbclient.telemetry.SpanProcessorSpy;
+import io.kurrent.dbclient.telemetry.StreamsTracingInstrumentationTests;
+import io.kurrent.dbclient.telemetry.TracingContextInjectionTests;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.sdk.OpenTelemetrySdk;

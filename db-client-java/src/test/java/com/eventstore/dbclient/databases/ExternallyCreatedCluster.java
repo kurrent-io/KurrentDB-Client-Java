@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.databases;
+package io.kurrent.dbclient.databases;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 
 public class ExternallyCreatedCluster implements Database {
     final private boolean secure;

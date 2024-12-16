@@ -1,7 +1,7 @@
-package com.eventstore.dbclient.persistentsubscriptions;
+package io.kurrent.dbclient.persistentsubscriptions;
 
-import com.eventstore.dbclient.ConnectionAware;
-import com.eventstore.dbclient.KurrentDBPersistentSubscriptionsClient;
+import io.kurrent.dbclient.ConnectionAware;
+import io.kurrent.dbclient.KurrentDBPersistentSubscriptionsClient;
 import org.junit.jupiter.api.Test;
 
 public interface DeletePersistentSubscriptionToStreamTests extends ConnectionAware {

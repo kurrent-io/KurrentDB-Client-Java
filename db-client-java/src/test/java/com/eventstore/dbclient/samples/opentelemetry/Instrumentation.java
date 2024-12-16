@@ -1,7 +1,7 @@
-package com.eventstore.dbclient.samples.opentelemetry;
+package io.kurrent.dbclient.samples.opentelemetry;
 
-import com.eventstore.dbclient.*;
-import com.eventstore.dbclient.samples.TestEvent;
+import io.kurrent.dbclient.*;
+import io.kurrent.dbclient.samples.TestEvent;
 // region import-required-packages
 import io.opentelemetry.exporter.logging.LoggingSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;

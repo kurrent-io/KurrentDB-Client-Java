@@ -1,8 +1,8 @@
-package com.eventstore.dbclient.misc;
+package io.kurrent.dbclient.misc;
 
-import com.eventstore.dbclient.Acl;
-import com.eventstore.dbclient.Acls;
-import com.eventstore.dbclient.StreamMetadata;
+import io.kurrent.dbclient.Acl;
+import io.kurrent.dbclient.Acls;
+import io.kurrent.dbclient.StreamMetadata;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

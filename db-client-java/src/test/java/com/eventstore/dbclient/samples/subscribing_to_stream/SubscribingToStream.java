@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.samples.subscribing_to_stream;
+package io.kurrent.dbclient.samples.subscribing_to_stream;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 
 import static org.junit.Assert.fail;
 

@@ -1,6 +1,6 @@
-package com.eventstore.dbclient.samples.server_side_filtering;
+package io.kurrent.dbclient.samples.server_side_filtering;
 
-import com.eventstore.dbclient.*;
+import io.kurrent.dbclient.*;
 
 import java.util.concurrent.CompletableFuture;
 

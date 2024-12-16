@@ -1,8 +1,8 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
 
-import com.eventstore.dbclient.streams.*;
-import com.eventstore.dbclient.streams.ReadStreamTests;
+import io.kurrent.dbclient.streams.*;
+import io.kurrent.dbclient.streams.ReadStreamTests;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;

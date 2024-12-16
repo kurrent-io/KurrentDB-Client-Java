@@ -1,4 +1,4 @@
-package com.eventstore.dbclient.samples;
+package io.kurrent.dbclient.samples;
 
 public class TestEvent {
     private String id;
