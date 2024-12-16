@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * PluginsTests require the enterprise edition of EventStoreDB (>= 24.2.0).
+ * PluginsTests require the enterprise edition of KurrentDB (>= 24.2.0).
  */
 public class PluginsTests implements ClientCertificateAuthenticationTests {
     static private Database database;

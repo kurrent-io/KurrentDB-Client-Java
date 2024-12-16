@@ -9,7 +9,7 @@ import java.util.Objects;
  * Constants used for expected revision control.
  * <p>
  *
- * The EventStoreDB server will assure idempotency for all requests using any value in <i>ExpectedRevision</i> except
+ * The KurrentDB server will assure idempotency for all requests using any value in <i>ExpectedRevision</i> except
  * <i>ANY</i>. When using <i>ANY</i>, the EventStoreDB server will do its best to assure idempotency but will not
  * guarantee it. Any other <i>ExpectedRevision</i> instances are meant for optimistic concurrency checks.
  * </p>

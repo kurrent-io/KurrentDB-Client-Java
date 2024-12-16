@@ -3,7 +3,7 @@ package com.eventstore.dbclient;
 import java.util.UUID;
 
 /**
- * Represents an event that will be sent to EventStoreDB.
+ * Represents an event that will be sent to KurrentDB.
  */
 public final class EventData {
     private final UUID eventId;

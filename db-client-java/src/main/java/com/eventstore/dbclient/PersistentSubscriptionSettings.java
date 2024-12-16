@@ -96,7 +96,7 @@ public abstract class PersistentSubscriptionSettings {
      *
      * The best way to explain link resolution is when using system projections. When reading the stream <i>$streams</i>
      * , each event is actually a link pointing to the first event of a stream. By enabling link resolution feature,
-     * EventStoreDB will also return the event targeted by the link.
+     * KurrentDB will also return the event targeted by the link.
      */
     public boolean shouldResolveLinkTos() {
         return resolveLinkTos;
@@ -191,7 +191,7 @@ public abstract class PersistentSubscriptionSettings {
      *
      * The best way to explain link resolution is when using system projections. When reading the stream <i>$streams</i>
      * , each event is actually a link pointing to the first event of a stream. By enabling link resolution feature,
-     * EventStoreDB will also return the event targeted by the link.
+     * KurrentDB will also return the event targeted by the link.
      */
     public boolean isResolveLinkTos() {
         return resolveLinkTos;
@@ -202,7 +202,7 @@ public abstract class PersistentSubscriptionSettings {
      *
      * The best way to explain link resolution is when using system projections. When reading the stream <i>$streams</i>
      * , each event is actually a link pointing to the first event of a stream. By enabling link resolution feature,
-     * EventStoreDB will also return the event targeted by the link.
+     * KurrentDB will also return the event targeted by the link.
      */
     void setResolveLinkTos(boolean resolveLinkTos) {
         this.resolveLinkTos = resolveLinkTos;

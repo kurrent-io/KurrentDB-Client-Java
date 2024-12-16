@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 /**
  * Represents EventStoreDB client for persistent subscriptions management. A client instance maintains a two-way communication to EventStoreDB.
- * Many threads can use the EventStoreDB client simultaneously, or a single thread can make many asynchronous requests.
+ * Many threads can use the KurrentDB client simultaneously, or a single thread can make many asynchronous requests.
  */
 public class KurrentDBPersistentSubscriptionsClient {
     private final KurrentDBClientBase inner;

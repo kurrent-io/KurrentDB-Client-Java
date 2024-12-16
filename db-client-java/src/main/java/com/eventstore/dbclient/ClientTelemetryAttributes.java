@@ -24,9 +24,9 @@ public class ClientTelemetryAttributes {
     }
 
     public static class EventStore {
-        public static final String STREAM = "db.eventstoredb.stream";
-        public static final String SUBSCRIPTION_ID = "db.eventstoredb.subscription.id";
-        public static final String EVENT_ID = "db.eventstoredb.event.id";
-        public static final String EVENT_TYPE = "db.eventstoredb.event.type";
+        public static final String STREAM = "db.kurrent.stream";
+        public static final String SUBSCRIPTION_ID = "db.kurrent.subscription.id";
+        public static final String EVENT_ID = "db.kurrent.event.id";
+        public static final String EVENT_TYPE = "db.kurrent.event.type";
     }
 }

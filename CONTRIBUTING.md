@@ -1,4 +1,4 @@
-# Contributing to `EventStoreDB-Client-Java`
+# Contributing to `Kurrent-Client-Java`
 
 Welcome to the Event Store community, and thank you for contributing! The following guide outlines the basics of how to get involved. Pull requests to update and expand this guide are very welcome!
 
@@ -10,7 +10,7 @@ We want the Event Store community to be as welcoming and inclusive as possible, 
 
 ### Licensing
 
-`EventStoreDB-Client-Java` is licensed under the [Apache-2.0][apache2] license. By submitting a pull request, you represent that you have right to license your contribution to Event Store Ltd and the community, and that by submitting a patch your contributions are licensed under the Apache-2.0 license.
+`Kurrent-Client-Java` is licensed under the [Apache-2.0][apache2] license. By submitting a pull request, you represent that you have right to license your contribution to Event Store Ltd and the community, and that by submitting a patch your contributions are licensed under the Apache-2.0 license.
 
 ## Contributing
 
@@ -22,7 +22,7 @@ Please disclose issues which you believe to be a security threat _by e-mail_ to 
 
 Issues may be reported via the [GitHub Repository][github-repo]. When reporting issues, please ensure that you include relevant information which can help diagnose the problem. This includes:
 
-- The version of `EventStoreDB-Client-Java` - including a commit SHA if using a local build
+- The version of `Kurrent-Client-Java` - including a commit SHA if using a local build
 
 - The operating system on which the issue is exhibited (on Unix, the output of `uname -a`)
 

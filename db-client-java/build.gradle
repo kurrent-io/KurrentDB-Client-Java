@@ -201,10 +201,10 @@ publishing {
 
             from components.java
             pom {
-                name = 'EventStoreDB Client Java'
+                name = 'Kurrent Client Java'
                 // packaging 'jar'
                 // optionally artifactId can be defined here
-                description = 'EventStoreDB gRPC Java client'
+                description = 'Kurrent gRPC Java client'
                 url = 'https://kurrent.io'
 
                 scm {

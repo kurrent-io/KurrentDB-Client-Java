@@ -5,7 +5,7 @@ package com.eventstore.dbclient;
  */
 public abstract class PersistentSubscriptionListener {
     /**
-     * Called when EventStoreDB sends an event to the persistent subscription.
+     * Called when KurrentDB sends an event to the persistent subscription.
      * @param subscription handle to the persistent subscription.
      * @param retryCount how many times the event was retried.
      * @param event a resolved event.

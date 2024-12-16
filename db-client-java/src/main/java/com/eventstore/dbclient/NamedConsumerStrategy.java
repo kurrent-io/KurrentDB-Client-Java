@@ -19,7 +19,7 @@ public class NamedConsumerStrategy {
     public static final NamedConsumerStrategy ROUND_ROBIN = new NamedConsumerStrategy("RoundRobin");
 
     /**
-     * For use with an indexing projection such as the system $by_category projection. EventStoreDB inspects event for
+     * For use with an indexing projection such as the system $by_category projection. KurrentDB inspects event for
      * its source stream id, hashing the id to one of 1024 buckets assigned to individual clients. When a client
      * disconnects, its buckets are assigned to other clients. When a client connects, it is assigned some existing
      * buckets. This naively attempts to maintain a balanced workload. The main goal of this strategy is to decrease the

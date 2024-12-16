@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
- * Represents EventStoreDB client for projections management. A client instance maintains a two-way communication to EventStoreDB.
+ * Represents KurrentDB client for projections management. A client instance maintains a two-way communication to EventStoreDB.
  * Many threads can use the EventStoreDB client simultaneously, or a single thread can make many asynchronous requests.
  */
 public class KurrentDBProjectionManagementClient {

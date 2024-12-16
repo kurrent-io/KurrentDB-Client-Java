@@ -20,7 +20,7 @@ public class KurrentDBClient extends KurrentDBClientBase {
     }
 
     /**
-     * Creates a gRPC client to EventStoreDB database.
+     * Creates a gRPC client to KurrentDB database.
      */
     public static KurrentDBClient create(KurrentDBClientSettings settings) {
         return new KurrentDBClient(settings);
