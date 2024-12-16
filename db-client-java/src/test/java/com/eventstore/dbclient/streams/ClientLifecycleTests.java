@@ -2,7 +2,7 @@ package com.eventstore.dbclient.streams;
 
 import com.eventstore.dbclient.ConnectionAware;
 import com.eventstore.dbclient.ConnectionShutdownException;
-import com.eventstore.dbclient.EventStoreDBClient;
+import com.eventstore.dbclient.KurrentDBClient;
 import com.eventstore.dbclient.KurrentDBClientSettings;
 import org.junit.jupiter.api.Test;
 
@@ -16,14 +16,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 public interface ClientLifecycleTests extends ConnectionAware {
     @Test
     default void testProvidesRunningStatus() {
-        EventStoreDBClient client = getDatabase().newClient();
+        KurrentDBClient client = getDatabase().newClient();
 
         assertFalse(client.isShutdown());
     }
 
     @Test
     default void testProvidesShutdownStatusAfterManualShutdown() throws Throwable {
-        EventStoreDBClient client = getDatabase().newClient();
+        KurrentDBClient client = getDatabase().newClient();
 
         client.shutdown().get();
 
@@ -35,7 +35,7 @@ public interface ClientLifecycleTests extends ConnectionAware {
         KurrentDBClientSettings settings = KurrentDBClientSettings.builder()
                 .addHost("unknown.host.name", 2113)
                 .buildConnectionSettings();
-        EventStoreDBClient client = EventStoreDBClient.create(settings);
+        KurrentDBClient client = KurrentDBClient.create(settings);
 
         try {
             client.readAll().get();

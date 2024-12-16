@@ -3,12 +3,11 @@ package com.eventstore.dbclient.samples.appending_events;
 import com.eventstore.dbclient.*;
 import com.eventstore.dbclient.samples.TestEvent;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class AppendingEvents {
-    private static void appendToStream(EventStoreDBClient client) throws ExecutionException, InterruptedException {
+    private static void appendToStream(KurrentDBClient client) throws ExecutionException, InterruptedException {
         // region append-to-stream
         EventData eventData = EventData
                 .builderAsJson(
@@ -28,7 +27,7 @@ public class AppendingEvents {
         // endregion append-to-stream
     }
 
-    private static void appendWithSameId(EventStoreDBClient client) throws ExecutionException, InterruptedException {
+    private static void appendWithSameId(KurrentDBClient client) throws ExecutionException, InterruptedException {
         // region append-duplicate-event
         EventData eventData = EventData
                 .builderAsJson(
@@ -52,7 +51,7 @@ public class AppendingEvents {
         // endregion append-duplicate-event
     }
 
-    private static void appendWithNoStream(EventStoreDBClient client) throws ExecutionException, InterruptedException {
+    private static void appendWithNoStream(KurrentDBClient client) throws ExecutionException, InterruptedException {
         // region append-with-no-stream
         EventData eventDataOne = EventData
                 .builderAsJson(
@@ -86,7 +85,7 @@ public class AppendingEvents {
         // endregion append-with-no-stream
     }
 
-    private static void appendWithConcurrencyCheck(EventStoreDBClient client) throws ExecutionException, InterruptedException {
+    private static void appendWithConcurrencyCheck(KurrentDBClient client) throws ExecutionException, InterruptedException {
         // region append-with-concurrency-check
 
         ReadStreamOptions readStreamOptions = ReadStreamOptions.get()
@@ -128,7 +127,7 @@ public class AppendingEvents {
         // endregion append-with-concurrency-check
     }
 
-    public void appendOverridingUserCredentials(EventStoreDBClient client) throws ExecutionException, InterruptedException {
+    public void appendOverridingUserCredentials(KurrentDBClient client) throws ExecutionException, InterruptedException {
         EventData eventData = EventData
                 .builderAsJson(
                         UUID.randomUUID(),

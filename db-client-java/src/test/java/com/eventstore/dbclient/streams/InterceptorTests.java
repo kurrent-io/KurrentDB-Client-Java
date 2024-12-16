@@ -1,7 +1,7 @@
 package com.eventstore.dbclient.streams;
 
 import com.eventstore.dbclient.ConnectionAware;
-import com.eventstore.dbclient.EventStoreDBClient;
+import com.eventstore.dbclient.KurrentDBClient;
 import com.eventstore.dbclient.ReadStreamOptions;
 import io.grpc.*;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +13,7 @@ public interface InterceptorTests extends ConnectionAware {
     @Test
     default void testInterceptorIsCalled() {
         AtomicInteger atom = new AtomicInteger(0);
-        EventStoreDBClient client = getDatabase().connectWith(opts -> opts.addInterceptor(new MyInterceptor(atom)));
+        KurrentDBClient client = getDatabase().connectWith(opts -> opts.addInterceptor(new MyInterceptor(atom)));
 
         try {
             client.readStream("foobar", ReadStreamOptions.get()).get();

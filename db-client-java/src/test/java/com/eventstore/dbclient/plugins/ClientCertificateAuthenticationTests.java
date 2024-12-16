@@ -10,7 +10,7 @@ public interface ClientCertificateAuthenticationTests extends ConnectionAware {
     @Test
     default void testClientCertificateAuthenticationWithValidCertificate() {
         Assertions.assertDoesNotThrow(() -> {
-            EventStoreDBClient client = getDatabase()
+            KurrentDBClient client = getDatabase()
                     .createClient(getDatabase()
                             .defaultSettingsBuilder()
                             .defaultClientCertificate(clientCertificate("admin"), userKey("admin"))

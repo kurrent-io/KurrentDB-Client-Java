@@ -19,7 +19,7 @@ public interface ConnectionAware {
 
     Logger getLogger();
 
-    default EventStoreDBClient getDefaultClient() {
+    default KurrentDBClient getDefaultClient() {
         return getDatabase().defaultClient();
     }
 

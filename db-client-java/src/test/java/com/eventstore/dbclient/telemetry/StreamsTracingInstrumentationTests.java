@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public interface StreamsTracingInstrumentationTests extends TelemetryAware {
     @Test
     default void testAppendIsInstrumentedWithTracingAsExpected() throws Throwable {
-        EventStoreDBClient client = getDefaultClient();
+        KurrentDBClient client = getDefaultClient();
         String streamName = generateName();
 
         client.appendToStream(
@@ -37,7 +37,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
     @Test
     default void testTracingContextIsInjectedAsExpectedWhenUserMetadataIsJsonObject() throws Throwable {
-        EventStoreDBClient client = getDefaultClient();
+        KurrentDBClient client = getDefaultClient();
         String streamName = generateName();
 
         client.appendToStream(
@@ -67,7 +67,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     default void testTracingContextInjectionIsIgnoredAsExpectedWhenUserMetadataIsNonNullAndNotAJsonObject()
             throws Throwable {
-        EventStoreDBClient client = getDefaultClient();
+        KurrentDBClient client = getDefaultClient();
         String streamName = generateName();
         byte[] userMetadata = mapper.writeValueAsBytes("clearlynotvalidjson");
 
@@ -124,7 +124,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
     @Test
     default void testAppendInstrumentationHandlesExceptionsAsExpected() throws Throwable {
-        EventStoreDBClient client = getDefaultClient();
+        KurrentDBClient client = getDefaultClient();
         String streamName = generateName();
 
         WrongExpectedVersionException actualException = null;
@@ -154,7 +154,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
     @Test
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     default void testCatchupSubscriptionIsInstrumentedWithTracingAndRestoresRemoteContextAsExpected() throws Throwable {
-        EventStoreDBClient client = getDefaultClient();
+        KurrentDBClient client = getDefaultClient();
         String streamName = generateName();
 
         EventData[] events = {
@@ -208,7 +208,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
     @Test
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     default void testCatchupSubscriptionInstrumentationHandlesExceptionsAsExpected() throws Throwable {
-        EventStoreDBClient client = getDefaultClient();
+        KurrentDBClient client = getDefaultClient();
         String streamName = generateName();
 
         client.appendToStream(
@@ -248,7 +248,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
     @Test
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     default void testCatchupSubscriptionTracingIsNotRestoredOnDeletedEvents() throws Throwable {
-        EventStoreDBClient client = getDefaultClient();
+        KurrentDBClient client = getDefaultClient();
 
         String category = UUID.randomUUID().toString().replace("-", "");
         String streamName = category + "-test";

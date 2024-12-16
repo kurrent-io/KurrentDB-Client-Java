@@ -21,7 +21,7 @@ public interface ReadStreamTests extends ConnectionAware {
             events.add(serializeBazEvent(event));
         }
 
-        EventStoreDBClient client = getDefaultClient();
+        KurrentDBClient client = getDefaultClient();
 
         client.appendToStream(streamName, events.iterator()).get();
         ReadResult result = client.readStream(streamName, ReadStreamOptions.get()).get();

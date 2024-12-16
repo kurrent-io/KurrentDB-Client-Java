@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface AppendTests extends ConnectionAware {
     @Test
     default void testAppendSingleEventNoStream() throws Throwable {
-        EventStoreDBClient client = getDatabase().defaultClient();
+        KurrentDBClient client = getDatabase().defaultClient();
 
         final String streamName = generateName();
         final String eventType = "TestEvent";

@@ -14,16 +14,16 @@ import java.util.concurrent.CompletableFuture;
  * Represents EventStoreDB client for stream operations. A client instance maintains a two-way communication to EventStoreDB.
  * Many threads can use the EventStoreDB client simultaneously, or a single thread can make many asynchronous requests.
  */
-public class EventStoreDBClient extends EventStoreDBClientBase {
-    private EventStoreDBClient(KurrentDBClientSettings settings) {
+public class KurrentDBClient extends KurrentDBClientBase {
+    private KurrentDBClient(KurrentDBClientSettings settings) {
         super(settings);
     }
 
     /**
      * Creates a gRPC client to EventStoreDB database.
      */
-    public static EventStoreDBClient create(KurrentDBClientSettings settings) {
-        return new EventStoreDBClient(settings);
+    public static KurrentDBClient create(KurrentDBClientSettings settings) {
+        return new KurrentDBClient(settings);
     }
 
     /**

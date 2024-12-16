@@ -5,7 +5,7 @@ import com.eventstore.dbclient.*;
 import static org.junit.Assert.fail;
 
 public class SubscribingToStream {
-    private static void subscribeToStream(EventStoreDBClient client) {
+    private static void subscribeToStream(KurrentDBClient client) {
         // region subscribe-to-stream
         SubscriptionListener listener = new SubscriptionListener() {
             @Override
@@ -74,7 +74,7 @@ public class SubscribingToStream {
         // endregion subscribe-to-stream-subscription-dropped
     }
 
-    private static void subscribeToAll(EventStoreDBClient client) {
+    private static void subscribeToAll(KurrentDBClient client) {
         // region subscribe-to-all
         SubscriptionListener listener = new SubscriptionListener() {
             @Override
@@ -130,7 +130,7 @@ public class SubscribingToStream {
         // endregion subscribe-to-all-subscription-dropped
     }
 
-    private static void subscribeToFiltered(EventStoreDBClient client) {
+    private static void subscribeToFiltered(KurrentDBClient client) {
         SubscriptionListener listener = new SubscriptionListener() {
             @Override
             public void onEvent(Subscription subscription, ResolvedEvent event) {
@@ -160,7 +160,7 @@ public class SubscribingToStream {
         // endregion stream-regex-filtered-subscription
     }
 
-    private static void overridingUserCredentials(EventStoreDBClient client) {
+    private static void overridingUserCredentials(KurrentDBClient client) {
         SubscriptionListener listener = new SubscriptionListener() {
             @Override
             public void onEvent(Subscription subscription, ResolvedEvent event) {

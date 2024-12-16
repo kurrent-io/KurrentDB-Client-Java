@@ -11,11 +11,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class EventStoreDBClientBase {
-    final Logger logger = LoggerFactory.getLogger(EventStoreDBClientBase.class);
+public class KurrentDBClientBase {
+    final Logger logger = LoggerFactory.getLogger(KurrentDBClientBase.class);
     final private GrpcClient client;
 
-    EventStoreDBClientBase(KurrentDBClientSettings settings) {
+    KurrentDBClientBase(KurrentDBClientSettings settings) {
         Discovery discovery;
 
         if (settings.getHosts().length == 1 && !settings.isDnsDiscover()) {

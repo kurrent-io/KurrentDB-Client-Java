@@ -1,7 +1,6 @@
 package com.eventstore.dbclient.streams;
 
 import com.eventstore.dbclient.*;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -139,7 +138,7 @@ public interface SubscriptionTests extends ConnectionAware {
 
     @Test
     default void testCancellingSubscriptionShouldNotRaiseAnException() throws Throwable {
-        EventStoreDBClient client = getDefaultClient();
+        KurrentDBClient client = getDefaultClient();
         String streamName = generateName();
         String eventType = generateName();
 
@@ -163,7 +162,7 @@ public interface SubscriptionTests extends ConnectionAware {
     @Test
     @Timeout(value = 5, unit = TimeUnit.MINUTES)
     default void testCaughtUpMessageIsReceived() throws Throwable {
-        EventStoreDBClient client = getDefaultClient();
+        KurrentDBClient client = getDefaultClient();
         Optional<ServerVersion> version = client.getServerVersion().get();
 
         Assumptions.assumeTrue(version.isPresent());

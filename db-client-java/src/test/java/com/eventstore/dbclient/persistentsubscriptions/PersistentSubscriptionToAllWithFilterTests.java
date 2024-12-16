@@ -6,14 +6,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 
 public interface PersistentSubscriptionToAllWithFilterTests extends ConnectionAware {
     @Test
     default void testPersistentSubscriptionToAllWithFilter() throws Throwable {
         Exceptions exceptions = new Exceptions().registerGoAwayError();
         EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
-        EventStoreDBClient streamsClient = getDatabase().defaultClient();
+        KurrentDBClient streamsClient = getDatabase().defaultClient();
         String groupName = generateName();
         int filteredEventTypeCount = 10;
         String filteredEventType = "filtered-event-type";

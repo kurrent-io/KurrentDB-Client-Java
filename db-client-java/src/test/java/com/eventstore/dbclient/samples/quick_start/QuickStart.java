@@ -12,7 +12,7 @@ public class QuickStart {
     public static void Run() throws ConnectionStringParsingException, ExecutionException, InterruptedException, JsonProcessingException {
         // region createClient
         KurrentDBClientSettings settings = EventStoreDBConnectionString.parseOrThrow("{connectionString}");
-        EventStoreDBClient client = EventStoreDBClient.create(settings);
+        KurrentDBClient client = KurrentDBClient.create(settings);
         // endregion createClient
 
         // region createEvent

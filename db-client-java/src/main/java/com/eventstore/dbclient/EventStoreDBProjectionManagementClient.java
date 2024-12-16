@@ -12,12 +12,12 @@ import java.util.function.Function;
  * Many threads can use the EventStoreDB client simultaneously, or a single thread can make many asynchronous requests.
  */
 public class EventStoreDBProjectionManagementClient {
-    final EventStoreDBClientBase inner;
+    final KurrentDBClientBase inner;
     private EventStoreDBProjectionManagementClient(KurrentDBClientSettings settings) {
-        inner = new EventStoreDBClientBase(settings);
+        inner = new KurrentDBClientBase(settings);
     }
 
-    private EventStoreDBProjectionManagementClient(EventStoreDBClientBase inner) {
+    private EventStoreDBProjectionManagementClient(KurrentDBClientBase inner) {
         this.inner = inner;
     }
 
@@ -33,7 +33,7 @@ public class EventStoreDBProjectionManagementClient {
      * Returns a Projection Management client based on existing client.
      * @param existingClient Existing client.
      */
-    public static EventStoreDBProjectionManagementClient from(EventStoreDBClientBase existingClient) {
+    public static EventStoreDBProjectionManagementClient from(KurrentDBClientBase existingClient) {
         return new EventStoreDBProjectionManagementClient(existingClient);
     }
 

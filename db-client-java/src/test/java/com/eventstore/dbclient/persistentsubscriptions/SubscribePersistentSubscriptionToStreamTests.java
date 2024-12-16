@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public interface SubscribePersistentSubscriptionToStreamTests extends ConnectionAware {
     @Test
@@ -14,7 +13,7 @@ public interface SubscribePersistentSubscriptionToStreamTests extends Connection
         Exceptions exceptions = new Exceptions().registerGoAwayError();
         String streamName = generateName();
         EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
-        EventStoreDBClient streamsClient = getDatabase().defaultClient();
+        KurrentDBClient streamsClient = getDatabase().defaultClient();
         JsonMapper jsonMapper = new JsonMapper();
 
         flaky(10, exceptions, () -> client.createToStream(streamName, "aGroup")
@@ -67,7 +66,7 @@ public interface SubscribePersistentSubscriptionToStreamTests extends Connection
         Exceptions exceptions = new Exceptions().registerGoAwayError();
         String streamName = generateName();
         EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
-        EventStoreDBClient streamsClient = getDatabase().defaultClient();
+        KurrentDBClient streamsClient = getDatabase().defaultClient();
         final JsonMapper jsonMapper = new JsonMapper();
 
         flaky(10, exceptions, () -> client.createToAll("aGroup")

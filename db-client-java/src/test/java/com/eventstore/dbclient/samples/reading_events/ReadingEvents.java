@@ -4,11 +4,10 @@ import com.eventstore.dbclient.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class ReadingEvents {
-    private static void readFromStream(EventStoreDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
+    private static void readFromStream(KurrentDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
         // region read-from-stream
         ReadStreamOptions options = ReadStreamOptions.get()
                 .forwards()
@@ -27,7 +26,7 @@ public class ReadingEvents {
         // endregion iterate-stream
     }
 
-    private static void readFromStreamPosition(EventStoreDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
+    private static void readFromStreamPosition(KurrentDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
         // region read-from-stream-position
         ReadStreamOptions options = ReadStreamOptions.get()
                 .forwards()
@@ -47,7 +46,7 @@ public class ReadingEvents {
         // endregion iterate-stream
     }
 
-    private static void readStreamOverridingUserCredentials(EventStoreDBClient client) throws ExecutionException, InterruptedException {
+    private static void readStreamOverridingUserCredentials(KurrentDBClient client) throws ExecutionException, InterruptedException {
         // region overriding-user-credentials
         ReadStreamOptions options = ReadStreamOptions.get()
                 .forwards()
@@ -59,7 +58,7 @@ public class ReadingEvents {
         // endregion overriding-user-credentials
     }
 
-    private static void readFromStreamPositionCheck(EventStoreDBClient client) throws JsonProcessingException, InterruptedException {
+    private static void readFromStreamPositionCheck(KurrentDBClient client) throws JsonProcessingException, InterruptedException {
         // region checking-for-stream-presence
         ReadStreamOptions options = ReadStreamOptions.get()
                 .forwards()
@@ -85,7 +84,7 @@ public class ReadingEvents {
         // endregion checking-for-stream-presence
     }
 
-    private static void readFromStreamBackwards(EventStoreDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
+    private static void readFromStreamBackwards(KurrentDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
         // region reading-backwards
         ReadStreamOptions options = ReadStreamOptions.get()
                 .backwards()
@@ -101,7 +100,7 @@ public class ReadingEvents {
         // endregion reading-backwards
     }
 
-    private static void readFromAllStream(EventStoreDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
+    private static void readFromAllStream(KurrentDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
         // region read-from-all-stream
         ReadAllOptions options = ReadAllOptions.get()
                 .forwards()
@@ -120,7 +119,7 @@ public class ReadingEvents {
         // endregion read-from-all-stream-iterate
     }
 
-    private static void readAllOverridingUserCredentials(EventStoreDBClient client) throws ExecutionException, InterruptedException {
+    private static void readAllOverridingUserCredentials(KurrentDBClient client) throws ExecutionException, InterruptedException {
         // region read-all-overriding-user-credentials
         ReadAllOptions options = ReadAllOptions.get()
                 .forwards()
@@ -132,7 +131,7 @@ public class ReadingEvents {
         // endregion read-all-overriding-user-credentials
     }
 
-    private static void ignoreSystemEvents(EventStoreDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
+    private static void ignoreSystemEvents(KurrentDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
         // region ignore-system-events
         ReadAllOptions options = ReadAllOptions.get()
                 .forwards()
@@ -151,7 +150,7 @@ public class ReadingEvents {
         // endregion ignore-system-events
     }
 
-    private static void readFromAllStreamBackwards(EventStoreDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
+    private static void readFromAllStreamBackwards(KurrentDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
         // region read-from-all-stream-backwards
         ReadAllOptions options = ReadAllOptions.get()
                 .backwards()
@@ -170,7 +169,7 @@ public class ReadingEvents {
         // endregion read-from-all-stream-iterate
     }
 
-    private static void filteringOutSystemEvents(EventStoreDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
+    private static void filteringOutSystemEvents(KurrentDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
         ReadAllOptions options = ReadAllOptions.get()
                 .forwards()
                 .fromStart();
@@ -187,7 +186,7 @@ public class ReadingEvents {
         }
     }
 
-    private static void readFromStreamResolvingLinkTos(EventStoreDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
+    private static void readFromStreamResolvingLinkTos(KurrentDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
         // region read-from-all-stream-resolving-link-Tos
         ReadAllOptions options = ReadAllOptions.get()
                 .forwards()

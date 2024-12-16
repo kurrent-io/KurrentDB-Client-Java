@@ -12,19 +12,19 @@ import java.util.concurrent.TimeoutException;
 
 public class ClientTracker {
     private static final Logger logger = LoggerFactory.getLogger(ClientTracker.class);
-    private ArrayList<EventStoreDBClientBase> otherClients = new ArrayList<>();
-    private EventStoreDBClient defaultClient = null;
+    private ArrayList<KurrentDBClientBase> otherClients = new ArrayList<>();
+    private KurrentDBClient defaultClient = null;
 
-    public synchronized EventStoreDBClient createClient(KurrentDBClientSettings settings) {
-        EventStoreDBClient client = EventStoreDBClient.create(settings);
+    public synchronized KurrentDBClient createClient(KurrentDBClientSettings settings) {
+        KurrentDBClient client = KurrentDBClient.create(settings);
         otherClients.add(client);
         return client;
     }
 
-    public synchronized EventStoreDBClient getDefaultClient(Database database) {
+    public synchronized KurrentDBClient getDefaultClient(Database database) {
         if (defaultClient == null) {
             KurrentDBClientSettings settings = database.defaultSettingsBuilder().buildConnectionSettings();
-            defaultClient = EventStoreDBClient.create(settings);
+            defaultClient = KurrentDBClient.create(settings);
 
             if (settings.isTls() && settings.getDefaultCredentials() != null) {
                 for (int count = 0; count < 50; count++) {
@@ -84,7 +84,7 @@ public class ClientTracker {
                             } catch (InterruptedException ex) {
                                 throw new RuntimeException(ex);
                             }
-                            defaultClient = EventStoreDBClient.create(settings);
+                            defaultClient = KurrentDBClient.create(settings);
                             continue;
                         }
 
@@ -107,7 +107,7 @@ public class ClientTracker {
             defaultClient = null;
         }
 
-        for (EventStoreDBClientBase client: otherClients) {
+        for (KurrentDBClientBase client: otherClients) {
             try {
                 client.shutdown().get();
             } catch (ExecutionException | InterruptedException e) {

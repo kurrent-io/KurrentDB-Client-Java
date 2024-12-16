@@ -9,7 +9,7 @@ import java.util.HashMap;
 public interface MetadataTests extends ConnectionAware {
     @Test
     default void testSetStreamMetadata() throws Throwable {
-        EventStoreDBClient client = getDatabase().defaultClient();
+        KurrentDBClient client = getDatabase().defaultClient();
 
         StreamMetadata metadata = new StreamMetadata();
 
@@ -41,7 +41,7 @@ public interface MetadataTests extends ConnectionAware {
 
     @Test
     default void testReadNoExistingMetadata() throws Throwable {
-        EventStoreDBClient client = getDatabase().defaultClient();
+        KurrentDBClient client = getDatabase().defaultClient();
         String streamName = generateName();
         client.appendToStream(streamName, EventDataBuilder.json("bar", new HashMap<String, Object>()).build()).get();
 
@@ -52,7 +52,7 @@ public interface MetadataTests extends ConnectionAware {
 
     @Test
     default void testReadMetadataAfterStreamDeletion() throws Throwable {
-        EventStoreDBClient client = getDatabase().defaultClient();
+        KurrentDBClient client = getDatabase().defaultClient();
         String streamName = generateName();
         client.appendToStream(streamName, EventDataBuilder.json("bar", new HashMap<String, Object>()).build()).get();
 

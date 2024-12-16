@@ -2,14 +2,11 @@ package com.eventstore.dbclient.persistentsubscriptions;
 
 import com.eventstore.dbclient.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -138,7 +135,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     default void testReplayParkedMessages() throws Throwable {
         Exceptions exceptions = new Exceptions().registerGoAwayError();
         EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
-        final EventStoreDBClient streamClient = getDatabase().defaultClient();
+        final KurrentDBClient streamClient = getDatabase().defaultClient();
         final JsonMapper jsonMapper = new JsonMapper();
         final String streamName = generateName();
         final String groupName = generateName();
@@ -197,7 +194,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     default void testReplayParkedMessagesToAll() throws Throwable {
         Exceptions exceptions = new Exceptions().registerGoAwayError();
         EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
-        final EventStoreDBClient streamClient = getDatabase().defaultClient();
+        final KurrentDBClient streamClient = getDatabase().defaultClient();
         final JsonMapper jsonMapper = new JsonMapper();
         String streamName = generateName();
         String groupName = generateName();

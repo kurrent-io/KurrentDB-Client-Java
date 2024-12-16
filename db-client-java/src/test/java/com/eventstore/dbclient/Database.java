@@ -15,19 +15,19 @@ public interface Database {
 
     void cleanup();
 
-    default EventStoreDBClient newClient() {
+    default KurrentDBClient newClient() {
         return connectWith(Function.identity());
     }
 
-    default EventStoreDBClient connectWith(Function<ConnectionSettingsBuilder, ConnectionSettingsBuilder> mod) {
+    default KurrentDBClient connectWith(Function<ConnectionSettingsBuilder, ConnectionSettingsBuilder> mod) {
         return createClient(mod.apply(defaultSettingsBuilder()).buildConnectionSettings());
     }
 
-    default EventStoreDBClient defaultClient() {
+    default KurrentDBClient defaultClient() {
         return getClientTracker().getDefaultClient(this);
     }
 
-    default EventStoreDBClient createClient(KurrentDBClientSettings settings) {
+    default KurrentDBClient createClient(KurrentDBClientSettings settings) {
         return getClientTracker().createClient(settings);
     }
 

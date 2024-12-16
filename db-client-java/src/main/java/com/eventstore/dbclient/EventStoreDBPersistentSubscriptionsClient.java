@@ -11,13 +11,13 @@ import java.util.function.Function;
  * Many threads can use the EventStoreDB client simultaneously, or a single thread can make many asynchronous requests.
  */
 public class EventStoreDBPersistentSubscriptionsClient {
-    private final EventStoreDBClientBase inner;
+    private final KurrentDBClientBase inner;
 
     private EventStoreDBPersistentSubscriptionsClient(KurrentDBClientSettings settings) {
-        inner = new EventStoreDBClientBase(settings);
+        inner = new KurrentDBClientBase(settings);
     }
 
-    private EventStoreDBPersistentSubscriptionsClient(EventStoreDBClientBase inner) {
+    private EventStoreDBPersistentSubscriptionsClient(KurrentDBClientBase inner) {
         this.inner = inner;
     }
 
@@ -32,7 +32,7 @@ public class EventStoreDBPersistentSubscriptionsClient {
      * Returns a Persistent Subscription Management client based on existing client.
      * @param existingClient Existing client.
      */
-    public static EventStoreDBPersistentSubscriptionsClient from(EventStoreDBClientBase existingClient) {
+    public static EventStoreDBPersistentSubscriptionsClient from(KurrentDBClientBase existingClient) {
         return new EventStoreDBPersistentSubscriptionsClient(existingClient);
     }
     /**

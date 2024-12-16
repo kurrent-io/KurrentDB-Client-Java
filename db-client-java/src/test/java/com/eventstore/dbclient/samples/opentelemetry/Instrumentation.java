@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 import static io.opentelemetry.semconv.ServiceAttributes.SERVICE_NAME;
 
 public class Instrumentation {
-    private static void tracing(EventStoreDBClient client) throws ExecutionException, InterruptedException {
+    private static void tracing(KurrentDBClient client) throws ExecutionException, InterruptedException {
         Resource resource = Resource.getDefault().toBuilder()
                 .put(SERVICE_NAME, "sample")
                 .build();

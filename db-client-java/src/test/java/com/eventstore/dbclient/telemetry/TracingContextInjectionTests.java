@@ -1,7 +1,6 @@
 package com.eventstore.dbclient.telemetry;
 
 import com.eventstore.dbclient.*;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -16,7 +15,7 @@ public interface TracingContextInjectionTests extends TelemetryAware {
     @Test
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     default void testTracingContextInjectionDoesNotAffectEventBody() throws Throwable {
-        EventStoreDBClient streamsClient = getDefaultClient();
+        KurrentDBClient streamsClient = getDefaultClient();
         EventStoreDBPersistentSubscriptionsClient psClient = getDefaultPersistentSubscriptionClient();
 
         String streamName = generateName();

@@ -5,7 +5,7 @@ import com.eventstore.dbclient.*;
 import java.util.concurrent.CompletableFuture;
 
 public class ServerSideFiltering {
-    private static void excludeSystemEvents(EventStoreDBClient client) {
+    private static void excludeSystemEvents(KurrentDBClient client) {
         //region exclude-system
         SubscriptionListener listener = new SubscriptionListener() {
             @Override
@@ -31,7 +31,7 @@ public class ServerSideFiltering {
         //endregion exclude-system
     }
 
-    private static void eventTypePrefix(EventStoreDBClient client) {
+    private static void eventTypePrefix(KurrentDBClient client) {
         //region event-type-prefix
         SubscriptionFilter filter = SubscriptionFilter.newBuilder()
                 .addEventTypePrefix("customer-")
@@ -56,7 +56,7 @@ public class ServerSideFiltering {
         );
     }
 
-    private static void eventTypeRegex(EventStoreDBClient client) {
+    private static void eventTypeRegex(KurrentDBClient client) {
         //region event-type-regex
         SubscriptionFilter filter = SubscriptionFilter.newBuilder()
                 .withEventTypeRegularExpression("^user|^company")
@@ -81,7 +81,7 @@ public class ServerSideFiltering {
         );
     }
 
-    private static void streamPrefix(EventStoreDBClient client) {
+    private static void streamPrefix(KurrentDBClient client) {
         //region stream-prefix
         SubscriptionFilter filter = SubscriptionFilter.newBuilder()
                 .addStreamNamePrefix("user-")
@@ -106,7 +106,7 @@ public class ServerSideFiltering {
         );
     }
 
-    private static void streamRegex(EventStoreDBClient client) {
+    private static void streamRegex(KurrentDBClient client) {
         //region stream-regex
         SubscriptionFilter filter = SubscriptionFilter.newBuilder()
                 .withStreamNameRegularExpression("^account|^savings")
@@ -131,7 +131,7 @@ public class ServerSideFiltering {
         );
     }
 
-    private static void checkpointCallback(EventStoreDBClient client) {
+    private static void checkpointCallback(KurrentDBClient client) {
         //region checkpoint
         String excludeSystemEventsRegex = "/^[^\\$].*/";
 
@@ -166,7 +166,7 @@ public class ServerSideFiltering {
         );
     }
 
-    private static void CheckpointCallbackWithInterval(EventStoreDBClient client) {
+    private static void CheckpointCallbackWithInterval(KurrentDBClient client) {
         //region checkpoint-with-interval
         String excludeSystemEventsRegex = "/^[^\\$].*/";
 
