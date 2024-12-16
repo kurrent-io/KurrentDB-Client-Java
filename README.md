@@ -31,13 +31,13 @@ repositories {
 
 ## Developing
 
-The SDK is built using [`Gradle`][gradle]. Integration tests run against a server using Docker, with the [Kurrent gRPC Client Test Container][container].
+The SDK is built using [`Gradle`][gradle]. Integration tests run against a server using Docker.
 
 ### Run tests
 
 Tests are written using [TestContainers](https://www.testcontainers.org/) and require [Docker](https://www.docker.com/) to be installed.
 
-Specific docker images can be specified via the enviroment variable `EVENTSTORE_IMAGE`.
+Specific docker images can be specified via the environment variable `EVENTSTORE_IMAGE`.
 
 ## Open Telemetry
 
@@ -164,7 +164,7 @@ CountResult result = client
     .get();
 ```
 
-For further details please see [the projection management tests](src/test/java/com/eventstore/dbclient/ProjectionManagementTests.java).
+For further details please see [the projection management tests](src/test/java/io/kurrent/dbclient/ProjectionManagementTests.java).
 
 ## Support
 
@@ -193,7 +193,6 @@ review our [Contributing Guide][contributing] and [Code of Conduct][code-of-cond
 
 [kurrent]: https://kurrent.io
 [gradle]: https://gradle.org
-[container]: https://github.com/Kurrent/Kurrent-Client-gRPC-TestData
 [contributing]: https://github.com/Kurrent/Kurrent-Client-Java/tree/master/CONTRIBUTING.md
 [code-of-conduct]: https://github.com/Kurrent/Kurrent-Client-Java/tree/master/CODE-OF-CONDUCT.md
 [support]: https://kurrent.io/support/

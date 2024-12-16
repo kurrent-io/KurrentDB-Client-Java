@@ -1,7 +1,7 @@
 package io.kurrent.dbclient;
 
 /**
- * A request not supported by the targeted EventStoreDB node was sent.
+ * A request not supported by the targeted KurrentDB node was sent.
  */
 public class UnsupportedFeatureException extends RuntimeException {
     UnsupportedFeatureException(){

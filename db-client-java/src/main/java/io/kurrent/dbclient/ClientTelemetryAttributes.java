@@ -1,7 +1,6 @@
 package io.kurrent.dbclient;
 
 import io.opentelemetry.semconv.ExceptionAttributes;
-import io.opentelemetry.semconv.OtelAttributes;
 import io.opentelemetry.semconv.ServerAttributes;
 import io.opentelemetry.semconv.incubating.DbIncubatingAttributes;
 
@@ -23,7 +22,7 @@ public class ClientTelemetryAttributes {
         public static final String STACK_TRACE = ExceptionAttributes.EXCEPTION_STACKTRACE.getKey();
     }
 
-    public static class EventStore {
+    public static class Kurrent {
         public static final String STREAM = "db.kurrent.stream";
         public static final String SUBSCRIPTION_ID = "db.kurrent.subscription.id";
         public static final String EVENT_ID = "db.kurrent.event.id";
