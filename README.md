@@ -1,15 +1,15 @@
-# EventStoreDB Client SDK for Java
+# Kurrent Client SDK for Java
 
-EventStoreDB is the event-native database, where business events are immutably stored and streamed. Designed for event-sourced, event-driven, and microservices architectures.
+KurrentDB is the event-native database, where business events are immutably stored and streamed. Designed for event-sourced, event-driven, and microservices architectures.
 
-This repository contains an [EventStoreDB][es] Client SDK written in Java for use with languages on the JVM. It is
+This repository contains an [KurrentDB][kurrent] Client SDK written in Java for use with languages on the JVM. It is
 compatible with Java 8 and above.
 
 *Note: This client is currently under active development and further API changes are expected. Feedback is very welcome.*
 
 ## Documentation
-* General documentation can be found in [Event Store GRPC Docs].
-* The latest stable version Javadoc can be found here: https://eventstore.github.io/EventStoreDB-Client-Java
+* General documentation can be found in [Kurrent GRPC Docs].
+* The latest stable version Javadoc can be found here: https://kurrent.github.io/Kurrent-Client-Java
 
 ## Access to binaries
 EventStore Ltd publishes GA (general availability) versions to [Maven Central].
@@ -31,8 +31,7 @@ repositories {
 
 ## Developing
 
-The SDK is built using [`Gradle`][gradle]. Integration tests run against a server using Docker, with the [EventStoreDB gRPC
-Client Test Container][container].
+The SDK is built using [`Gradle`][gradle]. Integration tests run against a server using Docker, with the [Kurrent gRPC Client Test Container][container].
 
 ### Run tests
 
@@ -46,7 +45,7 @@ Specific docker images can be specified via the enviroment variable `EVENTSTORE_
 
  For more information about Open Telemetry, refer to the [official documentation](https://opentelemetry.io/docs/what-is-opentelemetry/).
 
-## EventStoreDB Server Compatibility
+## KurrentDB Server Compatibility
 
 This client is compatible with version `20.6.1` upwards.
 
@@ -173,32 +172,32 @@ Information on support can be found on our website: [Event Store Support][suppor
 
 ## Documentation
 
-Documentation for EventStoreDB can be found in the [docs].
+Documentation for KurrentDB can be found in the [docs].
 
 Bear in mind that this client is not yet properly documented. We are working hard on a new version of the documentation.
 
 ## Security
 
-If you find a vulnerability in our software, please contact us. You can find how to reach out us and report it at https://www.eventstore.com/security#security
+If you find a vulnerability in our software, please contact us. You can find how to reach out us and report it at https://www.kurrent.io/security#security
 Thank you very much for supporting our software.
 
 ## Communities
 
 - [Discuss](https://discuss.eventstore.com/)
-- [Discord (Event Store)](https://discord.gg/Phn9pmCw3t)
+- [Discord (Kurrent)](https://discord.gg/Phn9pmCw3t)
 
 ## Contributing
 
 All contributions to the SDK are made via GitHub Pull Requests, and must be licensed under the Apache 2.0 license. Please
 review our [Contributing Guide][contributing] and [Code of Conduct][code-of-conduct] for more information.
 
-[es]: https://eventstore.com
+[kurrent]: https://kurrent.io
 [gradle]: https://gradle.org
-[container]: https://github.com/EventStore/EventStore-Client-gRPC-TestData
-[contributing]: https://github.com/EventStore/EventStoreDB-Client-Java/tree/master/CONTRIBUTING.md
-[code-of-conduct]: https://github.com/EventStore/EventStoreDB-Client-Java/tree/master/CODE-OF-CONDUCT.md
-[support]: https://eventstore.com/support/
-[docs]: https://developers.eventstore.com/server/v21.6/installation/
+[container]: https://github.com/Kurrent/Kurrent-Client-gRPC-TestData
+[contributing]: https://github.com/Kurrent/Kurrent-Client-Java/tree/master/CONTRIBUTING.md
+[code-of-conduct]: https://github.com/Kurrent/Kurrent-Client-Java/tree/master/CODE-OF-CONDUCT.md
+[support]: https://kurrent.io/support/
+[docs]: https://developers.eventstore.com/server/v24.6/quick-start/installation/
 [discuss]: https://discuss.eventstore.com/
 [Maven Central]: https://search.maven.org/artifact/com.eventstore/db-client-java
-[Event Store GRPC Docs]: https://developers.eventstore.com/clients/grpc
+[Kurrent GRPC Docs]: https://developers.eventstore.com/clients/grpc

@@ -47,8 +47,8 @@ Please ensure that the following steps have been undertaken before marking pull 
 - Ensure that commits are atomic units of work, and that the message follows our [Commit Message Template][commit-template]. A good way to do this is to configure your local clone of the repository to use our included template, by running: `git config commit.template .git.commit.template` in the root directory of the clone.
 
 
-[conduct]:  https://github.com/EventStore/EventStoreDB-Client-Java/tree/master/CODE-OF-CONDUCT.md
+[conduct]:  https://github.com/Kurrent/Kurrent-Client-Java/tree/master/CODE-OF-CONDUCT.md
 [apache2]: https://www.apache.org/licenses/LICENSE-2.0
-[commit-template]: https://github.com/EventStore/EventStoreDB-Client-Java/tree/master/.git.commit.template
-[github-repo]: https://github.com/EventStore/EventStoreDB-Client-Java
+[commit-template]: https://github.com/Kurrent/Kurrent-Client-Java/tree/master/.git.commit.template
+[github-repo]: https://github.com/Kurrent/Kurrent-Client-Java
 [drafts]: https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests#draft-pull-requests

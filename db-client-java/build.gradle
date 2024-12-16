@@ -205,12 +205,12 @@ publishing {
                 // packaging 'jar'
                 // optionally artifactId can be defined here
                 description = 'EventStoreDB gRPC Java client'
-                url = 'https://eventstore.com'
+                url = 'https://kurrent.io'
 
                 scm {
-                    connection = 'https://github.com/EventStore/EventStoreDB-Client-Java.git'
-                    developerConnection = 'https://github.com/EventStore/EventStoreDB-Client-Java.git'
-                    url = 'https://github.com/EventStore/EventStoreDB-Client-Java'
+                    connection = 'https://github.com/Kurrent/Kurrent-Client-Java.git'
+                    developerConnection = 'https://github.com/Kurrent/Kurrent-Client-Java.git'
+                    url = 'https://github.com/Kurrent/Kurrent-Client-Java'
                 }
 
                 licenses {
