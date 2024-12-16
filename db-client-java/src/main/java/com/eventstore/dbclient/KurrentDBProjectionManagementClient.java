@@ -11,13 +11,13 @@ import java.util.function.Function;
  * Represents EventStoreDB client for projections management. A client instance maintains a two-way communication to EventStoreDB.
  * Many threads can use the EventStoreDB client simultaneously, or a single thread can make many asynchronous requests.
  */
-public class EventStoreDBProjectionManagementClient {
+public class KurrentDBProjectionManagementClient {
     final KurrentDBClientBase inner;
-    private EventStoreDBProjectionManagementClient(KurrentDBClientSettings settings) {
+    private KurrentDBProjectionManagementClient(KurrentDBClientSettings settings) {
         inner = new KurrentDBClientBase(settings);
     }
 
-    private EventStoreDBProjectionManagementClient(KurrentDBClientBase inner) {
+    private KurrentDBProjectionManagementClient(KurrentDBClientBase inner) {
         this.inner = inner;
     }
 
@@ -25,16 +25,16 @@ public class EventStoreDBProjectionManagementClient {
      * Returns the Projection Management client based on the settings.
      * @param settings The settings to use for constructing the client.
      */
-    public static EventStoreDBProjectionManagementClient create(KurrentDBClientSettings settings) {
-        return new EventStoreDBProjectionManagementClient(settings);
+    public static KurrentDBProjectionManagementClient create(KurrentDBClientSettings settings) {
+        return new KurrentDBProjectionManagementClient(settings);
     }
 
     /**
      * Returns a Projection Management client based on existing client.
      * @param existingClient Existing client.
      */
-    public static EventStoreDBProjectionManagementClient from(KurrentDBClientBase existingClient) {
-        return new EventStoreDBProjectionManagementClient(existingClient);
+    public static KurrentDBProjectionManagementClient from(KurrentDBClientBase existingClient) {
+        return new KurrentDBProjectionManagementClient(existingClient);
     }
 
     /**

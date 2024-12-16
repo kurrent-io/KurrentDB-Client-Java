@@ -83,7 +83,7 @@ class AccountCreated {
 ```java
 import com.eventstore.dbclient.KurrentDBClient;
 import com.eventstore.dbclient.KurrentDBClientSettings;
-import com.eventstore.dbclient.EventStoreDBConnectionString;
+import com.eventstore.dbclient.KurrentDBConnectionString;
 import com.eventstore.dbclient.EventData;
 import com.eventstore.dbclient.ReadStreamOptions;
 import com.eventstore.dbclient.ResolvedEvent;
@@ -92,8 +92,8 @@ import com.eventstore.dbclient.ReadResult;
 
 public class Main {
     public static void main(String args[]) {
-        EventStoreDBClientSettings setts = EventStoreDBConnectionString.parseOrThrow("esdb://localhost:2113");
-        EventStoreDBClient client = EventStoreDBClient.create(setts);
+        KurrentDBClientSettings setts = KurrentDBConnectionString.parseOrThrow("esdb://localhost:2113");
+        KurrentDBClient client = KurrentDBClient.create(setts);
 
         AccountCreated createdEvent = new AccountCreated();
 
@@ -134,8 +134,8 @@ This client currently supports creating and getting the result of a continuous p
 
 Create a projection:
 ```java
-EventStoreDbClientSettings setts = EventStoreDBConnectionString.parseOrThrow("esdb://localhost:2113");
-EventStoreDBProjectionManagementClient client = EventStoreDBProjectionManagementClient.create(setts);
+KurrentDbClientSettings setts = KurrentDBConnectionString.parseOrThrow("esdb://localhost:2113");
+KurrentDBProjectionManagementClient client = KurrentDBProjectionManagementClient.create(setts);
 
 client
     .createContinuous(PROJECTION_NAME, PROJECTION_JS)

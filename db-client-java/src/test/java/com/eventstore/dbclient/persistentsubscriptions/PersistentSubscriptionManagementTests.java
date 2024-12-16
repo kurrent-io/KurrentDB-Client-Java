@@ -15,7 +15,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     @Test
     @Order(1)
     default void testListPersistentSubscriptions() throws Throwable {
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         String groupName = generateName();
         String streamA = generateName();
         String streamB = generateName();
@@ -43,7 +43,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     default void testListPersistentSubscriptionsForStream() throws Throwable {
         Exceptions exceptions = new Exceptions().registerGoAwayError();
 
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         String streamName = generateName();
         String groupName = generateName();
 
@@ -60,7 +60,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     @Test
     @Order(3)
     default void testListPersistentSubscriptionsToAll() throws Throwable {
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         String groupName = generateName();
         client.createToAll(groupName)
                 .get();
@@ -84,7 +84,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     @Test
     @Order(4)
     default void testGetPersistentSubscriptionInfo() throws Throwable {
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         String streamName = generateName();
         String groupName = generateName();
         client.createToStream(streamName, groupName)
@@ -107,7 +107,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     @Test
     @Order(5)
     default void testGetPersistentSubscriptionInfoToAll() throws Throwable {
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         String groupName = generateName();
 
         client.createToAll(groupName)
@@ -123,7 +123,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     @Test
     @Order(6)
      default void testGetPersistentSubscriptionInfoNotExisting() throws Throwable {
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         Optional<PersistentSubscriptionToStreamInfo> result = client.getInfoToStream(generateName(), generateName()).get();
 
         Assertions.assertFalse(result.isPresent());
@@ -134,7 +134,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     default void testReplayParkedMessages() throws Throwable {
         Exceptions exceptions = new Exceptions().registerGoAwayError();
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         final KurrentDBClient streamClient = getDatabase().defaultClient();
         final JsonMapper jsonMapper = new JsonMapper();
         final String streamName = generateName();
@@ -193,7 +193,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     default void testReplayParkedMessagesToAll() throws Throwable {
         Exceptions exceptions = new Exceptions().registerGoAwayError();
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         final KurrentDBClient streamClient = getDatabase().defaultClient();
         final JsonMapper jsonMapper = new JsonMapper();
         String streamName = generateName();
@@ -251,7 +251,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     @Order(9)
     default void testEncoding() throws Throwable {
         Exceptions exceptions = new Exceptions().registerGoAwayError();
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         String streamName = String.format("/foo/%s/stream", generateName());
         String groupName = String.format("/foo/%s/group", generateName());
 
@@ -276,7 +276,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     @Test
     @Order(10)
     default void testRestartSubsystem() throws Throwable {
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         client.restartSubsystem().get();
     }
 }

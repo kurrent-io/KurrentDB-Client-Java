@@ -2,7 +2,6 @@ package com.eventstore.dbclient.persistentsubscriptions;
 
 import com.eventstore.dbclient.*;
 import org.junit.jupiter.api.Test;
-import java.util.concurrent.ExecutionException;
 
 public interface UpdatePersistentSubscriptionToStreamTests extends ConnectionAware {
     @Test
@@ -10,7 +9,7 @@ public interface UpdatePersistentSubscriptionToStreamTests extends ConnectionAwa
         String streamName = generateName();
         String groupName = generateName();
 
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         client.createToStream(streamName, groupName)
                 .get();
 
@@ -25,7 +24,7 @@ public interface UpdatePersistentSubscriptionToStreamTests extends ConnectionAwa
     @Test
     default void testUpdatePersistentSubToAll() throws Throwable {
         String groupName = generateName();
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
 
         client.createToAll(groupName)
                     .get();

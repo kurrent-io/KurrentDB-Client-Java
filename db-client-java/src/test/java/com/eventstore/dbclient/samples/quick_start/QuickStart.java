@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutionException;
 public class QuickStart {
     public static void Run() throws ConnectionStringParsingException, ExecutionException, InterruptedException, JsonProcessingException {
         // region createClient
-        KurrentDBClientSettings settings = EventStoreDBConnectionString.parseOrThrow("{connectionString}");
+        KurrentDBClientSettings settings = KurrentDBConnectionString.parseOrThrow("{connectionString}");
         KurrentDBClient client = KurrentDBClient.create(settings);
         // endregion createClient
 

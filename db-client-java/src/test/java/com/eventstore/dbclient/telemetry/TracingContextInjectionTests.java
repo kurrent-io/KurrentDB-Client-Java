@@ -16,7 +16,7 @@ public interface TracingContextInjectionTests extends TelemetryAware {
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     default void testTracingContextInjectionDoesNotAffectEventBody() throws Throwable {
         KurrentDBClient streamsClient = getDefaultClient();
-        EventStoreDBPersistentSubscriptionsClient psClient = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient psClient = getDefaultPersistentSubscriptionClient();
 
         String streamName = generateName();
         String groupName = "aGroup";

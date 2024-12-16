@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 public interface CreatePersistentSubscriptionTests extends ConnectionAware {
     @Test
     default void testCreatePersistentSub() throws Throwable {
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
 
         client.createToStream(generateName(), generateName())
                 .get();
@@ -17,7 +17,7 @@ public interface CreatePersistentSubscriptionTests extends ConnectionAware {
 
     @Test
     default void testCreatePersistentSubToAll() throws Throwable {
-        EventStoreDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
 
         client.createToAll(generateName())
                 .get();

@@ -17,7 +17,7 @@ public interface PersistentSubscriptionsTracingInstrumentationTests extends Tele
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     default void testPersistentSubscriptionIsInstrumentedWithTracingAndRestoresRemoteContextAsExpected() throws Throwable {
         KurrentDBClient streamsClient = getDefaultClient();
-        EventStoreDBPersistentSubscriptionsClient psClient = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient psClient = getDefaultPersistentSubscriptionClient();
 
         String streamName = generateName();
         String groupName = "aGroup";
@@ -79,7 +79,7 @@ public interface PersistentSubscriptionsTracingInstrumentationTests extends Tele
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
     default void testPersistentSubscriptionInstrumentationHandlesExceptionsAsExpected() throws Throwable {
         KurrentDBClient streamsClient = getDefaultClient();
-        EventStoreDBPersistentSubscriptionsClient psClient = getDefaultPersistentSubscriptionClient();
+        KurrentDBPersistentSubscriptionsClient psClient = getDefaultPersistentSubscriptionClient();
 
         String streamName = generateName();
         String groupName = generateName();

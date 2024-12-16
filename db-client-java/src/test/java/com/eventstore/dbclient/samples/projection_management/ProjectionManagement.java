@@ -14,7 +14,7 @@ public class ProjectionManagement {
 
         Database database = DatabaseFactory.spawn();
         try {
-            EventStoreDBProjectionManagementClient client = EventStoreDBProjectionManagementClient.from(database.defaultClient());
+            KurrentDBProjectionManagementClient client = KurrentDBProjectionManagementClient.from(database.defaultClient());
             disable(client);
             disableNotFound(client);
             enable(client);
@@ -35,10 +35,10 @@ public class ProjectionManagement {
         }
     }
 
-    private static EventStoreDBProjectionManagementClient createClient(String connection) {
+    private static KurrentDBProjectionManagementClient createClient(String connection) {
         // region createClient
-        KurrentDBClientSettings settings = EventStoreDBConnectionString.parseOrThrow(connection);
-        EventStoreDBProjectionManagementClient client = EventStoreDBProjectionManagementClient.create(settings);
+        KurrentDBClientSettings settings = KurrentDBConnectionString.parseOrThrow(connection);
+        KurrentDBProjectionManagementClient client = KurrentDBProjectionManagementClient.create(settings);
         // endregion createClient
 
         Assert.assertNotNull(client);
@@ -46,14 +46,14 @@ public class ProjectionManagement {
         return client;
     }
 
-    private static void disable(EventStoreDBProjectionManagementClient client)
+    private static void disable(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region Disable
         client.disable("$by_category").get();
         // endregion Disable
     }
 
-    private static void disableNotFound(EventStoreDBProjectionManagementClient client)
+    private static void disableNotFound(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region DisableNotFound
         try {
@@ -66,14 +66,14 @@ public class ProjectionManagement {
         // endregion DisableNotFound
     }
 
-    private static void enable(EventStoreDBProjectionManagementClient client)
+    private static void enable(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region Enable
         client.enable("$by_category").get();
         // endregion Enable
     }
 
-    private static void enableNotFound(EventStoreDBProjectionManagementClient client)
+    private static void enableNotFound(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region EnableNotFound
         try {
@@ -86,7 +86,7 @@ public class ProjectionManagement {
         // endregion EnableNotFound
     }
 
-    private static void delete(EventStoreDBProjectionManagementClient client)
+    private static void delete(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         String name = "to-be-deleted-projection";
         client.create(name, "fromAll().when()").get();
@@ -99,7 +99,7 @@ public class ProjectionManagement {
         // endregion Delete
     }
 
-    private static void deleteNotFound(EventStoreDBProjectionManagementClient client)
+    private static void deleteNotFound(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region DeleteNotFound
         try {
@@ -112,14 +112,14 @@ public class ProjectionManagement {
         // endregion DeleteNotFound
     }
 
-    private static void abort(EventStoreDBProjectionManagementClient client)
+    private static void abort(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region Abort
         client.abort("$by_category").get();
         // endregion Abort
     }
 
-    private static void abortNotFound(EventStoreDBProjectionManagementClient client)
+    private static void abortNotFound(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region Abort_NotFound
         try {
@@ -132,14 +132,14 @@ public class ProjectionManagement {
         // endregion Abort_NotFound
     }
 
-    private static void reset(EventStoreDBProjectionManagementClient client)
+    private static void reset(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region Reset
         client.reset("$by_category").get();
         // endregion Reset
     }
 
-    private static void resetNotFound(EventStoreDBProjectionManagementClient client)
+    private static void resetNotFound(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region Reset_NotFound
         try {
@@ -152,7 +152,7 @@ public class ProjectionManagement {
         // endregion Reset_NotFound
     }
 
-    private static void create(EventStoreDBProjectionManagementClient client)
+    private static void create(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region CreateContinuous
         String js =
@@ -175,7 +175,7 @@ public class ProjectionManagement {
         // endregion CreateContinuous
     }
 
-    private static void createConflict(EventStoreDBProjectionManagementClient client)
+    private static void createConflict(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         String js = "{}";
         String name = "projection" + java.util.UUID.randomUUID();
@@ -191,7 +191,7 @@ public class ProjectionManagement {
         // endregion CreateContinuous_Conflict
     }
 
-    private static void update(EventStoreDBProjectionManagementClient client)
+    private static void update(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region Update
         String name = "countEvents_Update_" + java.util.UUID.randomUUID();
@@ -214,7 +214,7 @@ public class ProjectionManagement {
         // endregion Update
     }
 
-    private static void updateNotFound(EventStoreDBProjectionManagementClient client)
+    private static void updateNotFound(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region Update_NotFound
         try {
@@ -227,7 +227,7 @@ public class ProjectionManagement {
         // endregion Update_NotFound
     }
 
-    private static void listAll(EventStoreDBProjectionManagementClient client)
+    private static void listAll(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region ListAll
         List<ProjectionDetails> details = client.list().get();
@@ -245,7 +245,7 @@ public class ProjectionManagement {
         Assert.assertTrue(details.size() >= 5);
     }
 
-    private static void list(EventStoreDBProjectionManagementClient client)
+    private static void list(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region ListContinuous
         List<ProjectionDetails> details = client.list().get();
@@ -263,7 +263,7 @@ public class ProjectionManagement {
         Assert.assertTrue(details.size() >= 5);
     }
 
-    private static void getStatus(EventStoreDBProjectionManagementClient client)
+    private static void getStatus(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region GetStatus
         ProjectionDetails status = client.getStatus("$by_category").get();
@@ -278,7 +278,7 @@ public class ProjectionManagement {
         Assert.assertEquals("$by_category", status.getName());
     }
 
-    private static void getState(EventStoreDBProjectionManagementClient client)
+    private static void getState(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region GetState
         // This example requires the following class to be defined:
@@ -321,7 +321,7 @@ public class ProjectionManagement {
         Assert.assertTrue(result.getCount() > 0);
     }
 
-    private static void getResult(EventStoreDBProjectionManagementClient client)
+    private static void getResult(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region GetResult
         String name = "get_result_example";
@@ -354,7 +354,7 @@ public class ProjectionManagement {
         Assert.assertTrue(result > 0);
     }
 
-    private static void restartSubSystem(EventStoreDBProjectionManagementClient client)
+    private static void restartSubSystem(KurrentDBProjectionManagementClient client)
             throws java.lang.InterruptedException, java.util.concurrent.ExecutionException {
         // region RestartSubSystem
         client.restartSubsystem().get();

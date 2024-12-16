@@ -148,7 +148,7 @@ public class ParseValidConnectionStringTests {
     public void test(String connectionString, String json) throws ConnectionStringParsingException, JsonProcessingException {
 
         KurrentDBClientSettings expectedSettings = this.parseJson(json);
-        KurrentDBClientSettings parsedSettings = EventStoreDBConnectionString.parseOrThrow(connectionString);
+        KurrentDBClientSettings parsedSettings = KurrentDBConnectionString.parseOrThrow(connectionString);
 
         this.assertEquals(expectedSettings, parsedSettings);
     }

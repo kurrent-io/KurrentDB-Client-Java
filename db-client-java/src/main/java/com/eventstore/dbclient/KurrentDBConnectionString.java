@@ -6,8 +6,8 @@ import java.net.*;
 /**
  * Utility class to parse a connection string.
  */
-public final class EventStoreDBConnectionString {
-    EventStoreDBConnectionString() {}
+public final class KurrentDBConnectionString {
+    KurrentDBConnectionString() {}
 
     /**
      * Parses a string representation of a client settings. Throws a runtime exception if the connection string is

@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 public class PersistentSubscriptions {
-    public static void createPersistentSubscription(EventStoreDBPersistentSubscriptionsClient client) {
+    public static void createPersistentSubscription(KurrentDBPersistentSubscriptionsClient client) {
         // region create-persistent-subscription-to-stream
         client.createToStream(
             "test-stream",
@@ -17,7 +17,7 @@ public class PersistentSubscriptions {
         // endregion create-persistent-subscription-to-stream
     }
 
-    public static void connectToPersistentSubscriptionToStream(EventStoreDBPersistentSubscriptionsClient client) {
+    public static void connectToPersistentSubscriptionToStream(KurrentDBPersistentSubscriptionsClient client) {
         // region subscribe-to-persistent-subscription-to-stream
         client.subscribeToStream(
             "test-stream",
@@ -45,7 +45,7 @@ public class PersistentSubscriptions {
 
 
 
-    public static void connectToPersistentSubscriptionToStreamWithManualAcks(EventStoreDBPersistentSubscriptionsClient client) {
+    public static void connectToPersistentSubscriptionToStreamWithManualAcks(KurrentDBPersistentSubscriptionsClient client) {
         // region subscribe-to-persistent-subscription-with-manual-acks
         client.subscribeToStream(
                 "test-stream",
@@ -67,7 +67,7 @@ public class PersistentSubscriptions {
         // endregion subscribe-to-persistent-subscription-with-manual-acks
     }
 
-    public static void createPersistentSubscriptionToAll(EventStoreDBPersistentSubscriptionsClient client) {
+    public static void createPersistentSubscriptionToAll(KurrentDBPersistentSubscriptionsClient client) {
         // region create-persistent-subscription-to-all
         client.createToAll(
             "subscription-group",
@@ -76,7 +76,7 @@ public class PersistentSubscriptions {
         // endregion create-persistent-subscription-to-all
     }
 
-    public static void connectToPersistentSubscriptionToAll(EventStoreDBPersistentSubscriptionsClient client) {
+    public static void connectToPersistentSubscriptionToAll(KurrentDBPersistentSubscriptionsClient client) {
         // region subscribe-to-persistent-subscription-to-all
         client.subscribeToAll(
             "subscription-group",
@@ -106,7 +106,7 @@ public class PersistentSubscriptions {
         // endregion subscribe-to-persistent-subscription-to-all
     }
 
-    public static void updatePersistentSubscription(EventStoreDBPersistentSubscriptionsClient client) {
+    public static void updatePersistentSubscription(KurrentDBPersistentSubscriptionsClient client) {
         // region update-persistent-subscription
         client.updateToStream(
             "test-stream",
@@ -117,7 +117,7 @@ public class PersistentSubscriptions {
         // endregion update-persistent-subscription
     }
 
-    public static void deletePersistentSubscription(EventStoreDBPersistentSubscriptionsClient client) {
+    public static void deletePersistentSubscription(KurrentDBPersistentSubscriptionsClient client) {
         // region delete-persistent-subscription
         client.deleteToStream(
             "test-stream",
@@ -125,7 +125,7 @@ public class PersistentSubscriptions {
         // endregion delete-persistent-subscription
     }
 
-    public static void getPersistentSubscriptionToStreamInfo(EventStoreDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
+    public static void getPersistentSubscriptionToStreamInfo(KurrentDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
         // #region get-persistent-subscription-to-stream-info
         Optional<PersistentSubscriptionToStreamInfo> result = client.getInfoToStream("test-stream", "subscription-group").get();
         if (result.isPresent()) {
@@ -136,7 +136,7 @@ public class PersistentSubscriptions {
         // #endregion get-persistent-subscription-to-stream-info
     }
 
-    public static void getPersistentSubscriptionToAllInfo(EventStoreDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
+    public static void getPersistentSubscriptionToAllInfo(KurrentDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
         // #region get-persistent-subscription-to-all-info
         Optional<PersistentSubscriptionToAllInfo> result = client.getInfoToAll( "subscription-group").get();
         if (result.isPresent()) {
@@ -147,21 +147,21 @@ public class PersistentSubscriptions {
         // #endregion get-persistent-subscription-to-all-info
     }
 
-    public static void replayParkedToStream(EventStoreDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
+    public static void replayParkedToStream(KurrentDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
         // #region replay-parked-of-persistent-subscription-to-stream
         ReplayParkedMessagesOptions options = ReplayParkedMessagesOptions.get().stopAt(10);
         client.replayParkedMessagesToStream("test-stream", "subscription-group", options).get();
         // #endregion replay-parked-of-persistent-subscription-to-stream
     }
 
-    public static void replayParkedToAll(EventStoreDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
+    public static void replayParkedToAll(KurrentDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
         // #region replay-parked-of-persistent-subscription-to-all
         ReplayParkedMessagesOptions options = ReplayParkedMessagesOptions.get().stopAt(10);
         client.replayParkedMessagesToAll("subscription-group", options).get();
         // #endregion replay-parked-of-persistent-subscription-to-all
     }
 
-    public static void listPersistentSubscriptionToStream(EventStoreDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
+    public static void listPersistentSubscriptionToStream(KurrentDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
         // #region list-persistent-subscriptions-to-stream
         List<PersistentSubscriptionToStreamInfo> subscriptions = client.listToStream("test-stream").get();
 
@@ -171,7 +171,7 @@ public class PersistentSubscriptions {
         // #endregion list-persistent-subscriptions-to-stream
     }
 
-    public static void listPersistentSubscriptionToAll(EventStoreDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
+    public static void listPersistentSubscriptionToAll(KurrentDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
         // #region list-persistent-subscriptions-to-all
         List<PersistentSubscriptionToAllInfo> subscriptions = client.listToAll().get();
 
@@ -181,7 +181,7 @@ public class PersistentSubscriptions {
         // #endregion list-persistent-subscriptions-to-all
     }
 
-    public static void restartPersistentSubscriptionSubsystem(EventStoreDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
+    public static void restartPersistentSubscriptionSubsystem(KurrentDBPersistentSubscriptionsClient client) throws ExecutionException, InterruptedException {
         // #region restart-persistent-subscription-subsystem
         client.restartSubsystem().get();
         // #endregion restart-persistent-subscription-subsystem

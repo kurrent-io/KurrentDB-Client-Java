@@ -1,7 +1,7 @@
 package com.eventstore.dbclient.misc;
 
 import com.eventstore.dbclient.ConnectionStringParsingException;
-import com.eventstore.dbclient.EventStoreDBConnectionString;
+import com.eventstore.dbclient.KurrentDBConnectionString;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,7 +35,7 @@ public class ParseInvalidConnectionStringTests {
     @MethodSource("invalidConnectionStrings")
     public void test(String input) throws ConnectionStringParsingException {
         Assertions.assertThrows(RuntimeException.class, () -> {
-            EventStoreDBConnectionString.parseOrThrow(input);
+            KurrentDBConnectionString.parseOrThrow(input);
         });
     }
 }

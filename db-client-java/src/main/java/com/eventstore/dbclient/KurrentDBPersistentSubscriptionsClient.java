@@ -10,30 +10,30 @@ import java.util.function.Function;
  * Represents EventStoreDB client for persistent subscriptions management. A client instance maintains a two-way communication to EventStoreDB.
  * Many threads can use the EventStoreDB client simultaneously, or a single thread can make many asynchronous requests.
  */
-public class EventStoreDBPersistentSubscriptionsClient {
+public class KurrentDBPersistentSubscriptionsClient {
     private final KurrentDBClientBase inner;
 
-    private EventStoreDBPersistentSubscriptionsClient(KurrentDBClientSettings settings) {
+    private KurrentDBPersistentSubscriptionsClient(KurrentDBClientSettings settings) {
         inner = new KurrentDBClientBase(settings);
     }
 
-    private EventStoreDBPersistentSubscriptionsClient(KurrentDBClientBase inner) {
+    private KurrentDBPersistentSubscriptionsClient(KurrentDBClientBase inner) {
         this.inner = inner;
     }
 
     /**
      * Creates a persistent subscription client instance.
      */
-    public static EventStoreDBPersistentSubscriptionsClient create(KurrentDBClientSettings settings) {
-        return new EventStoreDBPersistentSubscriptionsClient(settings);
+    public static KurrentDBPersistentSubscriptionsClient create(KurrentDBClientSettings settings) {
+        return new KurrentDBPersistentSubscriptionsClient(settings);
     }
 
     /**
      * Returns a Persistent Subscription Management client based on existing client.
      * @param existingClient Existing client.
      */
-    public static EventStoreDBPersistentSubscriptionsClient from(KurrentDBClientBase existingClient) {
-        return new EventStoreDBPersistentSubscriptionsClient(existingClient);
+    public static KurrentDBPersistentSubscriptionsClient from(KurrentDBClientBase existingClient) {
+        return new KurrentDBPersistentSubscriptionsClient(existingClient);
     }
     /**
      * Creates a persistent subscription group on a stream.

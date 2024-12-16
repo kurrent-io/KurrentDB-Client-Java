@@ -23,12 +23,12 @@ public interface ConnectionAware {
         return getDatabase().defaultClient();
     }
 
-    default EventStoreDBProjectionManagementClient getDefaultProjectionClient() {
-        return EventStoreDBProjectionManagementClient.from(getDefaultClient());
+    default KurrentDBProjectionManagementClient getDefaultProjectionClient() {
+        return KurrentDBProjectionManagementClient.from(getDefaultClient());
     }
 
-    default EventStoreDBPersistentSubscriptionsClient getDefaultPersistentSubscriptionClient() {
-        return EventStoreDBPersistentSubscriptionsClient.from(getDefaultClient());
+    default KurrentDBPersistentSubscriptionsClient getDefaultPersistentSubscriptionClient() {
+        return KurrentDBPersistentSubscriptionsClient.from(getDefaultClient());
     }
 
     default String generateName() {
