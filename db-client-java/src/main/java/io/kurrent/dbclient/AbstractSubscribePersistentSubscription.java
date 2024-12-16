@@ -1,8 +1,8 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.persistentsubscriptions.Persistent;
-import com.eventstore.dbclient.proto.persistentsubscriptions.PersistentSubscriptionsGrpc;
-import com.eventstore.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.persistentsubscriptions.Persistent;
+import io.kurrent.dbclient.proto.persistentsubscriptions.PersistentSubscriptionsGrpc;
+import io.kurrent.dbclient.proto.shared.Shared;
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;

@@ -1,7 +1,7 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.persistentsubscriptions.Persistent;
-import com.eventstore.dbclient.proto.streams.StreamsOuterClass;
+import io.kurrent.dbclient.proto.persistentsubscriptions.Persistent;
+import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
 
 import java.util.Objects;
 import java.util.Optional;

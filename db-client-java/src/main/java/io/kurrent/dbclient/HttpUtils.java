@@ -1,6 +1,6 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.persistentsubscriptions.Persistent;
+import io.kurrent.dbclient.proto.persistentsubscriptions.Persistent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

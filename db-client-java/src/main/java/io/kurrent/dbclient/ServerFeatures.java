@@ -1,8 +1,8 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.serverfeatures.ServerFeaturesGrpc;
-import com.eventstore.dbclient.proto.serverfeatures.Serverfeatures;
-import com.eventstore.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.serverfeatures.ServerFeaturesGrpc;
+import io.kurrent.dbclient.proto.serverfeatures.Serverfeatures;
+import io.kurrent.dbclient.proto.shared.Shared;
 import io.grpc.ManagedChannel;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;

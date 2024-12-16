@@ -1,8 +1,8 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.projections.Projectionmanagement;
-import com.eventstore.dbclient.proto.projections.ProjectionsGrpc;
-import com.eventstore.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.projections.Projectionmanagement;
+import io.kurrent.dbclient.proto.projections.ProjectionsGrpc;
+import io.kurrent.dbclient.proto.shared.Shared;
 import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;

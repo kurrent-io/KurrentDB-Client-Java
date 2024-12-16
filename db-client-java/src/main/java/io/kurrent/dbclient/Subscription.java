@@ -1,6 +1,6 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.streams.StreamsOuterClass;
+import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
 import io.grpc.stub.ClientCallStreamObserver;
 
 /**

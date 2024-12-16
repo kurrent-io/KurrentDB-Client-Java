@@ -1,8 +1,8 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.persistentsubscriptions.Persistent;
-import com.eventstore.dbclient.proto.shared.Shared;
-import com.eventstore.dbclient.proto.streams.StreamsOuterClass;
+import io.kurrent.dbclient.proto.persistentsubscriptions.Persistent;
+import io.kurrent.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;

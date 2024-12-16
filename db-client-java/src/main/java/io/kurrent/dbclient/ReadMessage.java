@@ -1,6 +1,6 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.streams.StreamsOuterClass;
+import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
 
 /**
  * Received when performing a regular read operation (not a subscription).

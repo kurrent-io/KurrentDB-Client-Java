@@ -1,8 +1,8 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.shared.Shared;
-import com.eventstore.dbclient.proto.streams.StreamsGrpc;
-import com.eventstore.dbclient.proto.streams.StreamsOuterClass;
+import io.kurrent.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.streams.StreamsGrpc;
+import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
 import io.grpc.Metadata;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.ClientCallStreamObserver;

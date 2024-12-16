@@ -1,6 +1,6 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.projections.Projectionmanagement;
+import io.kurrent.dbclient.proto.projections.Projectionmanagement;
 
 /**
  * Provides the details for a projection.

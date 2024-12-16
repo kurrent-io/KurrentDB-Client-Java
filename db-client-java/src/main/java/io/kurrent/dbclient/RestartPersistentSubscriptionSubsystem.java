@@ -1,7 +1,7 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.persistentsubscriptions.PersistentSubscriptionsGrpc;
-import com.eventstore.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.persistentsubscriptions.PersistentSubscriptionsGrpc;
+import io.kurrent.dbclient.proto.shared.Shared;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

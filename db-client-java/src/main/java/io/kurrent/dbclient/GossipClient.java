@@ -1,8 +1,8 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.gossip.GossipGrpc;
-import com.eventstore.dbclient.proto.gossip.GossipOuterClass;
-import com.eventstore.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.gossip.GossipGrpc;
+import io.kurrent.dbclient.proto.gossip.GossipOuterClass;
+import io.kurrent.dbclient.proto.shared.Shared;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;

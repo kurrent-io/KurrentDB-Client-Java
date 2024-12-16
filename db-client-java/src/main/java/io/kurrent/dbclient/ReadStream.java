@@ -1,7 +1,7 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.shared.Shared;
-import com.eventstore.dbclient.proto.streams.StreamsOuterClass;
+import io.kurrent.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
 
 /**
  * TODO - Implement a better way to handle very long stream to not end

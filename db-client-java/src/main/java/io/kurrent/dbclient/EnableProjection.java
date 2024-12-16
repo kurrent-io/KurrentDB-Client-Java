@@ -1,7 +1,7 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.projections.Projectionmanagement;
-import com.eventstore.dbclient.proto.projections.ProjectionsGrpc;
+import io.kurrent.dbclient.proto.projections.Projectionmanagement;
+import io.kurrent.dbclient.proto.projections.ProjectionsGrpc;
 
 import java.util.concurrent.CompletableFuture;
 

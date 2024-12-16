@@ -1,7 +1,7 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.projections.Projectionmanagement;
-import com.eventstore.dbclient.proto.projections.ProjectionsGrpc;
+import io.kurrent.dbclient.proto.projections.Projectionmanagement;
+import io.kurrent.dbclient.proto.projections.ProjectionsGrpc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.json.JsonMapper;

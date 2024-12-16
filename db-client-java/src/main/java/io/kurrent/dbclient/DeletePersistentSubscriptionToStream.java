@@ -1,7 +1,7 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.persistentsubscriptions.Persistent;
-import com.eventstore.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.persistentsubscriptions.Persistent;
+import io.kurrent.dbclient.proto.shared.Shared;
 import com.google.protobuf.ByteString;
 
 class DeletePersistentSubscriptionToStream extends AbstractDeletePersistentSubscription {

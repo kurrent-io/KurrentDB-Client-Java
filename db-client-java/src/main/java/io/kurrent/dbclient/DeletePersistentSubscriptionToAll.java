@@ -1,7 +1,7 @@
 package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.persistentsubscriptions.Persistent;
-import com.eventstore.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.persistentsubscriptions.Persistent;
+import io.kurrent.dbclient.proto.shared.Shared;
 
 class DeletePersistentSubscriptionToAll extends AbstractDeletePersistentSubscription {
     public DeletePersistentSubscriptionToAll(GrpcClient client, String group,
