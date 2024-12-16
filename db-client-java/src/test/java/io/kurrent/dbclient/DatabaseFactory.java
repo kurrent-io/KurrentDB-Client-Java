@@ -37,13 +37,13 @@ public class DatabaseFactory {
         return DockerContainerDatabase
                 .builder()
                 .registry(Optional
-                        .ofNullable(System.getenv("EVENTSTORE_DOCKER_REGISTRY_ENV"))
+                        .ofNullable(System.getenv("KURRENT_DOCKER_REGISTRY_ENV"))
                         .orElse(DockerContainerDatabase.DEFAULT_REGISTRY))
                 .image(Optional
-                        .ofNullable(System.getenv("EVENTSTORE_DOCKER_IMAGE_ENV"))
+                        .ofNullable(System.getenv("KURRENT_DOCKER_IMAGE_ENV"))
                         .orElse(DockerContainerDatabase.DEFAULT_IMAGE))
                 .version(Optional
-                        .ofNullable(System.getenv("EVENTSTORE_DOCKER_TAG_ENV"))
+                        .ofNullable(System.getenv("KURRENT_DOCKER_TAG_ENV"))
                         .orElse(DockerContainerDatabase.DEFAULT_VERSION));
     }
 }

@@ -18,5 +18,5 @@ jobs:
     name: Test
     uses: ./.github/workflows/tests.yml
     with:
-      esdb_version: ${{ inputs.version }}
+      kdb_version: ${{ inputs.version }}
       runtime_env: ${{ inputs.runtime_env }}

@@ -42,7 +42,7 @@ jobs:
 
     uses: ./.github/workflows/tests.yml
     with:
-      esdb_version: ${{ matrix.version }}
+      kdb_version: ${{ matrix.version }}
 
   plugins-tests:
     needs: build
@@ -55,5 +55,5 @@ jobs:
 
     uses: ./.github/workflows/plugins-tests.yml
     with:
-      esdb_version: ${{ matrix.version }}
+      kdb_version: ${{ matrix.version }}
     secrets: inherit
