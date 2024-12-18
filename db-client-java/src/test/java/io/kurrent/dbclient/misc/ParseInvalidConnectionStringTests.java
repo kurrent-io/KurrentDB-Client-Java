@@ -14,20 +14,20 @@ public class ParseInvalidConnectionStringTests {
         return Stream.of(
                 Arguments.of("localhost"),
                 Arguments.of("https://console.eventstore.cloud/"),
-                Arguments.of("esbd+discovery://localhost"),
-                Arguments.of("esdb://my:great@username:UyeXx8$^PsOo4jG88FlCauR1Coz25q@host?nodePreference=follower&tlsVerifyCert=false"),
-                Arguments.of("esdb://host1,host2:200:300?tlsVerifyCert=false"),
-                Arguments.of("esdb://localhost/&tlsVerifyCert=false"),
-                Arguments.of("esdb://localhost?tlsVerifyCert=false?nodePreference=follower"),
-                Arguments.of("esdb://localhost?tlsVerifyCert=false&nodePreference=any"),
-                Arguments.of("esdb://localhost?tlsVerifyCert=if you feel like it"),
-                Arguments.of("esdb://localhost?keepAliveInterval=-3"),
-                Arguments.of("esdb://localhost?keepAliveInterval=sdfksjsfl"),
-                Arguments.of("esdb://localhost?keepAliveTimeout=sdfksjsfl"),
-                Arguments.of("esdb://localhost?keepAliveTimeout=-3"),
-                Arguments.of("esdb://localhost?nodePreference=read_only_replica"),
-                Arguments.of("esdb://localhost?userCertFile=/path/to/cert"),
-                Arguments.of("esdb://localhost?userKeyFile=/path/to/key")
+                Arguments.of("kurnt+discovery://localhost"),
+                Arguments.of("kurrent://my:great@username:UyeXx8$^PsOo4jG88FlCauR1Coz25q@host?nodePreference=follower&tlsVerifyCert=false"),
+                Arguments.of("kurrent://host1,host2:200:300?tlsVerifyCert=false"),
+                Arguments.of("kurrent://localhost/&tlsVerifyCert=false"),
+                Arguments.of("kurrent://localhost?tlsVerifyCert=false?nodePreference=follower"),
+                Arguments.of("kurrent://localhost?tlsVerifyCert=false&nodePreference=any"),
+                Arguments.of("kurrent://localhost?tlsVerifyCert=if you feel like it"),
+                Arguments.of("kurrent://localhost?keepAliveInterval=-3"),
+                Arguments.of("kurrent://localhost?keepAliveInterval=sdfksjsfl"),
+                Arguments.of("kurrent://localhost?keepAliveTimeout=sdfksjsfl"),
+                Arguments.of("kurrent://localhost?keepAliveTimeout=-3"),
+                Arguments.of("kurrent://localhost?nodePreference=read_only_replica"),
+                Arguments.of("kurrent://localhost?userCertFile=/path/to/cert"),
+                Arguments.of("kurrent://localhost?userKeyFile=/path/to/key")
        );
     }
 

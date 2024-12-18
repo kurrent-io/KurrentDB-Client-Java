@@ -16,6 +16,8 @@ import java.util.*;
  */
 public class ConnectionSettingsBuilder {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionSettingsBuilder.class);
+    private static final Set<String> SUPPORTED_PROTOCOLS = new HashSet<>(Arrays.asList("esdb", "esdb+discover", "kurrent", "kdb", "kdb+discover", "kurrent+discover"));
+
     private boolean _dnsDiscover = false;
     private int _maxDiscoverAttempts = 3;
     private int _discoveryInterval = 500;
@@ -257,10 +259,13 @@ public class ConnectionSettingsBuilder {
     }
 
     static KurrentDBClientSettings parseFromUrl(ConnectionSettingsBuilder builder, URL url) {
-        if (!url.getProtocol().equals("esdb") && !url.getProtocol().equals("esdb+discover"))
+        if (!SUPPORTED_PROTOCOLS.contains(url.getProtocol()))
             throw new RuntimeException(String.format("Unknown URL scheme: %s", url.getProtocol()));
 
-        builder.dnsDiscover(url.getProtocol().equals("esdb+discover"));
+        if (url.getProtocol().startsWith("esdb"))
+            logger.warn("The 'esdb' protocol is deprecated. Please use 'kurrent' or 'kdb' instead.");
+
+        builder.dnsDiscover(url.getProtocol().endsWith("+discover"));
 
         if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
             String[] splits = url.getUserInfo().split(":", 2);
