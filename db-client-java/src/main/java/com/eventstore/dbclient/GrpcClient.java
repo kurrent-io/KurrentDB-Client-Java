@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -78,6 +79,10 @@ class GrpcClient {
         return getWorkItemArgs().thenComposeAsync((args) -> {
             return action.apply(args).handleAsync((outcome, e) -> {
                 if (e != null) {
+                    if (e instanceof CompletionException) {
+                        e = e.getCause();
+                    }
+
                     if (e instanceof NotLeaderException) {
                         NotLeaderException ex = (NotLeaderException) e;
                         // TODO - Currently we don't retry on not leader exception but we might consider
