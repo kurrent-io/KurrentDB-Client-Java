@@ -141,6 +141,7 @@ public class ServerSideFiltering {
                         new Checkpointer() {
                             @Override
                             public CompletableFuture<Void> onCheckpoint(Subscription subscription, Position position) {
+                                // Save commit position to a persistent store as a checkpoint
                                 System.out.println("checkpoint taken at {position.getCommitUnsigned}");
                                 return CompletableFuture.completedFuture(null);
                             }
@@ -176,6 +177,7 @@ public class ServerSideFiltering {
                         new Checkpointer() {
                             @Override
                             public CompletableFuture<Void> onCheckpoint(Subscription subscription, Position position) {
+                                // Save commit position to a persistent store as a checkpoint
                                 System.out.println("checkpoint taken at {position.getCommitUnsigned}");
                                 return CompletableFuture.completedFuture(null);
                             }
