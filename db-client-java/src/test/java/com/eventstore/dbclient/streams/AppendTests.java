@@ -24,7 +24,7 @@ public interface AppendTests extends ConnectionAware {
                 .build();
 
         AppendToStreamOptions appendOptions = AppendToStreamOptions.get()
-                .expectedRevision(StreamState.noStream());
+                .streamState(StreamState.noStream());
 
         WriteResult appendResult = client.appendToStream(streamName, appendOptions, event)
                 .get();

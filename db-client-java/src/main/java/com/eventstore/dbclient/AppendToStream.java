@@ -42,7 +42,7 @@ class AppendToStream {
 
     private CompletableFuture<WriteResult> append(ManagedChannel channel, List<EventData> events) {
         CompletableFuture<WriteResult> result = new CompletableFuture<>();
-        StreamsOuterClass.AppendReq.Options.Builder options = this.options.getExpectedRevision().applyOnWire(StreamsOuterClass.AppendReq.Options.newBuilder()
+        StreamsOuterClass.AppendReq.Options.Builder options = this.options.getStreamState().applyOnWire(StreamsOuterClass.AppendReq.Options.newBuilder()
                 .setStreamIdentifier(Shared.StreamIdentifier.newBuilder()
                         .setStreamName(ByteString.copyFromUtf8(streamName))
                         .build()));

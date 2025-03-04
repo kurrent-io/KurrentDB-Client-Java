@@ -23,7 +23,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
         client.appendToStream(
                         streamName,
-                        AppendToStreamOptions.get().expectedRevision(StreamState.noStream()),
+                        AppendToStreamOptions.get().streamState(StreamState.noStream()),
                         EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
                                 .eventId(UUID.randomUUID())
                                 .build())
@@ -42,7 +42,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
         client.appendToStream(
                         streamName,
-                        AppendToStreamOptions.get().expectedRevision(StreamState.noStream()),
+                        AppendToStreamOptions.get().streamState(StreamState.noStream()),
                         EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
                                 .metadataAsBytes(mapper.writeValueAsBytes(new Foo()))
                                 .eventId(UUID.randomUUID())
@@ -82,7 +82,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
         client.appendToStream(
                         streamName,
-                        AppendToStreamOptions.get().expectedRevision(StreamState.noStream()),
+                        AppendToStreamOptions.get().streamState(StreamState.noStream()),
                         eventWithValidMetadata,
                         eventWithInvalidMetadata)
                 .get();
@@ -132,7 +132,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
             client.appendToStream(
                             streamName,
                             // Force WrongExpectedVersionException to be thrown.
-                            AppendToStreamOptions.get().expectedRevision(StreamState.streamExists()),
+                            AppendToStreamOptions.get().streamState(StreamState.streamExists()),
                             EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
                                     .eventId(UUID.randomUUID())
                                     .build())
@@ -263,7 +263,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
         WriteResult appendResult = client.appendToStream(streamName, events).get();
         Assertions.assertNotNull(appendResult);
 
-        DeleteResult deleteResult = client.deleteStream(streamName, DeleteStreamOptions.get().expectedRevision(StreamState.streamExists())).get();
+        DeleteResult deleteResult = client.deleteStream(streamName, DeleteStreamOptions.get().streamState(StreamState.streamExists())).get();
         Assertions.assertNotNull(deleteResult);
 
         CountDownLatch subscribeSpansLatch = new CountDownLatch(events.length);

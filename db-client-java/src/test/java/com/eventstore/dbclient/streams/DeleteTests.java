@@ -39,7 +39,7 @@ public interface DeleteTests extends ConnectionAware {
 
         String streamName = generateName();
         DeleteStreamOptions options = DeleteStreamOptions.get()
-            .expectedRevision(StreamState.streamExists());
+            .streamState(StreamState.streamExists());
 
         Assertions.assertThrows(WrongExpectedVersionException.class, () -> {
             try {

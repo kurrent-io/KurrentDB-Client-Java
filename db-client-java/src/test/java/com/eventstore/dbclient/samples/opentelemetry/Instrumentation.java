@@ -55,7 +55,7 @@ public class Instrumentation {
         // endregion setup-client-for-tracing
 
         AppendToStreamOptions options = AppendToStreamOptions.get()
-                .expectedRevision(StreamState.any());
+                .streamState(StreamState.any());
 
         WriteResult appendResult = client.appendToStream("some-stream", options, eventData)
                 .get();

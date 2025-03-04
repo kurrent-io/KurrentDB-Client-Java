@@ -4,7 +4,6 @@ import com.eventstore.dbclient.proto.shared.Shared;
 import com.eventstore.dbclient.proto.streams.StreamsGrpc;
 import com.eventstore.dbclient.proto.streams.StreamsOuterClass;
 import com.google.protobuf.ByteString;
-import io.grpc.Metadata;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -28,7 +27,7 @@ class DeleteStream {
 
             if (this.softDelete) {
                 StreamsOuterClass.DeleteReq req = StreamsOuterClass.DeleteReq.newBuilder()
-                        .setOptions(this.options.getExpectedRevision().applyOnWire(StreamsOuterClass.DeleteReq.Options.newBuilder()
+                        .setOptions(this.options.getStreamState().applyOnWire(StreamsOuterClass.DeleteReq.Options.newBuilder()
                                 .setStreamIdentifier(Shared.StreamIdentifier.newBuilder()
                                         .setStreamName(ByteString.copyFromUtf8(streamName))
                                         .build())))
@@ -45,7 +44,7 @@ class DeleteStream {
             }
 
             StreamsOuterClass.TombstoneReq req = StreamsOuterClass.TombstoneReq.newBuilder()
-                    .setOptions(this.options.getExpectedRevision().applyOnWire(StreamsOuterClass.TombstoneReq.Options.newBuilder()
+                    .setOptions(this.options.getStreamState().applyOnWire(StreamsOuterClass.TombstoneReq.Options.newBuilder()
                             .setStreamIdentifier(Shared.StreamIdentifier.newBuilder()
                                     .setStreamName(ByteString.copyFromUtf8(streamName))
                                     .build())))
