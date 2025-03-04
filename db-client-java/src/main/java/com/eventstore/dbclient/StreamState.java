@@ -151,7 +151,7 @@ public abstract class StreamState {
 
         @Override
         public String toString() {
-            return "StreamsExistsState";
+            return "StreamExistsState";
         }
     }
 
