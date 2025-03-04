@@ -1,13 +1,13 @@
 package com.eventstore.dbclient;
 
 class OptionsWithExpectedRevisionBase<T> extends OptionsBase<T> {
-    private ExpectedRevision expectedRevision;
+    private StreamState expectedRevision;
 
     protected OptionsWithExpectedRevisionBase() {
-        this.expectedRevision = ExpectedRevision.any();
+        this.expectedRevision = StreamState.any();
     }
 
-    ExpectedRevision getExpectedRevision() {
+    StreamState getExpectedRevision() {
         return this.expectedRevision;
     }
 
@@ -18,7 +18,7 @@ class OptionsWithExpectedRevisionBase<T> extends OptionsBase<T> {
      * @return updated options.
      */
     @SuppressWarnings("unchecked")
-    public T expectedRevision(ExpectedRevision revision) {
+    public T expectedRevision(StreamState revision) {
         this.expectedRevision = revision;
         return (T) this;
     }
@@ -31,6 +31,6 @@ class OptionsWithExpectedRevisionBase<T> extends OptionsBase<T> {
      * @return updated options.
      */
     public T expectedRevision(long revision) {
-        return expectedRevision(ExpectedRevision.expectedRevision(revision));
+        return expectedRevision(StreamState.streamRevision(revision));
     }
 }

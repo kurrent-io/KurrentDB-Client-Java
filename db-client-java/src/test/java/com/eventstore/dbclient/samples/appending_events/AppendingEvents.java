@@ -3,7 +3,6 @@ package com.eventstore.dbclient.samples.appending_events;
 import com.eventstore.dbclient.*;
 import com.eventstore.dbclient.samples.TestEvent;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -21,7 +20,7 @@ public class AppendingEvents {
                 .build();
 
         AppendToStreamOptions options = AppendToStreamOptions.get()
-                .expectedRevision(ExpectedRevision.noStream());
+                .expectedRevision(StreamState.noStream());
 
         client.appendToStream("some-stream", options, eventData)
                 .get();
@@ -41,7 +40,7 @@ public class AppendingEvents {
                 .build();
 
         AppendToStreamOptions options = AppendToStreamOptions.get()
-                .expectedRevision(ExpectedRevision.any());
+                .expectedRevision(StreamState.any());
 
         client.appendToStream("same-event-stream", options, eventData)
                 .get();
@@ -75,7 +74,7 @@ public class AppendingEvents {
                 .build();
 
         AppendToStreamOptions options = AppendToStreamOptions.get()
-                .expectedRevision(ExpectedRevision.noStream());
+                .expectedRevision(StreamState.noStream());
 
         client.appendToStream("no-stream-stream", options, eventDataOne)
                 .get();

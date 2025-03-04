@@ -1,7 +1,7 @@
 package com.eventstore.dbclient.misc;
 
 
-import com.eventstore.dbclient.ExpectedRevision;
+import com.eventstore.dbclient.StreamState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -9,52 +9,52 @@ public class ExpectedRevisionTests {
 
     @Test
     public void testExpectedRevisionEquality() {
-        Assertions.assertEquals(ExpectedRevision.any(), new ExpectedRevision.AnyExpectedRevision());
-        Assertions.assertEquals(ExpectedRevision.noStream(), new ExpectedRevision.NoStreamExpectedRevision());
-        Assertions.assertEquals(ExpectedRevision.streamExists(), new ExpectedRevision.StreamExistsExpectedRevision());
-        Assertions.assertEquals(ExpectedRevision.expectedRevision(1L), ExpectedRevision.expectedRevision(1L));
+        Assertions.assertEquals(StreamState.any(), new StreamState.AnyStreamState());
+        Assertions.assertEquals(StreamState.noStream(), new StreamState.NoStreamState());
+        Assertions.assertEquals(StreamState.streamExists(), new StreamState.StreamExistsState());
+        Assertions.assertEquals(StreamState.streamRevision(1L), StreamState.streamRevision(1L));
     }
 
     @Test
     public void testExpectedRevisionNonEquality() {
-        Assertions.assertNotEquals(ExpectedRevision.any(), ExpectedRevision.noStream());
-        Assertions.assertNotEquals(ExpectedRevision.any(), ExpectedRevision.streamExists());
-        Assertions.assertNotEquals(ExpectedRevision.any(), ExpectedRevision.expectedRevision(0L));
-        Assertions.assertNotEquals(ExpectedRevision.noStream(), ExpectedRevision.streamExists());
-        Assertions.assertNotEquals(ExpectedRevision.noStream(), ExpectedRevision.expectedRevision(0L));
-        Assertions.assertNotEquals(ExpectedRevision.streamExists(), ExpectedRevision.expectedRevision(0L));
+        Assertions.assertNotEquals(StreamState.any(), StreamState.noStream());
+        Assertions.assertNotEquals(StreamState.any(), StreamState.streamExists());
+        Assertions.assertNotEquals(StreamState.any(), StreamState.streamRevision(0L));
+        Assertions.assertNotEquals(StreamState.noStream(), StreamState.streamExists());
+        Assertions.assertNotEquals(StreamState.noStream(), StreamState.streamRevision(0L));
+        Assertions.assertNotEquals(StreamState.streamExists(), StreamState.streamRevision(0L));
     }
 
     @Test
     public void testExpectedRevisionHashCode() {
-        Assertions.assertEquals(ExpectedRevision.any().hashCode(), new ExpectedRevision.AnyExpectedRevision().hashCode());
-        Assertions.assertEquals(ExpectedRevision.noStream().hashCode(), new ExpectedRevision.NoStreamExpectedRevision().hashCode());
-        Assertions.assertEquals(ExpectedRevision.streamExists().hashCode(), new ExpectedRevision.StreamExistsExpectedRevision().hashCode());
-        Assertions.assertEquals(ExpectedRevision.expectedRevision(1L).hashCode(), ExpectedRevision.expectedRevision(1L).hashCode());
+        Assertions.assertEquals(StreamState.any().hashCode(), new StreamState.AnyStreamState().hashCode());
+        Assertions.assertEquals(StreamState.noStream().hashCode(), new StreamState.NoStreamState().hashCode());
+        Assertions.assertEquals(StreamState.streamExists().hashCode(), new StreamState.StreamExistsState().hashCode());
+        Assertions.assertEquals(StreamState.streamRevision(1L).hashCode(), StreamState.streamRevision(1L).hashCode());
     }
 
     @Test
     public void testHumanRepresentation() {
-        Assertions.assertEquals("ExpectedAny", ExpectedRevision.any().toString());
-        Assertions.assertEquals("ExpectedStreamExists", ExpectedRevision.streamExists().toString());
-        Assertions.assertEquals("ExpectedNoStream", ExpectedRevision.noStream().toString());
-        Assertions.assertEquals("42", ExpectedRevision.expectedRevision(42).toString());
+        Assertions.assertEquals("ExpectedAny", StreamState.any().toString());
+        Assertions.assertEquals("ExpectedStreamExists", StreamState.streamExists().toString());
+        Assertions.assertEquals("ExpectedNoStream", StreamState.noStream().toString());
+        Assertions.assertEquals("42", StreamState.streamRevision(42).toString());
     }
 
     @Test
     public void testRawLong() {
-        Assertions.assertEquals(-2, ExpectedRevision.any().toRawLong());
-        Assertions.assertEquals(-1, ExpectedRevision.noStream().toRawLong());
-        Assertions.assertEquals(-4, ExpectedRevision.streamExists().toRawLong());
-        Assertions.assertEquals(42, ExpectedRevision.expectedRevision(42).toRawLong());
+        Assertions.assertEquals(-2, StreamState.any().toRawLong());
+        Assertions.assertEquals(-1, StreamState.noStream().toRawLong());
+        Assertions.assertEquals(-4, StreamState.streamExists().toRawLong());
+        Assertions.assertEquals(42, StreamState.streamRevision(42).toRawLong());
     }
 
     @Test
     public void testRawLongConversion() {
-        Assertions.assertEquals(ExpectedRevision.fromRawLong(-2), ExpectedRevision.any());
-        Assertions.assertEquals(ExpectedRevision.fromRawLong(-1), ExpectedRevision.noStream());
-        Assertions.assertEquals(ExpectedRevision.fromRawLong(-4), ExpectedRevision.streamExists());
-        Assertions.assertEquals(ExpectedRevision.fromRawLong(42), ExpectedRevision.expectedRevision(42));
-        Assertions.assertThrowsExactly(RuntimeException.class, () -> ExpectedRevision.fromRawLong(-5));
+        Assertions.assertEquals(StreamState.fromRawLong(-2), StreamState.any());
+        Assertions.assertEquals(StreamState.fromRawLong(-1), StreamState.noStream());
+        Assertions.assertEquals(StreamState.fromRawLong(-4), StreamState.streamExists());
+        Assertions.assertEquals(StreamState.fromRawLong(42), StreamState.streamRevision(42));
+        Assertions.assertThrowsExactly(RuntimeException.class, () -> StreamState.fromRawLong(-5));
     }
 }

@@ -61,8 +61,8 @@ final class GrpcUtils {
                             }
 
                             try {
-                                ExpectedRevision expected = ExpectedRevision.fromRawLong(Long.parseLong(expectedStr));
-                                ExpectedRevision actual = ExpectedRevision.fromRawLong(Long.parseLong(actualStr));
+                                StreamState expected = StreamState.fromRawLong(Long.parseLong(expectedStr));
+                                StreamState actual = StreamState.fromRawLong(Long.parseLong(actualStr));
 
                                 dest.completeExceptionally(new WrongExpectedVersionException(streamName, expected, actual));
                                 return;
