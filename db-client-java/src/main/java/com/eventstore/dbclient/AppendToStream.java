@@ -75,16 +75,16 @@ class AppendToStream {
                     expectedRevision = StreamState.streamRevision(wev.getExpectedRevision());
                 }
 
-                StreamState currentRevision;
+                StreamState streamState;
                 if (wev.getCurrentRevisionOptionCase() == StreamsOuterClass.AppendResp.WrongExpectedVersion.CurrentRevisionOptionCase.CURRENT_NO_STREAM) {
-                    currentRevision = StreamState.noStream();
+                    streamState = StreamState.noStream();
                 } else {
-                    currentRevision = StreamState.streamRevision(wev.getCurrentRevision());
+                    streamState = StreamState.streamRevision(wev.getCurrentRevision());
                 }
 
                 String streamName = options.getStreamIdentifier().getStreamName().toStringUtf8();
 
-                throw new WrongExpectedVersionException(streamName, expectedRevision, currentRevision);
+                throw new WrongExpectedVersionException(streamName, expectedRevision, streamState);
             }
 
             throw new IllegalStateException("AppendResponse has neither Success or WrongExpectedVersion variants");

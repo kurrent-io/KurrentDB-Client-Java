@@ -7,17 +7,17 @@ import javax.validation.constraints.NotNull;
  */
 public class WrongExpectedVersionException extends RuntimeException {
     private final String streamName;
-    private final StreamState nextExpectedRevision;
-    private final StreamState actualRevision;
+    private final StreamState expectedState;
+    private final StreamState actualState;
 
     WrongExpectedVersionException(
             @NotNull String streamName,
-            @NotNull StreamState nextExpected,
-            @NotNull StreamState actualRevision) {
-        super(String.format("Expected %s but got %s instead", nextExpected, actualRevision));
+            @NotNull StreamState expectedState,
+            @NotNull StreamState actualState) {
+        super(String.format("Expected %s but got %s instead", expectedState, actualState));
         this.streamName = streamName;
-        this.nextExpectedRevision = nextExpected;
-        this.actualRevision = actualRevision;
+        this.expectedState = expectedState;
+        this.actualState = actualState;
     }
 
     /**
@@ -28,16 +28,16 @@ public class WrongExpectedVersionException extends RuntimeException {
     }
 
     /**
-     * Returns the expected revision by the request.
+     * Returns the expected stream state by the request.
      */
-    public StreamState getNextExpectedRevision() {
-        return nextExpectedRevision;
+    public StreamState getExpectedState() {
+        return expectedState;
     }
 
     /**
-     * Returns the actual revision of the stream when the check was performed.
+     * Returns the actual stream state when the check was performed.
      */
-    public StreamState getActualVersion() {
-        return actualRevision;
+    public StreamState getActualState() {
+        return actualState;
     }
 }
