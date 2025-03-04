@@ -25,7 +25,7 @@ class OptionsWithStreamStateBase<T> extends OptionsBase<T> {
 
 
     /**
-     * Asks the server to check that the stream receiving is at the given expected version.
+     * Asks the server to check that the stream receiving is at the given expected revision.
 
      * @param revision - expected revision.
      * @return updated options.
