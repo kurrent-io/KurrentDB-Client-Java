@@ -35,9 +35,9 @@ public class ExpectedRevisionTests {
 
     @Test
     public void testHumanRepresentation() {
-        Assertions.assertEquals("ExpectedAny", StreamState.any().toString());
-        Assertions.assertEquals("ExpectedStreamExists", StreamState.streamExists().toString());
-        Assertions.assertEquals("ExpectedNoStream", StreamState.noStream().toString());
+        Assertions.assertEquals("AnyStreamState", StreamState.any().toString());
+        Assertions.assertEquals("StreamExistsState", StreamState.streamExists().toString());
+        Assertions.assertEquals("NoStreamStream", StreamState.noStream().toString());
         Assertions.assertEquals("42", StreamState.streamRevision(42).toString());
     }
 
