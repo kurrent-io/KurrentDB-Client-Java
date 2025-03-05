@@ -1,6 +1,6 @@
 package io.kurrent.dbclient;
 
-class OptionsWithStartRevisionAndResolveLinkTosBase<T> extends OptionsWithResolveLinkTosBase<T> {
+class OptionsWithStartRevisionAndResolveLinkTosBase<T> extends OptionsWithBackPressure<T> {
     private StreamPosition<Long> startRevision;
 
     protected OptionsWithStartRevisionAndResolveLinkTosBase(OperationKind kind) {

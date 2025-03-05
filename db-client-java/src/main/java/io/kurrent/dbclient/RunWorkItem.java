@@ -1,15 +1,17 @@
 package io.kurrent.dbclient;
 
+import java.util.UUID;
+
 class RunWorkItem implements Msg {
-    final String msgId;
+    final UUID msgId;
     final WorkItem item;
 
-    public RunWorkItem(String msgId, WorkItem item) {
+    public RunWorkItem(UUID msgId, WorkItem item) {
         this.msgId = msgId;
         this.item = item;
     }
 
-    public String getMsgId() {
+    public UUID getMsgId() {
         return msgId;
     }
 

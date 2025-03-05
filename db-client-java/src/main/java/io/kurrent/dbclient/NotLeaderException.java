@@ -7,7 +7,7 @@ import java.net.InetSocketAddress;
  * In this case the connection will reconnect automatically to the leader node. However, the request causing that
  * exception needs to be retried if the user really wants it to be carried out.
  */
-public class NotLeaderException extends Exception {
+public class NotLeaderException extends RuntimeException {
     private final InetSocketAddress leaderEndpoint;
 
     NotLeaderException(String host, int port) {

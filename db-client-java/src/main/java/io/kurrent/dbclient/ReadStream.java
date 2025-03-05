@@ -3,10 +3,6 @@ package io.kurrent.dbclient;
 import io.kurrent.dbclient.proto.shared.Shared;
 import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
 
-/**
- * TODO - Implement a better way to handle very long stream to not end
- * if OOM
- */
 class ReadStream extends AbstractRead {
     private final String streamName;
     private final ReadStreamOptions options;

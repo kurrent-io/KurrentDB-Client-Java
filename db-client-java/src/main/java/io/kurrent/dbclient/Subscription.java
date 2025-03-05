@@ -7,31 +7,31 @@ import io.grpc.stub.ClientCallStreamObserver;
  * Subscription handle.
  */
 public class Subscription {
-    private final ClientCallStreamObserver<StreamsOuterClass.ReadReq> _requestStream;
-    private final String _subscriptionId;
-    private final Checkpointer _checkpointer;
+    private final org.reactivestreams.Subscription internal;
+    private final String subscriptionId;
+    private final Checkpointer checkpointer;
 
-    Subscription(ClientCallStreamObserver<StreamsOuterClass.ReadReq> requestStream, String subscriptionId, Checkpointer checkpointer) {
-        this._requestStream = requestStream;
-        this._subscriptionId = subscriptionId;
-        this._checkpointer = checkpointer;
+    Subscription(org.reactivestreams.Subscription internal, String subscriptionId, Checkpointer checkpointer) {
+        this.internal = internal;
+        this.subscriptionId = subscriptionId;
+        this.checkpointer = checkpointer;
     }
 
     /**
      * Returns subscription's id.
      */
     public String getSubscriptionId() {
-        return _subscriptionId;
+        return this.subscriptionId;
     }
 
     /**
      * Drops the subscription.
      */
     public void stop() {
-        this._requestStream.cancel("user-initiated", null);
+        this.internal.cancel();
     }
 
     Checkpointer getCheckpointer() {
-        return this._checkpointer;
+        return this.checkpointer;
     }
 }

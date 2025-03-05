@@ -28,16 +28,16 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '8'
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 7.4
 
@@ -48,7 +48,7 @@ jobs:
           KURRENT_DOCKER_IMAGE_ENV: ${{ needs.provide_docker.outputs.docker_repo }}/${{ needs.provide_docker.outputs.docker_container }}
           KURRENT_DOCKER_TAG_ENV: ${{ inputs.kdb_version }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: esdb_logs.tar.gz
@@ -66,19 +66,19 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Generate certificates
         run: docker compose --file configure-tls-for-tests.yml up
 
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '8'
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 7.4
 
@@ -90,7 +90,7 @@ jobs:
           KURRENT_DOCKER_TAG_ENV: ${{ inputs.kdb_version }}
           SECURE: true
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: esdb_logs.tar.gz
@@ -107,7 +107,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up cluster with Docker Compose
         run: docker compose up -d
@@ -117,13 +117,13 @@ jobs:
           CONTAINER_IMAGE_VERSION: ${{ inputs.kdb_version }}
 
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '8'
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 7.4
 

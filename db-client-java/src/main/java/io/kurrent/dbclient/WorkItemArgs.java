@@ -9,18 +9,21 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.LinkedBlockingQueue;
 
 class WorkItemArgs {
     private final UUID id;
     private final ManagedChannel channel;
     private final InetSocketAddress endpoint;
     private final ServerInfo info;
+    private final LinkedBlockingQueue<Msg> queue;
 
-    public WorkItemArgs(UUID id, ManagedChannel channel, InetSocketAddress endpoint, ServerInfo info) {
+    public WorkItemArgs(UUID id, ManagedChannel channel, InetSocketAddress endpoint, ServerInfo info, LinkedBlockingQueue<Msg> queue) {
         this.id = id;
         this.channel = channel;
         this.endpoint = endpoint;
         this.info = info;
+        this.queue = queue;
     }
 
     public UUID getId() {
@@ -61,6 +64,10 @@ class WorkItemArgs {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void reportNewLeader(String host, int port) {
+        this.queue.add(new CreateChannel(this.id, new InetSocketAddress(host, port)));
     }
 
     static URL getURL(boolean secure, InetSocketAddress endpoint, String path) {

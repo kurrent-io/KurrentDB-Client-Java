@@ -175,7 +175,8 @@ class ConnectionService implements Runnable {
                 this.channelId,
                 this.connection.getCurrentChannel(),
                 this.connection.getLastConnectedEndpoint(),
-                this.serverInfo);
+                this.serverInfo,
+                this.queue);
 
         args.getItem().accept(workArgs, null);
     }

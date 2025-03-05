@@ -11,24 +11,31 @@ public final class ReadMessage {
     private Position lastAllPosition;
     private ResolvedEvent event;
 
-    ReadMessage(StreamsOuterClass.ReadResp resp) {
-        if (resp.hasLastAllStreamPosition()) {
-            lastAllPosition = new Position(resp.getLastAllStreamPosition().getCommitPosition(), resp.getLastAllStreamPosition().getPreparePosition());
-            return;
-        }
-
-        if (resp.hasEvent()) {
-            event = ResolvedEvent.fromWire(resp.getEvent());
-            return;
-        }
-
-        if (resp.getLastStreamPosition() != 0) {
-            lastStreamPosition = resp.getLastStreamPosition();
-            return;
-        }
-
-        firstStreamPosition = resp.getFirstStreamPosition();
+    public static ReadMessage fromEvent(ResolvedEvent event) {
+        ReadMessage msg = new ReadMessage();
+        msg.event = event;
+        return msg;
     }
+
+    public static ReadMessage fromFirstStreamPosition(long position) {
+        ReadMessage msg = new ReadMessage();
+        msg.firstStreamPosition = position;
+        return msg;
+    }
+
+    public static ReadMessage fromLastStreamPosition(long position) {
+        ReadMessage msg = new ReadMessage();
+        msg.lastStreamPosition = position;
+        return msg;
+    }
+
+    public static ReadMessage fromLastAllPosition(long commit, long prepare) {
+        ReadMessage msg = new ReadMessage();
+        msg.lastAllPosition = new Position(commit, prepare);
+        return msg;
+    }
+
+    ReadMessage() {}
 
     /**
      * If this messages holds the first stream position.

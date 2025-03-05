@@ -1,7 +1,7 @@
 package io.kurrent.dbclient;
 
 /**
- * Options of the subscribe to $all request.
+ * Options of a subscription to $all request.
  */
 public class SubscribeToAllOptions extends OptionsWithPositionAndResolveLinkTosBase<SubscribeToAllOptions> {
     private SubscriptionFilter filter;

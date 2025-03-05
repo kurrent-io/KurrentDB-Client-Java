@@ -10,7 +10,6 @@ abstract class ReadSubscriber implements Subscriber<ReadMessage> {
     @Override
     public final void onSubscribe(Subscription s) {
         this.subscription = s;
-        request(Long.MAX_VALUE);
     }
 
     public final void request(long n) {
