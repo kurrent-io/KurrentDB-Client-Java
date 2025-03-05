@@ -10,7 +10,7 @@ class AbstractPersistentSubscriptionSettingsBuilder<T, TSettings extends Persist
     }
 
     /**
-     * @deprecated prefer {@link #resolveLinkTos()}
+     * @deprecated prefer {@link AbstractPersistentSubscriptionSettingsBuilder#resolveLinkTos()}
      */
     @Deprecated
     public T enableLinkResolution() {
@@ -18,7 +18,7 @@ class AbstractPersistentSubscriptionSettingsBuilder<T, TSettings extends Persist
     }
 
     /**
-     * @deprecated prefer {@link #notResolveLinkTos()}
+     * @deprecated prefer {@link AbstractPersistentSubscriptionSettingsBuilder#notResolveLinkTos()}
      */
     @Deprecated
     public T disableLinkResolution() {
@@ -26,7 +26,7 @@ class AbstractPersistentSubscriptionSettingsBuilder<T, TSettings extends Persist
     }
 
     /**
-     * @deprecated prefer {@link #resolveLinkTos(boolean)}
+     * @deprecated prefer {@link AbstractPersistentSubscriptionSettingsBuilder#resolveLinkTos(boolean value)}
      */
     @Deprecated
     @SuppressWarnings("unchecked")
@@ -117,7 +117,7 @@ class AbstractPersistentSubscriptionSettingsBuilder<T, TSettings extends Persist
     }
 
     /**
-     * @deprecated prefer {@link #checkpointUpperBound}
+     * @deprecated prefer {@link AbstractPersistentSubscriptionSettingsBuilder#checkpointUpperBound(int value)}
      */
     @Deprecated
     public T maxCheckpointCount(int value) {
@@ -134,7 +134,7 @@ class AbstractPersistentSubscriptionSettingsBuilder<T, TSettings extends Persist
     }
 
     /**
-     * @deprecated prefer {@link #checkpointLowerBound}
+     * @deprecated prefer {@link AbstractPersistentSubscriptionSettingsBuilder#checkpointLowerBound(int value)}
      */
     @Deprecated
     public T minCheckpointCount(int value) {
