@@ -1,9 +1,9 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
 
 import java.util.concurrent.CompletableFuture;
 
-class SubscriptionStreamConsumer implements StreamConsumer{
+class SubscriptionStreamConsumer implements StreamConsumer {
     private final SubscriptionListener listener;
     private final Checkpointer checkpointer;
     private final CompletableFuture<Subscription> future;

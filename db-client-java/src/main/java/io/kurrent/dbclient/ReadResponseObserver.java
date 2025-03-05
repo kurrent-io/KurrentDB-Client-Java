@@ -1,7 +1,7 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
-import com.eventstore.dbclient.proto.shared.Shared;
-import com.eventstore.dbclient.proto.streams.StreamsOuterClass;
+import io.kurrent.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;

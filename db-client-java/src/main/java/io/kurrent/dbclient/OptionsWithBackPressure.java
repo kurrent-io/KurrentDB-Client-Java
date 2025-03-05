@@ -1,4 +1,4 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
 class OptionsWithBackPressure<T> extends OptionsWithResolveLinkTosBase<T> {
     private int batchSize;

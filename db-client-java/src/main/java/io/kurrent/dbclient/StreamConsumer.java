@@ -1,4 +1,4 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
 public interface StreamConsumer {
     default void onSubscribe(org.reactivestreams.Subscription subscription) {}
