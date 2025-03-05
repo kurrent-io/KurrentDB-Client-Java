@@ -3,13 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [5.4.4] - 2025-03-05
-### Changed
-- Upgrade dependencies to latest [EventStoreDB-Client-Java#304](https://github.com/EventStore/EventStoreDB-Client-Java/pull/304)
-
 ### Fixed
-- Support back-pressure on reads and subscriptions. [EventStoreDB-Client-Java#292](https://github.com/EventStore/EventStoreDB-Client-Java/pull/295)
-- Unwrap CompletionException in GrpcClient. [EventStoreDB-Client-Java#298](https://github.com/EventStore/EventStoreDB-Client-Java/pull/298)
+- Disable trace context extraction for deleted events [EventStoreDB-Client-Java#292](https://github.com/EventStore/EventStoreDB-Client-Java/pull/292)
+
+### Fixes
+- #291 [EventStoreDB-Client-Java#292](https://github.com/EventStore/EventStoreDB-Client-Java/pull/292)
 
 ## [5.4.3] - 2024-11-07
 ### Fixed
