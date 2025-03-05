@@ -1,4 +1,4 @@
-# Kurrent Client SDK for Java
+# KurrentDB Client SDK for Java
 
 KurrentDB is the event-native database, where business events are immutably stored and streamed. Designed for event-sourced, event-driven, and microservices architectures.
 
@@ -55,7 +55,7 @@ Server setup instructions can be found in the [docs], follow the docker setup fo
 
 The following snippet showcases a simple example where we form a connection, then write and read events from the server.
 
-Note: If testing locally using `--insecure` the url should be `esdb://localhost:2113?tls=false`.
+Note: If testing locally using `--insecure` the url should be `kurrentdb://localhost:2113?tls=false`.
 
 ```java
 class AccountCreated {
@@ -91,7 +91,7 @@ import io.kurrent.dbclient.ReadResult;
 
 public class Main {
     public static void main(String args[]) {
-        KurrentDBClientSettings setts = KurrentDBConnectionString.parseOrThrow("esdb://localhost:2113");
+        KurrentDBClientSettings setts = KurrentDBConnectionString.parseOrThrow("kurrentdb://localhost:2113");
         KurrentDBClient client = KurrentDBClient.create(setts);
 
         AccountCreated createdEvent = new AccountCreated();
@@ -133,7 +133,7 @@ This client currently supports creating and getting the result of a continuous p
 
 Create a projection:
 ```java
-KurrentDbClientSettings setts = KurrentDBConnectionString.parseOrThrow("esdb://localhost:2113");
+KurrentDBClientSettings setts = KurrentDBConnectionString.parseOrThrow("kurrentdb://localhost:2113");
 KurrentDBProjectionManagementClient client = KurrentDBProjectionManagementClient.create(setts);
 
 client

@@ -197,20 +197,20 @@ javadoc {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'db-client-java'
+            artifactId = 'kurrentdb-client'
 
             from components.java
             pom {
-                name = 'Kurrent Client Java'
+                name = 'KurrentDB Client Java'
                 // packaging 'jar'
                 // optionally artifactId can be defined here
                 description = 'Kurrent gRPC Java client'
                 url = 'https://kurrent.io'
 
                 scm {
-                    connection = 'https://github.com/EventStore/Kurrent-Client-Java.git'
-                    developerConnection = 'https://github.com/EventStore/Kurrent-Client-Java.git'
-                    url = 'https://github.com/EventStore/Kurrent-Client-Java'
+                    connection = 'https://github.com/EventStore/KurrentDB-Client-Java.git'
+                    developerConnection = 'https://github.com/EventStore/KurrentDB-Client-Java.git'
+                    url = 'https://github.com/EventStore/KurrentDB-Client-Java'
                 }
 
                 licenses {

@@ -3,14 +3,8 @@ package io.kurrent.dbclient;
 import io.kurrent.dbclient.proto.shared.Shared;
 import io.kurrent.dbclient.proto.streams.StreamsGrpc;
 import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
-import io.grpc.Metadata;
-import io.grpc.StatusRuntimeException;
-import io.grpc.stub.ClientCallStreamObserver;
-import io.grpc.stub.ClientResponseObserver;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
-
-import java.util.concurrent.CompletableFuture;
 
 abstract class AbstractRead implements Publisher<ReadMessage> {
     protected static final StreamsOuterClass.ReadReq.Options.Builder defaultReadOptions;
