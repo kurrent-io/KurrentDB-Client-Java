@@ -189,9 +189,6 @@ def publishLogin = project.hasProperty("ossrhUsername") ? project.getProperties(
 def publishPassword = project.hasProperty("ossrhPassword") ? project.getProperties().get("ossrhPassword") : ""
 
 javadoc {
-    doFirst {
-        options.addBooleanOption('-no-module-directories', true)
-    }
 }
 
 publishing {
