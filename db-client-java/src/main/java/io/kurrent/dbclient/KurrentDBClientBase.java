@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 public class KurrentDBClientBase {
     final Logger logger = LoggerFactory.getLogger(KurrentDBClientBase.class);
     final private GrpcClient client;
-    final private MessageSerializer serializer;
+    final protected MessageSerializer serializer;
 
     KurrentDBClientBase(KurrentDBClientSettings settings) {
         Discovery discovery;

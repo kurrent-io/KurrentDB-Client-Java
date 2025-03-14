@@ -2,6 +2,7 @@ package io.kurrent.dbclient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import io.kurrent.dbclient.serialization.MessageSerializationContext;
 import org.reactivestreams.Publisher;
 
 import java.util.Arrays;
@@ -9,6 +10,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static io.kurrent.dbclient.serialization.MessageTypeNamingResolutionContext.fromStreamName;
 
 /**
  * Represents EventStoreDB client for stream operations. A client instance maintains a two-way communication to EventStoreDB.
@@ -28,10 +33,11 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Appends events to a given stream.
+     *
      * @param streamName stream's name.
-     * @param events events to send.
-     * @see WriteResult
+     * @param events     events to send.
      * @return a write result if successful.
+     * @see WriteResult
      */
     public CompletableFuture<WriteResult> appendToStream(String streamName, EventData... events) {
         return this.appendToStream(streamName, Arrays.stream(events).iterator());
@@ -39,10 +45,11 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Appends events to a given stream.
+     *
      * @param streamName stream's name.
-     * @param events events to send.
-     * @see WriteResult
+     * @param events     events to send.
      * @return a write result if successful.
+     * @see WriteResult
      */
     public CompletableFuture<WriteResult> appendToStream(String streamName, Iterator<EventData> events) {
         return this.appendToStream(streamName, AppendToStreamOptions.get(), events);
@@ -50,11 +57,12 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Appends events to a given stream.
+     *
      * @param streamName stream's name.
-     * @param options append stream request's options.
-     * @param events events to send.
-     * @see WriteResult
+     * @param options    append stream request's options.
+     * @param events     events to send.
      * @return a write result if successful.
+     * @see WriteResult
      */
     public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, EventData... events) {
         return this.appendToStream(streamName, options, Arrays.stream(events).iterator());
@@ -62,11 +70,12 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Appends events to a given stream.
+     *
      * @param streamName stream's name.
-     * @param options append stream request's options.
-     * @param events events to send.
-     * @see WriteResult
+     * @param options    append stream request's options.
+     * @param events     events to send.
      * @return a write result if successful.
+     * @see WriteResult
      */
     public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, Iterator<EventData> events) {
         if (options == null)
@@ -76,11 +85,63 @@ public class KurrentDBClient extends KurrentDBClientBase {
     }
 
     /**
-     * Sets a stream's metadata.
+     * Appends events to a given stream.
+     *
      * @param streamName stream's name.
-     * @param metadata stream's metadata
-     * @see WriteResult
+     * @param events     events to send.
      * @return a write result if successful.
+     * @see WriteResult
+     */
+    public CompletableFuture<WriteResult> appendToStream(String streamName, List<Object> events) {
+        // TODO: Sort type erasure issue with Iterator
+        return this.appendToStream(streamName, AppendToStreamOptions.get(), events);
+    }
+
+    /**
+     * Appends events to a given stream.
+     *
+     * @param streamName stream's name.
+     * @param options    append stream request's options.
+     * @param events     events to send.
+     * @return a write result if successful.
+     * @see WriteResult
+     */
+    public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, Object... events) {
+        return this.appendToStream(streamName, options, Stream.of(events).collect(Collectors.toList()));
+    }
+
+    /**
+     * Appends events to a given stream.
+     *
+     * @param streamName stream's name.
+     * @param options    append stream request's options.
+     * @param events     events to send.
+     * @return a write result if successful.
+     * @see WriteResult
+     */
+    public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, List<Object> events) {
+        // TODO: Sort type erasure issue with Iterator
+        if (options == null)
+            options = AppendToStreamOptions.get();
+
+        MessageSerializationContext serializationContext = new MessageSerializationContext(fromStreamName(streamName));
+
+        options.serializationSettings()
+                .map(serializer::with)
+                .orElse(serializer)
+                .serialize();
+
+        throw new RuntimeException("Not Implemented!");
+        //return new AppendToStream(this.getGrpcClient(), streamName, events, options).execute();
+    }
+
+    /**
+     * Sets a stream's metadata.
+     *
+     * @param streamName stream's name.
+     * @param metadata   stream's metadata
+     * @return a write result if successful.
+     * @see WriteResult
      */
     public CompletableFuture<WriteResult> setStreamMetadata(String streamName, StreamMetadata metadata) {
         return setStreamMetadata(streamName, null, metadata);
@@ -88,11 +149,12 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Sets a stream's metadata.
+     *
      * @param streamName stream's name.
-     * @param options append stream request's options.
-     * @param metadata stream's metadata
-     * @see WriteResult
+     * @param options    append stream request's options.
+     * @param metadata   stream's metadata
      * @return a write result if successful.
+     * @see WriteResult
      */
     public CompletableFuture<WriteResult> setStreamMetadata(String streamName, AppendToStreamOptions options, StreamMetadata metadata) {
         JsonMapper mapper = new JsonMapper();
@@ -103,12 +165,13 @@ public class KurrentDBClient extends KurrentDBClientBase {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-     }
+    }
 
     /**
      * Reads events from a given stream. The reading can be done forwards and backwards.
+     *
      * @param streamName stream's name.
-     * @param options read request's operations.
+     * @param options    read request's operations.
      */
     public CompletableFuture<ReadResult> readStream(String streamName, ReadStreamOptions options) {
         return readEventsFromPublisher(readStreamReactive(streamName, options));
@@ -116,6 +179,7 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Reads events from a given stream. The reading can be done forwards and backwards.
+     *
      * @param streamName stream's name.
      */
     public Publisher<ReadMessage> readStreamReactive(String streamName) {
@@ -125,8 +189,9 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Reads events from a given stream. The reading can be done forwards and backwards.
+     *
      * @param streamName stream's name.
-     * @param options read request's operations.
+     * @param options    read request's operations.
      */
     public Publisher<ReadMessage> readStreamReactive(String streamName, ReadStreamOptions options) {
         if (options == null)
@@ -137,6 +202,7 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Reads stream's metadata.
+     *
      * @param streamName stream's name.
      * @see StreamMetadata
      */
@@ -146,8 +212,9 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Reads stream's metadata.
+     *
      * @param streamName stream's name.
-     * @param options read request's operations.
+     * @param options    read request's operations.
      * @see StreamMetadata
      */
     public CompletableFuture<StreamMetadata> getStreamMetadata(String streamName, ReadStreamOptions options) {
@@ -183,6 +250,7 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Reads events from the $all stream. The reading can be done forwards and backwards.
+     *
      * @param options options of the read $all request.
      */
     public CompletableFuture<ReadResult> readAll(ReadAllOptions options) {
@@ -195,6 +263,7 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     /**
      * Reads events from the $all stream. The reading can be done forwards and backwards.
+     *
      * @param options options of the read $all request.
      */
     public Publisher<ReadMessage> readAllReactive(ReadAllOptions options) {
@@ -210,8 +279,9 @@ public class KurrentDBClient extends KurrentDBClientBase {
      * event from the starting point onward. If events already exist, the handler will be called for each event one by
      * one until it reaches the end of the stream. From there, the server will notify the handler whenever a new event
      * appears.
+     *
      * @param streamName stream's name.
-     * @param listener consumes a subscription's events.
+     * @param listener   consumes a subscription's events.
      * @return a subscription handle.
      */
     public CompletableFuture<Subscription> subscribeToStream(String streamName, SubscriptionListener listener) {
@@ -224,9 +294,10 @@ public class KurrentDBClient extends KurrentDBClientBase {
      * event from the starting point onward. If events already exist, the handler will be called for each event one by
      * one until it reaches the end of the stream. From there, the server will notify the handler whenever a new event
      * appears.
+     *
      * @param streamName stream's name.
-     * @param listener consumes a subscription's events.
-     * @param options a subscription request's options.
+     * @param listener   consumes a subscription's events.
+     * @param options    a subscription request's options.
      * @return a subscription handle.
      */
     public CompletableFuture<Subscription> subscribeToStream(String streamName, SubscriptionListener listener, SubscribeToStreamOptions options) {
@@ -242,6 +313,7 @@ public class KurrentDBClient extends KurrentDBClientBase {
      * event from the starting point onward. If events already exist, the handler will be called for each event one by
      * one until it reaches the end of the stream. From there, the server will notify the handler whenever a new event
      * appears.
+     *
      * @param listener consumes a subscription's events.
      * @return a subscription handle.
      */
@@ -255,8 +327,9 @@ public class KurrentDBClient extends KurrentDBClientBase {
      * event from the starting point onward. If events already exist, the handler will be called for each event one by
      * one until it reaches the end of the stream. From there, the server will notify the handler whenever a new event
      * appears.
+     *
      * @param listener consumes a subscription's events.
-     * @param options subscription to $all request's options.
+     * @param options  subscription to $all request's options.
      * @return a subscription handle.
      */
     public CompletableFuture<Subscription> subscribeToAll(SubscriptionListener listener, SubscribeToAllOptions options) {
@@ -274,9 +347,10 @@ public class KurrentDBClient extends KurrentDBClientBase {
      * deleting the stream, you are able to write to it again, continuing from where it left off.
      * </p>
      * <i>Note: Deletion is reversible until the scavenging process runs.</i>
+     *
      * @param streamName stream's name
-     * @see DeleteResult
      * @return if successful, delete result.
+     * @see DeleteResult
      */
     public CompletableFuture<DeleteResult> deleteStream(String streamName) {
         return this.deleteStream(streamName, DeleteStreamOptions.get());
@@ -290,10 +364,11 @@ public class KurrentDBClient extends KurrentDBClientBase {
      * deleting the stream, you are able to write to it again, continuing from where it left off.
      * </p>
      * <i>Note: soft deletion is reversible until the scavenging process runs.</i>
+     *
      * @param streamName stream's name
-     * @param options delete stream request's options.
-     * @see DeleteResult
+     * @param options    delete stream request's options.
      * @return if successful, delete result.
+     * @see DeleteResult
      */
     public CompletableFuture<DeleteResult> deleteStream(String streamName, DeleteStreamOptions options) {
         if (options == null)
@@ -309,9 +384,10 @@ public class KurrentDBClient extends KurrentDBClientBase {
      * written to again. Tombstone events are written with the event's type '$streamDeleted'. When a tombstoned stream
      * is read, the read will return a <i>StreamDeleted</i> error.
      * </p>
+     *
      * @param streamName a stream's name.
-     * @see DeleteResult
      * @return if successful, delete result.
+     * @see DeleteResult
      */
     public CompletableFuture<DeleteResult> tombstoneStream(String streamName) {
         return this.tombstoneStream(streamName, DeleteStreamOptions.get());
@@ -324,10 +400,11 @@ public class KurrentDBClient extends KurrentDBClientBase {
      * written to again. Tombstone events are written with the event's type '$streamDeleted'. When a tombstoned stream
      * is read, the read will return a <i>StreamDeleted</i> error.
      * </p>
+     *
      * @param streamName a stream's name.
-     * @param options delete stream request's options.
-     * @see DeleteResult
+     * @param options    delete stream request's options.
      * @return if successful, delete result.
+     * @see DeleteResult
      */
     public CompletableFuture<DeleteResult> tombstoneStream(String streamName, DeleteStreamOptions options) {
         if (options == null)

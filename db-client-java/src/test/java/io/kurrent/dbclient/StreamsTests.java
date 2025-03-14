@@ -3,6 +3,7 @@ package io.kurrent.dbclient;
 
 import io.kurrent.dbclient.streams.*;
 import io.kurrent.dbclient.streams.ReadStreamTests;
+import io.kurrent.dbclient.streams.serialization.SerializationTests;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ public class StreamsTests implements
         DeadlineTests,
         InterceptorTests,
         MetadataTests,
+        SerializationTests,
         ClientLifecycleTests {
     static private Database database;
     static private Logger logger;
