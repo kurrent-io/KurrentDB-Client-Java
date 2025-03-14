@@ -1,5 +1,7 @@
 package io.kurrent.dbclient;
 
+import io.kurrent.dbclient.serialization.MessageSerializer;
+import io.kurrent.dbclient.serialization.MessageSerializerBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,7 @@ import java.util.concurrent.Executors;
 public class KurrentDBClientBase {
     final Logger logger = LoggerFactory.getLogger(KurrentDBClientBase.class);
     final private GrpcClient client;
+    final private MessageSerializer serializer;
 
     KurrentDBClientBase(KurrentDBClientSettings settings) {
         Discovery discovery;
@@ -30,6 +33,8 @@ public class KurrentDBClientBase {
         this.client = service.getHandle();
 
         CompletableFuture.runAsync(service, createConnectionLoopExecutor());
+
+        serializer = MessageSerializerBuilder.get();
     }
     private Executor createConnectionLoopExecutor() {
         return Executors.newSingleThreadExecutor(r -> {
