@@ -75,6 +75,7 @@ public final class EventData {
      * @return an event data builder.
      * @param <A> a type that can be serialized in JSON.
      */
+    @Deprecated
     public static <A> EventDataBuilder builderAsJson(UUID eventId, String eventType, A eventData) {
         return EventDataBuilder.json(eventId, eventType, eventData);
     }
@@ -119,6 +120,10 @@ public final class EventData {
      */
     public static EventDataBuilder builderAsBinary(UUID eventId, String eventType, byte[] eventData) {
         return EventDataBuilder.binary(eventId, eventType, eventData);
+    }
+    
+    public MessageData toMessageData() {
+        return new MessageData(eventType, eventData, userMetadata, eventId, contentType);
     }
 }
 

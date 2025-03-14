@@ -5,13 +5,11 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.kurrent.dbclient.serialization.MessageSerializationContext;
 import org.reactivestreams.Publisher;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static io.kurrent.dbclient.serialization.MessageTypeNamingResolutionContext.fromStreamName;
 
@@ -81,58 +79,76 @@ public class KurrentDBClient extends KurrentDBClientBase {
         if (options == null)
             options = AppendToStreamOptions.get();
 
-        return new AppendToStream(this.getGrpcClient(), streamName, events, options).execute();
+        Iterator<MessageData> messageData =
+                StreamSupport.stream(Spliterators.spliteratorUnknownSize(events, Spliterator.ORDERED), false)
+                        .map(EventData::toMessageData)
+                        .iterator();
+
+        return new AppendToStream(this.getGrpcClient(), streamName, messageData, options).execute();
     }
 
     /**
-     * Appends events to a given stream.
+     * Appends messages to a given stream.
      *
      * @param streamName stream's name.
-     * @param events     events to send.
+     * @param messages   messages to send.
      * @return a write result if successful.
      * @see WriteResult
      */
-    public CompletableFuture<WriteResult> appendToStream(String streamName, List<Object> events) {
+    public CompletableFuture<WriteResult> appendToStream(String streamName, List<Message> messages) {
         // TODO: Sort type erasure issue with Iterator
-        return this.appendToStream(streamName, AppendToStreamOptions.get(), events);
+        return this.appendToStream(streamName, AppendToStreamOptions.get(), messages);
     }
 
     /**
-     * Appends events to a given stream.
+     * Appends messages to a given stream.
      *
      * @param streamName stream's name.
      * @param options    append stream request's options.
-     * @param events     events to send.
+     * @param messages   messages to send.
      * @return a write result if successful.
      * @see WriteResult
      */
-    public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, Object... events) {
-        return this.appendToStream(streamName, options, Stream.of(events).collect(Collectors.toList()));
+    public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, Message... messages) {
+        return this.appendToStream(streamName, options, Stream.of(messages).collect(Collectors.toList()));
     }
 
     /**
-     * Appends events to a given stream.
+     * Appends messages to a given stream.
      *
      * @param streamName stream's name.
      * @param options    append stream request's options.
-     * @param events     events to send.
+     * @param messages   messages to send.
      * @return a write result if successful.
      * @see WriteResult
      */
-    public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, List<Object> events) {
+    public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, Object... messages) {
+        return this.appendToStream(streamName, options, Stream.of(messages).map(Message::from).collect(Collectors.toList()));
+    }
+
+    /**
+     * Appends messages to a given stream.
+     *
+     * @param streamName stream's name.
+     * @param options    append stream request's options.
+     * @param messages   messages to send.
+     * @return a write result if successful.
+     * @see WriteResult
+     */
+    public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, List<Message> messages) {
         // TODO: Sort type erasure issue with Iterator
         if (options == null)
             options = AppendToStreamOptions.get();
 
         MessageSerializationContext serializationContext = new MessageSerializationContext(fromStreamName(streamName));
 
-        options.serializationSettings()
+        Iterator<MessageData> messageData = options.serializationSettings()
                 .map(serializer::with)
                 .orElse(serializer)
-                .serialize();
+                .serialize(messages, serializationContext)
+                .iterator();
 
-        throw new RuntimeException("Not Implemented!");
-        //return new AppendToStream(this.getGrpcClient(), streamName, events, options).execute();
+        return new AppendToStream(this.getGrpcClient(), streamName, messageData, options).execute();
     }
 
     /**
