@@ -2,9 +2,16 @@ name: Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Run in dry-run mode'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
-  release:
+  publish:
+    name: Publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,4 +34,9 @@ jobs:
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
           JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.MAVENCENTRAL_USERNAME }}
           JRELEASER_MAVENCENTRAL_PASSWORD: ${{ secrets.MAVENCENTRAL_PASSWORD }}
-        run: gradle jreleaserDeploy
+        run: |
+          if [ "${{ github.event.inputs.dry-run }}" == "true" ]; then
+            gradle jreleaserDeploy --dry-run
+          else
+            gradle jreleaserDeploy
+          fi
