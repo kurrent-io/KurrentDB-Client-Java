@@ -38,16 +38,16 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 8
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '8'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/gradle-build-action@v3
         with:
-          gradle-version: 7.4
+          gradle-version: 8.13
 
       - name: Generate certificates
         run: |
@@ -102,16 +102,16 @@ jobs:
       - name: Generate user certificates
         run: docker compose --file configure-user-certs-for-tests.yml up
 
-      - name: Set up JDK 8
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '8'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/gradle-build-action@v3
         with:
-          gradle-version: 7.4
+          gradle-version: 8.13
 
       - name: Execute Gradle build
         run: ./gradlew ci --tests ${{ matrix.test }}Tests
