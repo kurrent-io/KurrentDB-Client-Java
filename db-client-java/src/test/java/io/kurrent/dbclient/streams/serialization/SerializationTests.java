@@ -16,25 +16,19 @@ public interface SerializationTests extends ConnectionAware {
 
         // Given
         final String streamName = generateName();
-        final List<UserRegistered> expected = generateMessages(2);
+        final Object[] expected = generateMessages(2).toArray();
         
-
         // When
         AppendToStreamOptions appendOptions = AppendToStreamOptions.get()
                 .expectedRevision(ExpectedRevision.noStream());
 
-        WriteResult appendResult = client.appendToStream(streamName, appendOptions, expected.iterator())
+        WriteResult appendResult = client.appendToStream(streamName, appendOptions, expected)
                 .get();
 
-        Assertions.assertEquals(ExpectedRevision.expectedRevision(0), appendResult.getNextExpectedRevision());
-
-        ReadStreamOptions readStreamOptions = ReadStreamOptions.get()
-                .fromEnd()
-                .backwards()
-                .maxCount(1);
-
+        Assertions.assertEquals(ExpectedRevision.expectedRevision(1), appendResult.getNextExpectedRevision());
+        
         // Ensure appended event is readable
-        ReadResult result = client.readStream(streamName, readStreamOptions)
+        ReadResult result = client.readStream(streamName, ReadStreamOptions.get())
                 .get();
 
         Assertions.assertEquals(2, result.getEvents().size());

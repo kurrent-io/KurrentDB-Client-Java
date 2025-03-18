@@ -12,15 +12,15 @@ public final class MessageData {
     private final byte[] messageData;
     private final byte[] messageMetadata;
 
-    MessageData(String messageType, byte[] messageData) {
+    public MessageData(String messageType, byte[] messageData) {
         this(messageType, messageData, null, UUID.randomUUID(), ContentType.JSON);
     }
 
-    MessageData(String messageType, byte[] messageData, byte[] userMetadata) {
+    public MessageData(String messageType, byte[] messageData, byte[] userMetadata) {
         this(messageType, messageData, userMetadata, UUID.randomUUID(), ContentType.JSON);
     }
-    
-    MessageData(String messageType, byte[] messageData, byte[] userMetadata, UUID messageId, String contentType) {
+
+    public MessageData(String messageType, byte[] messageData, byte[] userMetadata, UUID messageId, String contentType) {
         this.messageId = messageId;
         this.messageType = messageType;
         this.contentType = contentType;

@@ -7,14 +7,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 class MessageSerializerImpl implements MessageSerializer {
+    Serializer serializer = new JacksonSerializer();
+    
     @Override
     public MessageSerializer with(OperationSerializationSettings serializationSettings) {
-        return null;
+        return this;
     }
 
     @Override
     public MessageData serialize(Message value, MessageSerializationContext context) {
-        return null;
+        return MessageData
+                .builderAsJson(value.getData().getClass().getTypeName(), serializer.serialize(value))
+                .build();
     }
 
     @Override
