@@ -34,7 +34,7 @@ public class KurrentDBClientBase {
 
         CompletableFuture.runAsync(service, createConnectionLoopExecutor());
 
-        serializer = MessageSerializerBuilder.get();
+        serializer = MessageSerializerBuilder.get(settings.getSerializationSettings());
     }
     private Executor createConnectionLoopExecutor() {
         return Executors.newSingleThreadExecutor(r -> {

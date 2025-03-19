@@ -35,7 +35,7 @@ class ClientTelemetry {
 
             injectedEvents.add(
                     MessageDataBuilder
-                            .with(event.getMessageType(), event.getMessageData(), tryInjectTracingContext(span, event.getMessageData()), event.getMessageId(), isJsonEvent)
+                            .with(event.getMessageType(), event.getMessageData(), tryInjectTracingContext(span, event.getMessageMetadata()), event.getMessageId(), isJsonEvent)
                             .build());
         }
         return injectedEvents;

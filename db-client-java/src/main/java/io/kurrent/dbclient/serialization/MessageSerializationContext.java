@@ -7,7 +7,7 @@ public class MessageSerializationContext {
         this.namingResolution = namingResolution;
     }
 
-    public MessageTypeNamingResolutionContext getNamingResolution() {
+    public MessageTypeNamingResolutionContext namingResolution() {
         return namingResolution;
     }
 }

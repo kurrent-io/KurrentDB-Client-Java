@@ -102,7 +102,7 @@ public final class Message {
      *
      * @return The message domain data.
      */
-    public Object getData() {
+    public Object data() {
         return data;
     }
 
@@ -111,7 +111,7 @@ public final class Message {
      *
      * @return The message metadata, may be null.
      */
-    public Object getMetadata() {
+    public Object metadata() {
         return metadata;
     }
 
@@ -120,7 +120,7 @@ public final class Message {
      *
      * @return The message ID.
      */
-    public UUID getMessageId() {
+    public UUID messageId() {
         return messageId;
     }
 

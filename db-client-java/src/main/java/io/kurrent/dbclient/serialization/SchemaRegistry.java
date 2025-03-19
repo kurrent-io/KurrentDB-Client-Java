@@ -15,7 +15,7 @@ public class SchemaRegistry {
         this.messageTypeNamingStrategy = messageTypeNamingStrategy;
     }
 
-    public Serializer serializer(ContentType schemaType) {
+    public Serializer getSerializer(ContentType schemaType) {
         return serializers.get(schemaType);
     }
 

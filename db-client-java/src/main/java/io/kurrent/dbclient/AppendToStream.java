@@ -103,8 +103,8 @@ class AppendToStream {
                         .putMetadata(SystemMetadataKeys.CONTENT_TYPE, e.getContentType())
                         .putMetadata(SystemMetadataKeys.TYPE, e.getMessageType());
 
-                if (e.getMessageData() != null) {
-                    msgBuilder.setCustomMetadata(ByteString.copyFrom(e.getMessageData()));
+                if (e.getMessageMetadata() != null) {
+                    msgBuilder.setCustomMetadata(ByteString.copyFrom(e.getMessageMetadata()));
                 }
 
                 requestStream.onNext(StreamsOuterClass.AppendReq.newBuilder()
