@@ -1,6 +1,6 @@
 # Contributor Covenant Code of Conduct
 
-`EventStoreDB-Client-Java` follows the widely-adopted Contributor Covenant Code of Conduct.
+`Kurrent-Client-Java` follows the widely-adopted Contributor Covenant Code of Conduct.
 
 ## Our Pledge
 

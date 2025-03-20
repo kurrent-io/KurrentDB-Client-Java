@@ -18,7 +18,7 @@ tasks.withType(JavaCompile) {
     options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
-group = 'com.eventstore'
+group = 'io.kurrent'
 version = '5.4.3'
 
 java {
@@ -197,20 +197,20 @@ javadoc {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'db-client-java'
+            artifactId = 'kurrentdb-client'
 
             from components.java
             pom {
-                name = 'EventStoreDB Client Java'
+                name = 'KurrentDB Client Java'
                 // packaging 'jar'
                 // optionally artifactId can be defined here
-                description = 'EventStoreDB gRPC Java client'
-                url = 'https://eventstore.com'
+                description = 'Kurrent gRPC Java client'
+                url = 'https://kurrent.io'
 
                 scm {
-                    connection = 'https://github.com/EventStore/EventStoreDB-Client-Java.git'
-                    developerConnection = 'https://github.com/EventStore/EventStoreDB-Client-Java.git'
-                    url = 'https://github.com/EventStore/EventStoreDB-Client-Java'
+                    connection = 'https://github.com/EventStore/KurrentDB-Client-Java.git'
+                    developerConnection = 'https://github.com/EventStore/KurrentDB-Client-Java.git'
+                    url = 'https://github.com/EventStore/KurrentDB-Client-Java'
                 }
 
                 licenses {
