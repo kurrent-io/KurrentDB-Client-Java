@@ -19,7 +19,7 @@ tasks.withType(JavaCompile) {
 }
 
 group = 'io.kurrent'
-version = '5.4.3'
+version = '1.0.0'
 
 java {
     withJavadocJar()
@@ -46,9 +46,9 @@ dependencies {
     implementation "io.grpc:grpc-stub:${grpcVersion}"
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    implementation 'org.slf4j:slf4j-api:2.0.9'
-    implementation "org.bouncycastle:bcprov-jdk18on:1.77"
-    implementation "org.bouncycastle:bcpkix-jdk18on:1.77"
+    implementation "org.slf4j:slf4j-api:2.0.17"
+    implementation "org.bouncycastle:bcprov-jdk18on:1.80"
+    implementation "org.bouncycastle:bcpkix-jdk18on:1.80"
 
     implementation platform("io.opentelemetry:opentelemetry-bom:${openTelemetryVersion}")
     implementation "io.opentelemetry:opentelemetry-api"
@@ -66,7 +66,7 @@ dependencies {
     testImplementation platform("com.fasterxml.jackson:jackson-bom:${jacksonVersion}")
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     testImplementation "com.github.javafaker:javafaker:1.0.2"
-    testImplementation 'org.slf4j:slf4j-simple:2.0.9'
+    testImplementation 'org.slf4j:slf4j-simple:2.0.17'
     testImplementation "io.opentelemetry:opentelemetry-sdk"
     testImplementation "io.opentelemetry:opentelemetry-sdk-testing"
     testImplementation 'io.opentelemetry:opentelemetry-exporter-logging:1.38.0'
@@ -189,9 +189,8 @@ def publishLogin = project.hasProperty("ossrhUsername") ? project.getProperties(
 def publishPassword = project.hasProperty("ossrhPassword") ? project.getProperties().get("ossrhPassword") : ""
 
 javadoc {
-    doFirst {
-        options.addBooleanOption('-no-module-directories', true)
-    }
+    options.addStringOption('Xdoclint:none', '-quiet')
+    failOnError = false
 }
 
 publishing {
@@ -204,7 +203,7 @@ publishing {
                 name = 'KurrentDB Client Java'
                 // packaging 'jar'
                 // optionally artifactId can be defined here
-                description = 'Kurrent gRPC Java client'
+                description = 'KurrentDB gRPC Java client'
                 url = 'https://kurrent.io'
 
                 scm {
