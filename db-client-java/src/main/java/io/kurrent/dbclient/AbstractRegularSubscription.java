@@ -20,9 +20,9 @@ abstract class AbstractRegularSubscription {
     protected SubscriptionListener listener;
     protected Checkpointer checkpointer = null;
     private final GrpcClient client;
-    private final OptionsWithBackPressure<?> options;
+    private final OptionsWithBackPressureAndSerialization<?> options;
 
-    protected AbstractRegularSubscription(GrpcClient client, OptionsWithBackPressure<?> options) {
+    protected AbstractRegularSubscription(GrpcClient client, OptionsWithBackPressureAndSerialization<?> options) {
         this.client = client;
         this.options = options;
     }
@@ -72,6 +72,10 @@ abstract class AbstractRegularSubscription {
                     event);
         });
 
-        return new ReadResponseObserver(this.options, consumer);
+        return new ReadResponseObserver(
+                this.options, 
+                consumer, 
+                this.client.getSerializer(options.serializationSettings().orElse(null))
+        );
     }
 }

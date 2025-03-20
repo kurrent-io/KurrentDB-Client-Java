@@ -3,6 +3,7 @@ package io.kurrent.dbclient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.kurrent.dbclient.serialization.MessageSerializationContext;
+import io.kurrent.dbclient.serialization.MessageSerializer;
 import org.reactivestreams.Publisher;
 
 import java.util.*;
@@ -140,11 +141,13 @@ public class KurrentDBClient extends KurrentDBClientBase {
         if (options == null)
             options = AppendToStreamOptions.get();
 
-        MessageSerializationContext serializationContext = new MessageSerializationContext(fromStreamName(streamName));
+        MessageSerializationContext serializationContext = 
+                new MessageSerializationContext(fromStreamName(streamName));
 
-        Iterator<MessageData> messageData = options.serializationSettings()
-                .map(serializer::with)
-                .orElse(serializer)
+        MessageSerializer serializer = getGrpcClient()
+                .getSerializer(options.serializationSettings().orElse(null));
+        
+        Iterator<MessageData> messageData = serializer
                 .serialize(messages, serializationContext)
                 .iterator();
 

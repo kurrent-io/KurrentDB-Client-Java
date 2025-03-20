@@ -3,6 +3,9 @@ package io.kurrent.dbclient;
 import io.grpc.ManagedChannel;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
+import io.kurrent.dbclient.serialization.MessageSerializer;
+import io.kurrent.dbclient.serialization.MessageSerializerBuilder;
+import io.kurrent.dbclient.serialization.OperationSerializationSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +22,14 @@ class GrpcClient {
     private final AtomicBoolean closed;
     private final LinkedBlockingQueue<Msg> queue;
     private final KurrentDBClientSettings settings;
+    private final MessageSerializer serializer;
 
     GrpcClient(KurrentDBClientSettings settings, AtomicBoolean closed, LinkedBlockingQueue<Msg> queue) {
         this.settings = settings;
         this.closed = closed;
         this.queue = queue;
+
+        this.serializer = MessageSerializerBuilder.get(settings.getSerializationSettings());
     }
 
     public boolean isShutdown() {
@@ -101,7 +107,7 @@ class GrpcClient {
                     logger.debug("RunWorkItem[{}] completed exceptionally: {}", args.getId(), e.toString());
 
                     if (e instanceof RuntimeException)
-                        throw (RuntimeException)e;
+                        throw (RuntimeException) e;
                     else
                         throw new RuntimeException(e);
                 }
@@ -119,5 +125,9 @@ class GrpcClient {
 
     public KurrentDBClientSettings getSettings() {
         return this.settings;
+    }
+
+    public MessageSerializer getSerializer(OperationSerializationSettings serializationSettings) {
+        return this.serializer.with(serializationSettings);
     }
 }

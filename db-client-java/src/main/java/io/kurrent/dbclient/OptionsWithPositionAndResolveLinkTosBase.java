@@ -1,6 +1,6 @@
 package io.kurrent.dbclient;
 
-class OptionsWithPositionAndResolveLinkTosBase<T> extends OptionsWithBackPressure<T> {
+class OptionsWithPositionAndResolveLinkTosBase<T> extends OptionsWithBackPressureAndSerialization<T> {
     private StreamPosition<Position> position;
 
     protected OptionsWithPositionAndResolveLinkTosBase(OperationKind kind) {

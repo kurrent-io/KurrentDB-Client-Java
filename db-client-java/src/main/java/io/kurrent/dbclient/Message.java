@@ -34,7 +34,7 @@ public final class Message {
      *
      * <p>Example:
      * <pre>
-     * // Create a message with a specific ID
+     * Create a message with a specific ID
      * UserRegistered userRegistered = new UserRegistered("123", "Alice");
      * Message message = Message.from(userRegistered);
      * </pre>
@@ -53,7 +53,7 @@ public final class Message {
      *
      * <p>Example:
      * <pre>
-     * // Create a message with a specific ID
+     * Create a message with a specific ID
      * UserRegistered userRegistered = new UserRegistered("123", "Alice");
      * UUID messageId = UUID.randomUUID();
      * Message message = Message.from(userRegistered, messageId);
@@ -74,7 +74,7 @@ public final class Message {
      *
      * <p>Example:
      * <pre>
-     * // Create a message with data and metadata
+     * Create a message with data and metadata
      * OrderPlaced orderPlaced = new OrderPlaced("ORD-123", 99.99);
      * EventMetadata metadata = new EventMetadata(
      *     "user-456", 

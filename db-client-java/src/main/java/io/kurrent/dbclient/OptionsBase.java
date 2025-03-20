@@ -8,7 +8,7 @@ class OptionsBase<T> {
     private final OperationKind kind;
     private UserCredentials credentials;
     private boolean requiresLeader;
-    private Map<String, String> headers = new HashMap<>();
+    private final Map<String, String> headers = new HashMap<>();
 
     protected OptionsBase() {
         this(OperationKind.Regular);

@@ -16,7 +16,6 @@ import java.util.concurrent.Executors;
 public class KurrentDBClientBase {
     final Logger logger = LoggerFactory.getLogger(KurrentDBClientBase.class);
     final private GrpcClient client;
-    final protected MessageSerializer serializer;
 
     KurrentDBClientBase(KurrentDBClientSettings settings) {
         Discovery discovery;
@@ -33,8 +32,6 @@ public class KurrentDBClientBase {
         this.client = service.getHandle();
 
         CompletableFuture.runAsync(service, createConnectionLoopExecutor());
-
-        serializer = MessageSerializerBuilder.get(settings.getSerializationSettings());
     }
     private Executor createConnectionLoopExecutor() {
         return Executors.newSingleThreadExecutor(r -> {
