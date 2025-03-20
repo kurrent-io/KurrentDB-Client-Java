@@ -24,12 +24,12 @@ public interface AppendTests extends ConnectionAware {
                 .build();
 
         AppendToStreamOptions appendOptions = AppendToStreamOptions.get()
-                .expectedRevision(ExpectedRevision.noStream());
+                .streamState(StreamState.noStream());
 
         WriteResult appendResult = client.appendToStream(streamName, appendOptions, event)
                 .get();
 
-        Assertions.assertEquals(ExpectedRevision.expectedRevision(0), appendResult.getNextExpectedRevision());
+        Assertions.assertEquals(StreamState.streamRevision(0), appendResult.getNextExpectedRevision());
 
         ReadStreamOptions readStreamOptions = ReadStreamOptions.get()
                 .fromEnd()

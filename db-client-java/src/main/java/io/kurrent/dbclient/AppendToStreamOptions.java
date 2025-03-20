@@ -3,7 +3,7 @@ package io.kurrent.dbclient;
 /**
  * Options of the append stream request.
  */
-public class AppendToStreamOptions extends OptionsWithExpectedRevisionBase<AppendToStreamOptions> {
+public class AppendToStreamOptions extends OptionsWithStreamStateBase<AppendToStreamOptions> {
     private AppendToStreamOptions() {
     }
 

@@ -42,7 +42,7 @@ class AppendToStream {
 
     private CompletableFuture<WriteResult> append(ManagedChannel channel, List<EventData> events) {
         CompletableFuture<WriteResult> result = new CompletableFuture<>();
-        StreamsOuterClass.AppendReq.Options.Builder options = this.options.getExpectedRevision().applyOnWire(StreamsOuterClass.AppendReq.Options.newBuilder()
+        StreamsOuterClass.AppendReq.Options.Builder options = this.options.getStreamState().applyOnWire(StreamsOuterClass.AppendReq.Options.newBuilder()
                 .setStreamIdentifier(Shared.StreamIdentifier.newBuilder()
                         .setStreamName(ByteString.copyFromUtf8(streamName))
                         .build()));
@@ -58,33 +58,33 @@ class AppendToStream {
                     logPosition = new Position(p.getCommitPosition(), p.getPreparePosition());
                 }
 
-                ExpectedRevision nextExpectedRevision = success.hasNoStream() ? ExpectedRevision.noStream()
-                        : ExpectedRevision.expectedRevision(success.getCurrentRevision());
+                StreamState nextExpectedRevision = success.hasNoStream() ? StreamState.noStream()
+                        : StreamState.streamRevision(success.getCurrentRevision());
 
                 return new WriteResult(nextExpectedRevision, logPosition);
             }
             if (resp.hasWrongExpectedVersion()) {
                 StreamsOuterClass.AppendResp.WrongExpectedVersion wev = resp.getWrongExpectedVersion();
 
-                ExpectedRevision expectedRevision;
+                StreamState expectedRevision;
                 if (wev.getExpectedRevisionOptionCase() == StreamsOuterClass.AppendResp.WrongExpectedVersion.ExpectedRevisionOptionCase.EXPECTED_ANY) {
-                    expectedRevision = ExpectedRevision.any();
+                    expectedRevision = StreamState.any();
                 } else if (wev.getExpectedRevisionOptionCase() == StreamsOuterClass.AppendResp.WrongExpectedVersion.ExpectedRevisionOptionCase.EXPECTED_STREAM_EXISTS) {
-                    expectedRevision = ExpectedRevision.streamExists();
+                    expectedRevision = StreamState.streamExists();
                 } else {
-                    expectedRevision = ExpectedRevision.expectedRevision(wev.getExpectedRevision());
+                    expectedRevision = StreamState.streamRevision(wev.getExpectedRevision());
                 }
 
-                ExpectedRevision currentRevision;
+                StreamState streamState;
                 if (wev.getCurrentRevisionOptionCase() == StreamsOuterClass.AppendResp.WrongExpectedVersion.CurrentRevisionOptionCase.CURRENT_NO_STREAM) {
-                    currentRevision = ExpectedRevision.noStream();
+                    streamState = StreamState.noStream();
                 } else {
-                    currentRevision = ExpectedRevision.expectedRevision(wev.getCurrentRevision());
+                    streamState = StreamState.streamRevision(wev.getCurrentRevision());
                 }
 
                 String streamName = options.getStreamIdentifier().getStreamName().toStringUtf8();
 
-                throw new WrongExpectedVersionException(streamName, expectedRevision, currentRevision);
+                throw new WrongExpectedVersionException(streamName, expectedRevision, streamState);
             }
 
             throw new IllegalStateException("AppendResponse has neither Success or WrongExpectedVersion variants");

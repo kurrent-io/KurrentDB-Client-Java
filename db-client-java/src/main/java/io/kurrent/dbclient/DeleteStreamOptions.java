@@ -3,7 +3,7 @@ package io.kurrent.dbclient;
 /**
  * Options of the delete or tombstone stream request.
  */
-public class DeleteStreamOptions extends OptionsWithExpectedRevisionBase<DeleteStreamOptions> {
+public class DeleteStreamOptions extends OptionsWithStreamStateBase<DeleteStreamOptions> {
     DeleteStreamOptions() {}
 
     /**
