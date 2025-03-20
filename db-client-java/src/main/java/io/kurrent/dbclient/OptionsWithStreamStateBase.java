@@ -1,4 +1,4 @@
-package com.eventstore.dbclient;
+package io.kurrent.dbclient;
 
 class OptionsWithStreamStateBase<T> extends OptionsBase<T> {
     private StreamState streamState;
