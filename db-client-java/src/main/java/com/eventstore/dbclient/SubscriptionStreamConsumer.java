@@ -67,6 +67,11 @@ class SubscriptionStreamConsumer implements StreamConsumer{
 
     @Override
     public void onCancelled(Throwable exception) {
+        // error occurred before subscription was confirmed
+        if (this.subscription == null) {
+            this.future.completeExceptionally(exception);
+        }
+
         this.listener.onCancelled(this.subscription, exception);
     }
 
