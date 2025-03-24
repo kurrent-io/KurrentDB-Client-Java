@@ -19,7 +19,7 @@ tasks.withType(JavaCompile) {
 }
 
 group = 'com.eventstore'
-version = '5.4.4'
+version = '5.4.5'
 
 java {
     withJavadocJar()
