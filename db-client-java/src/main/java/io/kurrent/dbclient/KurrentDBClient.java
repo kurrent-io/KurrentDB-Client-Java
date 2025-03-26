@@ -9,7 +9,6 @@ import org.reactivestreams.Publisher;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static io.kurrent.dbclient.serialization.MessageTypeNamingResolutionContext.fromStreamName;
@@ -33,8 +32,9 @@ public class KurrentDBClient extends KurrentDBClientBase {
     /**
      * Appends events to a given stream.
      *
+     * @deprecated This method may be removed in future releases. Prefer using appendToStream method with explicit stream state parameter.
      * @param streamName stream's name.
-     * @param events     events to send.
+     * @param events     events to store.
      * @return a write result if successful.
      * @see WriteResult
      */
@@ -45,8 +45,9 @@ public class KurrentDBClient extends KurrentDBClientBase {
     /**
      * Appends events to a given stream.
      *
+     * @deprecated This method may be removed in future releases. Prefer using appendToStream method with explicit stream state parameter.
      * @param streamName stream's name.
-     * @param events     events to send.
+     * @param events     events to store.
      * @return a write result if successful.
      * @see WriteResult
      */
@@ -57,22 +58,24 @@ public class KurrentDBClient extends KurrentDBClientBase {
     /**
      * Appends events to a given stream.
      *
+     * @deprecated This method may be removed in future releases. Prefer using appendToStream method with explicit stream state parameter.
      * @param streamName stream's name.
      * @param options    append stream request's options.
-     * @param events     events to send.
+     * @param events     events to store.
      * @return a write result if successful.
      * @see WriteResult
      */
     public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, EventData... events) {
         return this.appendToStream(streamName, options, Arrays.stream(events).iterator());
     }
-
+    
     /**
      * Appends events to a given stream.
      *
+     * @deprecated This method may be removed in future releases. Prefer using appendToStream method with explicit stream state parameter.
      * @param streamName stream's name.
      * @param options    append stream request's options.
-     * @param events     events to send.
+     * @param events     events to store.
      * @return a write result if successful.
      * @see WriteResult
      */
@@ -85,73 +88,209 @@ public class KurrentDBClient extends KurrentDBClientBase {
                         .map(EventData::toMessageData)
                         .iterator();
 
-        return new AppendToStream(this.getGrpcClient(), streamName, messageData, options).execute();
+        return new AppendToStream(this.getGrpcClient(), streamName, options.getStreamState(), messageData, options).execute();
     }
 
     /**
      * Appends messages to a given stream.
      *
-     * @param streamName stream's name.
-     * @param messages   messages to send.
+     * @param streamName  stream's name.
+     * @param streamState expected stream's state in the database
+     * @param messages    messages to store.
      * @return a write result if successful.
      * @see WriteResult
      */
-    public CompletableFuture<WriteResult> appendToStream(String streamName, List<Message> messages) {
-        // TODO: Sort type erasure issue with Iterator
-        return this.appendToStream(streamName, AppendToStreamOptions.get(), messages);
+    public CompletableFuture<WriteResult> appendToStream(
+            String streamName, 
+            StreamState streamState,
+            Object... messages
+    ) {
+        return this.appendToStream(
+                streamName, 
+                streamState, 
+                Arrays.stream(messages).collect(Collectors.toList()), 
+                AppendToStreamOptions.get()
+        );
+    }
+
+
+    /**
+     * Appends messages to a given stream.
+     *
+     * @param streamName  stream's name.
+     * @param streamState expected stream's state in the database
+     * @param messages    messages to store.
+     * @return a write result if successful.
+     * @see WriteResult
+     */
+    public CompletableFuture<WriteResult> appendToStream(
+            String streamName,
+            StreamState streamState,
+            Message... messages
+    ) {
+        List<Message> toAppend = Arrays.stream(messages).collect(Collectors.toList());
+        return this.appendToStream(
+                streamName,
+                streamState,
+                toAppend,
+                AppendToStreamOptions.get()
+        );
     }
 
     /**
      * Appends messages to a given stream.
      *
-     * @param streamName stream's name.
-     * @param options    append stream request's options.
-     * @param messages   messages to send.
+     * @param streamName  stream's name.
+     * @param streamState expected stream's state in the database
+     * @param messages    messages to store.
      * @return a write result if successful.
      * @see WriteResult
      */
-    public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, Message... messages) {
-        return this.appendToStream(streamName, options, Stream.of(messages).collect(Collectors.toList()));
+    public CompletableFuture<WriteResult> appendToStream(
+            String streamName,
+            StreamState streamState,
+            Iterable<Object> messages
+    ) {
+        return this.appendToStream(
+                streamName,
+                streamState,
+                messages,
+                AppendToStreamOptions.get()
+        );
+    }
+
+
+    /**
+     * Appends messages to a given stream.
+     *
+     * @param streamName  stream's name.
+     * @param streamState expected stream's state in the database
+     * @param messages    messages to store.
+     * @param options     append stream request's options.
+     * @return a write result if successful.
+     * @see WriteResult
+     */
+    public CompletableFuture<WriteResult> appendToStream(
+            String streamName,
+            StreamState streamState,
+            Object[] messages,
+            AppendToStreamOptions options
+    ) {
+        List<Message> toAppend =
+                Arrays.stream(messages)
+                        .map(Message::from)
+                        .collect(Collectors.toList());
+
+        return this.appendToStream(
+                streamName,
+                streamState,
+                toAppend,
+                options
+        );
     }
 
     /**
      * Appends messages to a given stream.
      *
-     * @param streamName stream's name.
-     * @param options    append stream request's options.
-     * @param messages   messages to send.
+     * @param streamName  stream's name.
+     * @param streamState expected stream's state in the database
+     * @param messages    messages to store.
+     * @param options     append stream request's options.
      * @return a write result if successful.
      * @see WriteResult
      */
-    public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, Object... messages) {
-        return this.appendToStream(streamName, options, Stream.of(messages).map(Message::from).collect(Collectors.toList()));
+    public CompletableFuture<WriteResult> appendToStream(
+            String streamName,
+            StreamState streamState,
+            Iterable<Object> messages,
+            AppendToStreamOptions options
+    ) {
+        List<Message> toAppend =
+                StreamSupport.stream(messages.spliterator(), false)
+                        .map(Message::from)
+                        .collect(Collectors.toList());
+
+        return this.appendToStream(
+                streamName,
+                streamState,
+                toAppend,
+                options
+        );
     }
 
     /**
      * Appends messages to a given stream.
      *
-     * @param streamName stream's name.
-     * @param options    append stream request's options.
-     * @param messages   messages to send.
+     * @param streamName  stream's name.
+     * @param streamState expected stream's state in the database
+     * @param messages    messages to store.
      * @return a write result if successful.
      * @see WriteResult
      */
-    public CompletableFuture<WriteResult> appendToStream(String streamName, AppendToStreamOptions options, List<Message> messages) {
-        // TODO: Sort type erasure issue with Iterator
+    public CompletableFuture<WriteResult> appendToStream(
+            String streamName,
+            StreamState streamState,
+            List<Message> messages
+    ) {
+        return this.appendToStream(streamName, streamState, messages, AppendToStreamOptions.get());
+    }
+
+    /**
+     * Appends messages to a given stream.
+     *
+     * @param streamName  stream's name.
+     * @param streamState expected stream's state in the database.
+     * @param messages    messages to store.
+     * @param options     append stream request's options.
+     * @return a write result if successful.
+     * @see WriteResult
+     */
+    public CompletableFuture<WriteResult> appendToStream(
+            String streamName,
+            StreamState streamState,
+            Message[] messages,
+            AppendToStreamOptions options
+    ) {
+        List<Message> toAppend = Arrays.stream(messages).collect(Collectors.toList());
+
+        return this.appendToStream(
+                streamName,
+                streamState,
+                toAppend,
+                options
+        );
+    }
+
+    /**
+     * Appends messages to a given stream.
+     *
+     * @param streamName  stream's name.
+     * @param streamState expected stream's state in the database.
+     * @param messages    messages to store.
+     * @param options     append stream request's options.
+     * @return a write result if successful.
+     * @see WriteResult
+     */
+    public CompletableFuture<WriteResult> appendToStream(
+            String streamName,
+            StreamState streamState,
+            List<Message> messages,
+            AppendToStreamOptions options
+    ) {
         if (options == null)
             options = AppendToStreamOptions.get();
 
-        MessageSerializationContext serializationContext = 
+        MessageSerializationContext serializationContext =
                 new MessageSerializationContext(fromStreamName(streamName));
 
         MessageSerializer serializer = getGrpcClient()
                 .getSerializer(options.serializationSettings().orElse(null));
-        
+
         Iterator<MessageData> messageData = serializer
                 .serialize(messages, serializationContext)
                 .iterator();
 
-        return new AppendToStream(this.getGrpcClient(), streamName, messageData, options).execute();
+        return new AppendToStream(this.getGrpcClient(), streamName, streamState, messageData, options).execute();
     }
 
     /**

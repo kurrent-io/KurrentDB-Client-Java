@@ -4,6 +4,7 @@ import io.kurrent.dbclient.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -16,13 +17,10 @@ public interface SerializationTests extends ConnectionAware {
 
         // Given
         final String streamName = generateName();
-        final Object[] expected = generateMessages(2).toArray();
+        final List<Object> expected = new ArrayList<>(generateMessages(2));
         
         // When
-        AppendToStreamOptions appendOptions = AppendToStreamOptions.get()
-                .streamState(StreamState.noStream());
-
-        WriteResult appendResult = client.appendToStream(streamName, appendOptions, expected)
+        WriteResult appendResult = client.appendToStream(streamName, StreamState.noStream(), expected)
                 .get();
 
         Assertions.assertEquals(StreamState.streamRevision(1), appendResult.getNextExpectedRevision());
@@ -34,7 +32,7 @@ public interface SerializationTests extends ConnectionAware {
         Assertions.assertEquals(2, result.getEvents().size());
     }
 
-    static List<UserRegistered> generateMessages(int count){
+    static List<Object> generateMessages(int count){
         return IntStream.range(0, count)
                 .mapToObj(x -> 
                         new UserRegistered(

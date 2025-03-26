@@ -17,12 +17,20 @@ import java.util.concurrent.CompletableFuture;
 class AppendToStream {
     private final GrpcClient client;
     private final String streamName;
+    private final StreamState streamState;
     private final List<MessageData> events;
     private final AppendToStreamOptions options;
 
-    public AppendToStream(GrpcClient client, String streamName, Iterator<MessageData> events, AppendToStreamOptions options) {
+    public AppendToStream(
+            GrpcClient client, 
+            String streamName, 
+            StreamState streamState, 
+            Iterator<MessageData> events, 
+            AppendToStreamOptions options
+    ) {
         this.client = client;
         this.streamName = streamName;
+        this.streamState = streamState;
         this.events = new ArrayList<>();
         while (events.hasNext()) {
             this.events.add(events.next());
@@ -42,7 +50,7 @@ class AppendToStream {
 
     private CompletableFuture<WriteResult> append(ManagedChannel channel, List<MessageData> events) {
         CompletableFuture<WriteResult> result = new CompletableFuture<>();
-        StreamsOuterClass.AppendReq.Options.Builder options = this.options.getStreamState().applyOnWire(StreamsOuterClass.AppendReq.Options.newBuilder()
+        StreamsOuterClass.AppendReq.Options.Builder options = this.streamState.applyOnWire(StreamsOuterClass.AppendReq.Options.newBuilder()
                 .setStreamIdentifier(Shared.StreamIdentifier.newBuilder()
                         .setStreamName(ByteString.copyFromUtf8(streamName))
                         .build()));
@@ -117,7 +125,7 @@ class AppendToStream {
             String leaderPort = e.getTrailers().get(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER));
 
             if (leaderHost != null && leaderPort != null) {
-                NotLeaderException reason = new NotLeaderException(leaderHost, Integer.valueOf(leaderPort));
+                NotLeaderException reason = new NotLeaderException(leaderHost, Integer.parseInt(leaderPort));
                 result.completeExceptionally(reason);
             } else {
                 result.completeExceptionally(e);
