@@ -8,6 +8,8 @@ import com.eventstore.dbclient.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+
+import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -233,5 +235,13 @@ public class ParseValidConnectionStringTests {
         }
 
         return builder.buildConnectionSettings();
+    }
+
+    @Test
+    public void testPortNumbers() {
+        //Test gossip seeds with port numbers higher than 32000.
+        EventStoreDBClientSettings settings = EventStoreDBConnectionString.parseOrThrow("esdb://localhost:4500,localhost:50000?feature=foobar&feature=baz");
+        Assertions.assertNotNull(settings);
+        Assertions.assertEquals(2,settings.getHosts().length);
     }
 }

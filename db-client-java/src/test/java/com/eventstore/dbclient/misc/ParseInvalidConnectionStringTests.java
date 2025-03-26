@@ -2,12 +2,14 @@ package com.eventstore.dbclient.misc;
 
 import com.eventstore.dbclient.ConnectionStringParsingException;
 import com.eventstore.dbclient.EventStoreDBConnectionString;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
+
 
 public class ParseInvalidConnectionStringTests {
     public static Stream<Arguments> invalidConnectionStrings() {
@@ -27,7 +29,8 @@ public class ParseInvalidConnectionStringTests {
                 Arguments.of("esdb://localhost?keepAliveTimeout=-3"),
                 Arguments.of("esdb://localhost?nodePreference=read_only_replica"),
                 Arguments.of("esdb://localhost?userCertFile=/path/to/cert"),
-                Arguments.of("esdb://localhost?userKeyFile=/path/to/key")
+                Arguments.of("esdb://localhost?userKeyFile=/path/to/key"),
+                Arguments.of("esdb://localhost:65536,localhost:2113")
        );
     }
 

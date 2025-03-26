@@ -1,6 +1,7 @@
 package com.eventstore.dbclient.resolution;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +14,6 @@ public class FixedSeedsNodeResolution implements NodeResolution {
 
     @Override
     public List<InetSocketAddress> resolve() {
-        return Arrays.asList(seeds);
+        return new ArrayList<>(Arrays.asList(seeds));
     }
 }

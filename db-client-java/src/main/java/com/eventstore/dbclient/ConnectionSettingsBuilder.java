@@ -1,6 +1,5 @@
 package com.eventstore.dbclient;
 
-
 import io.grpc.ClientInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,7 @@ import java.util.*;
  * Utility to create client settings programmatically.
  */
 public class ConnectionSettingsBuilder {
+
     private static final Logger logger = LoggerFactory.getLogger(ConnectionSettingsBuilder.class);
     private boolean _dnsDiscover = false;
     private int _maxDiscoverAttempts = 3;
@@ -33,10 +33,12 @@ public class ConnectionSettingsBuilder {
     private String _tlsCaFile = null;
     private Set<String> _features = new HashSet<>();
 
-    ConnectionSettingsBuilder() {}
+    ConnectionSettingsBuilder() {
+    }
 
     /**
      * Returns configured connection settings.
+     *
      * @see EventStoreDBClientSettings
      * @return configured settings.
      */
@@ -76,7 +78,8 @@ public class ConnectionSettingsBuilder {
     }
 
     /**
-     * How long to wait before retrying a new discovery process (in milliseconds).
+     * How long to wait before retrying a new discovery process (in
+     * milliseconds).
      */
     public ConnectionSettingsBuilder discoveryInterval(int discoveryInterval) {
         this._discoveryInterval = discoveryInterval;
@@ -163,15 +166,17 @@ public class ConnectionSettingsBuilder {
     }
 
     /**
-     * The amount of time (in milliseconds) the sender of the keepalive ping waits for an acknowledgement.
+     * The amount of time (in milliseconds) the sender of the keepalive ping
+     * waits for an acknowledgement.
      */
     public ConnectionSettingsBuilder keepAliveTimeout(long value) {
         if (value >= 0 && value < Consts.DEFAULT_KEEP_ALIVE_TIMEOUT_IN_MS) {
             logger.warn("Specified keepAliveTimeout of {} is less than recommended {}", value, Consts.DEFAULT_KEEP_ALIVE_TIMEOUT_IN_MS);
         }
 
-        if (value == -1)
+        if (value == -1) {
             value = Long.MAX_VALUE;
+        }
 
         this._keepAliveTimeout = value;
 
@@ -179,15 +184,17 @@ public class ConnectionSettingsBuilder {
     }
 
     /**
-     * The amount of time (in milliseconds) to wait after which a keepalive ping is sent on the transport.
+     * The amount of time (in milliseconds) to wait after which a keepalive ping
+     * is sent on the transport.
      */
     public ConnectionSettingsBuilder keepAliveInterval(long value) {
         if (value >= 0 && value < Consts.DEFAULT_KEEP_ALIVE_INTERVAL_IN_MS) {
             logger.warn("Specified keepAliveInterval of {} is less than recommended {}", value, Consts.DEFAULT_KEEP_ALIVE_INTERVAL_IN_MS);
         }
 
-        if (value == -1)
+        if (value == -1) {
             value = Long.MAX_VALUE;
+        }
 
         this._keepAliveInterval = value;
 
@@ -204,6 +211,7 @@ public class ConnectionSettingsBuilder {
 
     /**
      * Register a gRPC interceptor every time a new gRPC channel is created.
+     *
      * @param interceptor
      */
     public ConnectionSettingsBuilder addInterceptor(ClientInterceptor interceptor) {
@@ -212,8 +220,10 @@ public class ConnectionSettingsBuilder {
     }
 
     /**
-     * Client certificate for secure connection. Not required for enabling secure connection. Useful for self-signed
-     * certificate that are not installed on the system trust store.
+     * Client certificate for secure connection. Not required for enabling
+     * secure connection. Useful for self-signed certificate that are not
+     * installed on the system trust store.
+     *
      * @param filepath path to a certificate file.
      */
     public ConnectionSettingsBuilder tlsCaFile(String filepath) {
@@ -246,7 +256,11 @@ public class ConnectionSettingsBuilder {
                 break;
             case 2:
                 try {
-                    addHost(hostParts[0], Short.parseShort(hostParts[1]));
+                    int port = Integer.parseInt(hostParts[1]);
+                    if (port > 65535) {
+                        throw new RuntimeException(new IllegalArgumentException(String.format("Invalid port number format: %s. Post cannot be higher than 65535.", hostParts[1])));
+                    }
+                    addHost(hostParts[0], port);
                 } catch (NumberFormatException e) {
                     throw new RuntimeException(String.format("Invalid port number format: %s", hostParts[1]));
                 }
@@ -257,8 +271,9 @@ public class ConnectionSettingsBuilder {
     }
 
     static EventStoreDBClientSettings parseFromUrl(ConnectionSettingsBuilder builder, URL url) {
-        if (!url.getProtocol().equals("esdb") && !url.getProtocol().equals("esdb+discover"))
+        if (!url.getProtocol().equals("esdb") && !url.getProtocol().equals("esdb+discover")) {
             throw new RuntimeException(String.format("Unknown URL scheme: %s", url.getProtocol()));
+        }
 
         builder.dnsDiscover(url.getProtocol().equals("esdb+discover"));
 
@@ -271,16 +286,18 @@ public class ConnectionSettingsBuilder {
                 } catch (UnsupportedEncodingException e) {
                     throw new RuntimeException(e);
                 }
-            }
-            else
+            } else {
                 builder.defaultCredentials(splits[0], "");
+            }
         }
 
-        if (builder._hosts.isEmpty() && !url.getPath().isEmpty() && !url.getPath().equals("/"))
+        if (builder._hosts.isEmpty() && !url.getPath().isEmpty() && !url.getPath().equals("/")) {
             throw new RuntimeException(String.format("Unsupported URL path: %s", url.getPath()));
+        }
 
-        if (builder._hosts.isEmpty() && url.getHost().isEmpty())
+        if (builder._hosts.isEmpty() && url.getHost().isEmpty()) {
             throw new RuntimeException("Connection string doesn't have an host");
+        }
 
         if (builder._hosts.isEmpty()) {
             if (!url.getHost().contains(",")) {
@@ -292,16 +309,18 @@ public class ConnectionSettingsBuilder {
             }
         }
 
-        if (url.getQuery() == null)
+        if (url.getQuery() == null) {
             return builder.buildConnectionSettings();
+        }
 
         String userCertFile = null;
         String userKeyFile = null;
         for (String param : url.getQuery().split("&")) {
             String[] entry = param.split("=");
 
-            if (entry.length <= 1)
+            if (entry.length <= 1) {
                 continue;
+            }
 
             String value = entry[1].toLowerCase();
             switch (entry[0].toLowerCase()) {
@@ -328,8 +347,9 @@ public class ConnectionSettingsBuilder {
                     try {
                         int parsedValue = Integer.parseInt(value);
 
-                        if (parsedValue < 0)
+                        if (parsedValue < 0) {
                             invalidParamFormat(entry[0], value);
+                        }
 
                         builder._maxDiscoverAttempts = parsedValue;
                     } catch (NumberFormatException e) {
@@ -341,8 +361,9 @@ public class ConnectionSettingsBuilder {
                     try {
                         int parsedValue = Integer.parseInt(value);
 
-                        if (parsedValue < 0)
+                        if (parsedValue < 0) {
                             invalidParamFormat(entry[0], value);
+                        }
 
                         builder._discoveryInterval = parsedValue;
                     } catch (NumberFormatException e) {
@@ -354,8 +375,9 @@ public class ConnectionSettingsBuilder {
                     try {
                         int parsedValue = Integer.parseInt(value);
 
-                        if (parsedValue < 0)
+                        if (parsedValue < 0) {
                             invalidParamFormat(entry[0], value);
+                        }
 
                         builder._gossipTimeout = parsedValue;
                     } catch (NumberFormatException e) {
@@ -364,22 +386,25 @@ public class ConnectionSettingsBuilder {
                     break;
 
                 case "dnsdiscover":
-                    if (!value.equals("true") && !value.equals("false"))
+                    if (!value.equals("true") && !value.equals("false")) {
                         invalidParamFormat(entry[0], value);
+                    }
 
                     builder._dnsDiscover = value.equals("true");
                     break;
 
                 case "tls":
-                    if (!value.equals("true") && !value.equals("false"))
+                    if (!value.equals("true") && !value.equals("false")) {
                         invalidParamFormat(entry[0], value);
+                    }
 
                     builder._tls = value.equals("true");
                     break;
 
                 case "tlsverifycert":
-                    if (!value.equals("true") && !value.equals("false"))
+                    if (!value.equals("true") && !value.equals("false")) {
                         invalidParamFormat(entry[0], value);
+                    }
 
                     builder._tlsVerifyCert = value.equals("true");
                     break;
@@ -387,14 +412,17 @@ public class ConnectionSettingsBuilder {
                 case "keepalivetimeout":
                     try {
                         long parsedValue = Long.parseLong(value);
-                        if (parsedValue >= 0 && parsedValue < Consts.DEFAULT_KEEP_ALIVE_TIMEOUT_IN_MS)
+                        if (parsedValue >= 0 && parsedValue < Consts.DEFAULT_KEEP_ALIVE_TIMEOUT_IN_MS) {
                             logger.warn("Specified keepAliveTimeout of {} is less than recommended {}", parsedValue, Consts.DEFAULT_KEEP_ALIVE_TIMEOUT_IN_MS);
+                        }
 
-                        if (parsedValue < -1)
+                        if (parsedValue < -1) {
                             invalidParamFormat(entry[0], value);
+                        }
 
-                        if (parsedValue == -1)
+                        if (parsedValue == -1) {
                             parsedValue = Long.MAX_VALUE;
+                        }
 
                         builder._keepAliveTimeout = parsedValue;
                     } catch (NumberFormatException e) {
@@ -405,14 +433,17 @@ public class ConnectionSettingsBuilder {
                 case "keepaliveinterval":
                     try {
                         long parsedValue = Long.parseLong(value);
-                        if (parsedValue >= 0 && parsedValue < Consts.DEFAULT_KEEP_ALIVE_INTERVAL_IN_MS)
+                        if (parsedValue >= 0 && parsedValue < Consts.DEFAULT_KEEP_ALIVE_INTERVAL_IN_MS) {
                             logger.warn("Specified keepAliveInterval of {} is less than recommended {}", parsedValue, Consts.DEFAULT_KEEP_ALIVE_INTERVAL_IN_MS);
+                        }
 
-                        if (parsedValue < -1)
+                        if (parsedValue < -1) {
                             invalidParamFormat(entry[0], value);
+                        }
 
-                        if (parsedValue == -1)
+                        if (parsedValue == -1) {
                             parsedValue = Long.MAX_VALUE;
+                        }
 
                         builder._keepAliveInterval = parsedValue;
                     } catch (NumberFormatException e) {
@@ -424,8 +455,9 @@ public class ConnectionSettingsBuilder {
                     try {
                         long parsedValue = Long.parseLong(value);
 
-                        if (parsedValue <= 0)
+                        if (parsedValue <= 0) {
                             invalidParamFormat(entry[0], value);
+                        }
 
                         builder._defaultDeadline = parsedValue;
                     } catch (NumberFormatException e) {
@@ -434,22 +466,25 @@ public class ConnectionSettingsBuilder {
                     break;
 
                 case "tlscafile":
-                    if (entry[1].isEmpty())
+                    if (entry[1].isEmpty()) {
                         invalidParamFormat(entry[0], entry[1]);
+                    }
 
                     builder._tlsCaFile = entry[1];
                     break;
 
                 case "usercertfile":
-                    if (entry[1].isEmpty())
+                    if (entry[1].isEmpty()) {
                         invalidParamFormat(entry[0], entry[1]);
+                    }
 
                     userCertFile = entry[1];
                     break;
 
                 case "userkeyfile":
-                    if (entry[1].isEmpty())
+                    if (entry[1].isEmpty()) {
                         invalidParamFormat(entry[0], entry[1]);
+                    }
 
                     userKeyFile = entry[1];
                     break;
@@ -464,11 +499,13 @@ public class ConnectionSettingsBuilder {
             }
         }
 
-        if (userCertFile != null ^ userKeyFile != null)
+        if (userCertFile != null ^ userKeyFile != null) {
             throw new RuntimeException("Invalid user certificate settings. Both 'userCertFile' and 'userKeyFile' must be provided.");
+        }
 
-        if (userCertFile != null)
+        if (userCertFile != null) {
             builder.defaultClientCertificate(userCertFile, userKeyFile);
+        }
 
         return builder.buildConnectionSettings();
     }
