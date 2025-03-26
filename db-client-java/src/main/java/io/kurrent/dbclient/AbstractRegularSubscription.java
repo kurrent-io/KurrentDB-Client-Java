@@ -10,6 +10,7 @@ import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import io.grpc.ManagedChannel;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -39,38 +40,42 @@ abstract class AbstractRegularSubscription {
     protected abstract StreamsOuterClass.ReadReq.Options.Builder createOptions();
 
     public CompletableFuture<Subscription> execute() {
-        CompletableFuture<Subscription> future = new CompletableFuture<>();
-
-        this.client.getWorkItemArgs().whenComplete((args, error) -> {
-            if (error != null) {
-                future.completeExceptionally(error);
-                return;
-            }
-
-            ReadResponseObserver observer = createObserver(args, future);
-            observer.onConnected(args);
+        return this.client.run(channel -> {
+            CompletableFuture<Subscription> future = new CompletableFuture<>();
 
             StreamsOuterClass.ReadReq readReq = StreamsOuterClass.ReadReq.newBuilder()
                     .setOptions(createOptions())
                     .build();
 
-            StreamsGrpc.StreamsStub streamsClient = GrpcUtils.configureStub(StreamsGrpc.newStub(args.getChannel()), this.client.getSettings(), this.options);
-            streamsClient.read(readReq, observer);
-        });
+            StreamsGrpc.StreamsStub streamsClient = GrpcUtils.configureStub(
+                    StreamsGrpc.newStub(channel),
+                    this.client.getSettings(),
+                    this.options
+            );
 
-        return future;
+            ReadResponseObserver observer = createObserver(channel, future);
+            streamsClient.read(readReq, observer);
+
+            return future;
+        });
     }
 
-    private ReadResponseObserver createObserver(WorkItemArgs args, CompletableFuture<Subscription> future) {
-        StreamConsumer consumer = new SubscriptionStreamConsumer(this.listener, this.checkpointer, future, (subscriptionId, event, action) -> {
-            ClientTelemetry.traceSubscribe(
-                    action,
-                    subscriptionId,
-                    args.getChannel(),
-                    client.getSettings(),
-                    options.getCredentials(),
-                    event);
-        });
+    private ReadResponseObserver createObserver(ManagedChannel channel, CompletableFuture<Subscription> future) {
+        StreamConsumer consumer = new SubscriptionStreamConsumer(
+                this.listener,
+                this.checkpointer,
+                future,
+                (subscriptionId, event, action) -> {
+                    ClientTelemetry.traceSubscribe(
+                            action,
+                            subscriptionId,
+                            channel,
+                            client.getSettings(),
+                            options.getCredentials(),
+                            event
+                    );
+                }
+        );
 
         return new ReadResponseObserver(this.options, consumer);
     }

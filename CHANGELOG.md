@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [5.4.5] - 2025-03-24
+
+### Fixed
+- Fix subscription error handling during server shutdown [EventStoreDB-Client-Java#311](https://github.com/EventStore/EventStoreDB-Client-Java/pull/311)
+
 ## [5.4.4] - 2025-03-05
 ### Changed
 - Upgrade dependencies to latest [EventStoreDB-Client-Java#304](https://github.com/EventStore/EventStoreDB-Client-Java/pull/304)
