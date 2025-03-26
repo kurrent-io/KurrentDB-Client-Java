@@ -1,0 +1,41 @@
+package io.kurrent.dbclient.misc;
+
+import io.kurrent.dbclient.ConnectionStringParsingException;
+import io.kurrent.dbclient.KurrentDBConnectionString;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
+
+public class ParseInvalidConnectionStringTests {
+    public static Stream<Arguments> invalidConnectionStrings() {
+        return Stream.of(
+                Arguments.of("localhost"),
+                Arguments.of("https://console.eventstore.cloud/"),
+                Arguments.of("kurnt+discovery://localhost"),
+                Arguments.of("kurrent://my:great@username:UyeXx8$^PsOo4jG88FlCauR1Coz25q@host?nodePreference=follower&tlsVerifyCert=false"),
+                Arguments.of("kurrent://host1,host2:200:300?tlsVerifyCert=false"),
+                Arguments.of("kurrent://localhost/&tlsVerifyCert=false"),
+                Arguments.of("kurrent://localhost?tlsVerifyCert=false?nodePreference=follower"),
+                Arguments.of("kurrent://localhost?tlsVerifyCert=false&nodePreference=any"),
+                Arguments.of("kurrent://localhost?tlsVerifyCert=if you feel like it"),
+                Arguments.of("kurrent://localhost?keepAliveInterval=-3"),
+                Arguments.of("kurrent://localhost?keepAliveInterval=sdfksjsfl"),
+                Arguments.of("kurrent://localhost?keepAliveTimeout=sdfksjsfl"),
+                Arguments.of("kurrent://localhost?keepAliveTimeout=-3"),
+                Arguments.of("kurrent://localhost?nodePreference=read_only_replica"),
+                Arguments.of("kurrent://localhost?userCertFile=/path/to/cert"),
+                Arguments.of("kurrent://localhost?userKeyFile=/path/to/key")
+       );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidConnectionStrings")
+    public void test(String input) throws ConnectionStringParsingException {
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            KurrentDBConnectionString.parseOrThrow(input);
+        });
+    }
+}

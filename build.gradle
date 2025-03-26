@@ -12,5 +12,5 @@ allprojects {
 }
 
 if (!JavaVersion.current().isJava8Compatible()) {
-    throw new Exception("Java 8 is required to build EventStoreDB-Client-Java")
+    throw new Exception("Java 8 is required to build Kurrent-Client-Java")
 }
