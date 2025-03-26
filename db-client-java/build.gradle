@@ -1,17 +1,21 @@
 buildscript {
     dependencies {
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.4'
-        //classpath 'gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.4.4'
         classpath 'de.undercouch:gradle-download-task:5.5.0'
     }
 }
 
 plugins {
-    id 'java-library'
+    id 'java'
     id 'com.google.protobuf' version '0.9.4'
     id 'idea'
     id 'maven-publish'
     id 'signing'
+    id 'org.jreleaser' version '1.15.0'
+}
+
+repositories {
+    mavenCentral()
 }
 
 tasks.withType(JavaCompile) {
@@ -19,11 +23,16 @@ tasks.withType(JavaCompile) {
 }
 
 group = 'io.kurrent'
-version = '1.0.0'
+version = '1.0.0-alpha.3'
 
 java {
-    withJavadocJar()
     withSourcesJar()
+    withJavadocJar()
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
 }
 
 configurations {
@@ -34,7 +43,7 @@ configurations {
 }
 
 dependencies {
-    api "org.reactivestreams:reactive-streams:${reactiveStreamsApiVersion}"
+    implementation "org.reactivestreams:reactive-streams:${reactiveStreamsApiVersion}"
 
     implementation "javax.annotation:javax.annotation-api:${annotationApiVersion}"
     implementation "javax.validation:validation-api:${validationApiVersion}"
@@ -184,10 +193,6 @@ protobuf {
     }
 }
 
-def isSnapshot = project.version.toString().endsWith("-SNAPSHOT")
-def publishLogin = project.hasProperty("ossrhUsername") ? project.getProperties().get("ossrhUsername") : ""
-def publishPassword = project.hasProperty("ossrhPassword") ? project.getProperties().get("ossrhPassword") : ""
-
 javadoc {
     options.addStringOption('Xdoclint:none', '-quiet')
     failOnError = false
@@ -195,12 +200,12 @@ javadoc {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        myPub(MavenPublication) {
             artifactId = 'kurrentdb-client'
 
             from components.java
             pom {
-                name = 'KurrentDB Client Java'
+                name = 'KurrentDB gRPC Java client'
                 // packaging 'jar'
                 // optionally artifactId can be defined here
                 description = 'KurrentDB gRPC Java client'
@@ -211,14 +216,12 @@ publishing {
                     developerConnection = 'https://github.com/EventStore/KurrentDB-Client-Java.git'
                     url = 'https://github.com/EventStore/KurrentDB-Client-Java'
                 }
-
                 licenses {
                     license {
                         name = 'The Apache License, Version 2.0'
                         url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
                 }
-
                 developers {
                     developer {
                         id = 'ylaupa'
@@ -229,34 +232,88 @@ publishing {
             }
         }
     }
-
     repositories {
         maven {
-            def releaseUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-            def snapshotUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
-            def finalUrl = isSnapshot ? snapshotUrl : releaseUrl
-
-            name = 'Sonatype'
-            url = finalUrl
-            credentials {
-                username = publishLogin
-                password = publishPassword
-            }
+            name = "LocalMavenWithChecksums"
+            url = uri(layout.buildDirectory.dir("staging-deploy"))
         }
+
+        maven {
+            name = "PreDeploy"
+            url = uri(layout.buildDirectory.dir("pre-deploy"))
+        }
+
+        // Old accounts way
+//        maven {
+//            name = "OSSRH"
+//            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+//
+//            credentials {
+//                username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
+//                password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
+//            }
+//        }
+
+//        maven {
+//            def releaseUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+//            def snapshotUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+//            def finalUrl = isSnapshot ? snapshotUrl : releaseUrl
+//
+//            name = 'Sonatype'
+//            url = finalUrl
+//            credentials {
+//                username = publishLogin
+//                password = publishPassword
+//            }
+//        }
     }
 }
 
 signing {
-    useGpgCmd()
-    sign configurations.archives
-    sign publishing.publications.mavenJava
+    setRequired {
+        gradle.taskGraph.allTasks.any { it.name.contains("LocalMavenWithChecksums") }
+    }
+    sign publishing.publications.myPub
 }
 
-tasks.withType(Sign) {
-    onlyIf {
-        gradle.taskGraph.hasTask(":db-client-java:publish")
+jreleaser {
+    project {
+        copyright = 'kurrent.io'
+        description = 'Kurrent gRPC Java client'
+    }
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+            // New accounts way
+            mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    username = findProperty("ossrhUsername") ?: System.getenv("MAVENCENTRAL_USERNAME")
+                    password = findProperty("ossrhPassword") ?: System.getenv("MAVENCENTRAL_PASSWORD")
+                    stagingRepository('build/pre-deploy')
+                }
+            }
+        }
+    }
+    release {
+        github {
+            enabled = false
+        }
     }
 }
+
+
+//// For generation of checksums in build/libs
+//tasks.withType(Jar) { task ->
+//    task.doLast {
+//        ant.checksum algorithm: 'md5', file: it.archivePath
+//        ant.checksum algorithm: 'sha1', file: it.archivePath
+//    }
+//}
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
