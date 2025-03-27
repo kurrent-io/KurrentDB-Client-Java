@@ -1,4 +1,12 @@
-# KurrentDB Client SDK for Java
+<a href="https://kurrent.io">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="KurrentLogo-White.png">
+    <source media="(prefers-color-scheme: light)" srcset="KurrentLogo-Black.png">
+    <img alt="Kurrent" src="KurrentLogo-Plum.png" height="50%" width="50%">
+  </picture>
+</a>
+
+# KurrentDB Java Client
 
 KurrentDB is the event-native database, where business events are immutably stored and streamed. Designed for event-sourced, event-driven, and microservices architectures.
 
@@ -8,11 +16,12 @@ compatible with Java 8 and above.
 *Note: This client is currently under active development and further API changes are expected. Feedback is very welcome.*
 
 ## Documentation
-* General documentation can be found in [Kurrent GRPC Docs].
-* The latest stable version Javadoc can be found here: https://kurrent.github.io/Kurrent-Client-Java
+* General documentation can be found in [KurrentDB GRPC Docs].
+
+[//]: # (* The latest stable version Javadoc can be found here: https://kurrent.github.io/Kurrent-Client-Java)
 
 ## Access to binaries
-EventStore Ltd publishes GA (general availability) versions to [Maven Central].
+Kurrent, Inc publishes GA (general availability) versions to [Maven Central].
 
 ### Snapshot versions
 
@@ -193,10 +202,10 @@ review our [Contributing Guide][contributing] and [Code of Conduct][code-of-cond
 
 [kurrent]: https://kurrent.io
 [gradle]: https://gradle.org
-[contributing]: https://github.com/EventStore/Kurrent-Client-Java/tree/master/CONTRIBUTING.md
-[code-of-conduct]: https://github.com/EventStore/Kurrent-Client-Java/tree/master/CODE-OF-CONDUCT.md
+[contributing]: https://github.com/kurrent-io/KurrentDB-Client-Java/tree/master/CONTRIBUTING.md
+[code-of-conduct]: https://github.com/kurrent-io/KurrentDB-Client-Java/tree/master/CODE-OF-CONDUCT.md
 [support]: https://kurrent.io/support/
-[docs]: https://developers.eventstore.com/server/v24.6/quick-start/installation/
-[discuss]: https://discuss.eventstore.com/
-[Maven Central]: https://search.maven.org/artifact/io.kurrent/db-client-java
-[Kurrent GRPC Docs]: https://developers.eventstore.com/clients/grpc
+[docs]: https://developers.kurrent.io/server/v25.0/quick-start/installation/
+[discuss]: https://discuss.kurrent.io/
+[Maven Central]: https://search.maven.org/artifact/io.kurrent/kurrentdb-client
+[KurrentDB GRPC Docs]: https://developers.eventstore.com/clients/grpc
