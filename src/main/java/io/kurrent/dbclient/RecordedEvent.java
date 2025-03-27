@@ -108,15 +108,6 @@ public class RecordedEvent {
     }
 
     /**
-     * Deserialized representation of the event's payload. In this case, the payload is supposed to be JSON.
-     */
-    @Deprecated
-    public <A> A getEventDataAs(Class<A> clazz) throws IOException {
-        JsonMapper mapper = new JsonMapper();
-        return mapper.readValue(this.getEventData(), clazz);
-    }
-
-    /**
      * The event's metadata.
      */
     public byte[] getUserMetadata() {

@@ -10,31 +10,6 @@ class AbstractPersistentSubscriptionSettingsBuilder<T, TSettings extends Persist
     }
 
     /**
-     * @deprecated prefer {@link AbstractPersistentSubscriptionSettingsBuilder#resolveLinkTos()}
-     */
-    @Deprecated
-    public T enableLinkResolution() {
-        return resolveLinks(true);
-    }
-
-    /**
-     * @deprecated prefer {@link AbstractPersistentSubscriptionSettingsBuilder#notResolveLinkTos()}
-     */
-    @Deprecated
-    public T disableLinkResolution() {
-        return resolveLinks(false);
-    }
-
-    /**
-     * @deprecated prefer {@link AbstractPersistentSubscriptionSettingsBuilder#resolveLinkTos(boolean value)}
-     */
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    public T resolveLinks(boolean value) {
-        return (T) resolveLinkTos(value);
-    }
-
-    /**
      * Whether the subscription should resolve linkTo events to their linked events. Default: false.
      */
     @SuppressWarnings("unchecked")
@@ -117,28 +92,12 @@ class AbstractPersistentSubscriptionSettingsBuilder<T, TSettings extends Persist
     }
 
     /**
-     * @deprecated prefer {@link AbstractPersistentSubscriptionSettingsBuilder#checkpointUpperBound(int value)}
-     */
-    @Deprecated
-    public T maxCheckpointCount(int value) {
-        return checkpointUpperBound(value);
-    }
-
-    /**
      * The maximum number of messages not checkpointed before forcing a checkpoint. Default: 1000.
      */
     @SuppressWarnings("unchecked")
     public T checkpointUpperBound(int value) {
         settings.setCheckpointUpperBound(value);
         return (T) this;
-    }
-
-    /**
-     * @deprecated prefer {@link AbstractPersistentSubscriptionSettingsBuilder#checkpointLowerBound(int value)}
-     */
-    @Deprecated
-    public T minCheckpointCount(int value) {
-        return this.checkpointLowerBound(value);
     }
 
     /**
