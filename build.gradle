@@ -15,6 +15,7 @@ plugins {
 }
 
 def ENV = System.getenv()
+def isDryRunEnabled = (project.hasProperty('dryRun')? project.ext.dryRun: false).toBoolean()
 
 repositories {
     mavenCentral()
@@ -23,11 +24,6 @@ repositories {
 tasks.withType(JavaCompile) {
     options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
-
-group = 'io.kurrent'
-version = '1.0.0-alpha.4'
-
-archivesBaseName = 'kurrentdb-client'
 
 java {
     withSourcesJar()
@@ -221,11 +217,11 @@ publish.mustRunAfter checkVersion
 
 publishing {
     publications {
-        maven(MavenPublication) {
+        register('maven', MavenPublication) {
             groupId = 'io.kurrent'
             artifactId = 'kurrentdb-client'
+            version = '1.0.0-alpha.5'
 
-            from components.java
             pom {
                 name = 'KurrentDB gRPC Java client'
                 description = 'KurrentDB gRPC Java client'
@@ -261,6 +257,7 @@ publishing {
 }
 
 jreleaser {
+    dryrun = isDryRunEnabled
     project {
         copyright = 'Kurrent, Inc'
         description = 'Kurrent gRPC Java client'
@@ -294,9 +291,6 @@ jreleaser {
             repoOwner = 'kurrent-io'
             name = 'kurrentdb-client'
             host = 'https://www.kurrent.io'
-            username = 'w1am'
-            sign = false
-            branch = 'release-gradle'
             skipRelease = true
             skipTag = true
         }
@@ -306,7 +300,7 @@ jreleaser {
             name = 'KurrentDB-Client-Java'
             host = 'github.com'
             releaseName = '{{tagName}}'
-            token = ENV.JAVA_CLIENT_GH_TOKEN
+            token = ENV.GH_PAT
             sign = true
             overwrite = true
             artifacts = true
