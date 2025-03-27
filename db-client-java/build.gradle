@@ -11,8 +11,10 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'signing'
-    id 'org.jreleaser' version '1.15.0'
+    id 'org.jreleaser' version '1.17.0'
 }
+
+def ENV = System.getenv()
 
 repositories {
     mavenCentral()
@@ -23,7 +25,9 @@ tasks.withType(JavaCompile) {
 }
 
 group = 'io.kurrent'
-version = '1.0.0-alpha.3'
+version = '1.0.0-alpha.2'
+
+archivesBaseName = 'kurrentdb-client'
 
 java {
     withSourcesJar()
@@ -40,6 +44,10 @@ configurations {
         canBeResolved = false
         canBeConsumed = true
     }
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -200,21 +208,20 @@ javadoc {
 
 publishing {
     publications {
-        myPub(MavenPublication) {
+        maven(MavenPublication) {
+            groupId = 'io.kurrent'
             artifactId = 'kurrentdb-client'
 
             from components.java
             pom {
                 name = 'KurrentDB gRPC Java client'
-                // packaging 'jar'
-                // optionally artifactId can be defined here
                 description = 'KurrentDB gRPC Java client'
                 url = 'https://kurrent.io'
 
                 scm {
-                    connection = 'https://github.com/EventStore/KurrentDB-Client-Java.git'
-                    developerConnection = 'https://github.com/EventStore/KurrentDB-Client-Java.git'
-                    url = 'https://github.com/EventStore/KurrentDB-Client-Java'
+                    connection = 'https://github.com/kurrent-io/KurrentDB-Client-Java.git'
+                    developerConnection = 'https://github.com/kurrent-io/KurrentDB-Client-Java.git'
+                    url = 'https://github.com/kurrent-io/KurrentDB-Client-Java'
                 }
                 licenses {
                     license {
@@ -234,67 +241,39 @@ publishing {
     }
     repositories {
         maven {
-            name = "LocalMavenWithChecksums"
-            url = uri(layout.buildDirectory.dir("staging-deploy"))
+            name = "StagingDeploy"
+            url = layout.buildDirectory.dir('staging-deploy')
         }
-
-        maven {
-            name = "PreDeploy"
-            url = uri(layout.buildDirectory.dir("pre-deploy"))
-        }
-
-        // Old accounts way
-//        maven {
-//            name = "OSSRH"
-//            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-//
-//            credentials {
-//                username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
-//                password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
-//            }
-//        }
-
-//        maven {
-//            def releaseUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-//            def snapshotUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
-//            def finalUrl = isSnapshot ? snapshotUrl : releaseUrl
-//
-//            name = 'Sonatype'
-//            url = finalUrl
-//            credentials {
-//                username = publishLogin
-//                password = publishPassword
-//            }
-//        }
     }
-}
-
-signing {
-    setRequired {
-        gradle.taskGraph.allTasks.any { it.name.contains("LocalMavenWithChecksums") }
-    }
-    sign publishing.publications.myPub
 }
 
 jreleaser {
     project {
-        copyright = 'kurrent.io'
+        copyright = 'Kurrent, Inc'
         description = 'Kurrent gRPC Java client'
     }
     signing {
         active = 'ALWAYS'
         armored = true
+        passphrase = ENV.JRELEASER_GPG_PASSPHRASE
+        publicKey = ENV.JRELEASER_GPG_PUBLIC_KEY
+        secretKey = ENV.JRELEASER_GPG_SECRET_KEY
+    }
+    environment {
+        variables = '/home/w1am/.jreleaser/config.toml'
     }
     deploy {
         maven {
-            // New accounts way
             mavenCentral {
                 sonatype {
                     active = 'ALWAYS'
                     url = 'https://central.sonatype.com/api/v1/publisher'
-                    username = findProperty("ossrhUsername") ?: System.getenv("MAVENCENTRAL_USERNAME")
-                    password = findProperty("ossrhPassword") ?: System.getenv("MAVENCENTRAL_PASSWORD")
-                    stagingRepository('build/pre-deploy')
+                    authorization = 'BEARER'
+                    username = ENV.JRELEASER_MAVENCENTRAL_USERNAME
+                    password = ENV.JRELEASER_MAVENCENTRAL_PASSWORD
+                    retryDelay = 60
+                    maxRetries = 60
+                    stagingRepository('build/staging-deploy')
                 }
             }
         }
@@ -306,14 +285,6 @@ jreleaser {
     }
 }
 
-
-//// For generation of checksums in build/libs
-//tasks.withType(Jar) { task ->
-//    task.doLast {
-//        ant.checksum algorithm: 'md5', file: it.archivePath
-//        ant.checksum algorithm: 'sha1', file: it.archivePath
-//    }
-//}
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
