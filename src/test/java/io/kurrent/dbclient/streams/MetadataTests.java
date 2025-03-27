@@ -27,7 +27,7 @@ public interface MetadataTests extends ConnectionAware {
 
         metadata.setAcl(acl);
 
-        HashMap<String, Object> payload = new HashMap<>();
+        byte[] payload = "data".getBytes();
 
         String streamName = generateName();
 
@@ -43,7 +43,7 @@ public interface MetadataTests extends ConnectionAware {
     default void testReadNoExistingMetadata() throws Throwable {
         KurrentDBClient client = getDatabase().defaultClient();
         String streamName = generateName();
-        client.appendToStream(streamName, EventDataBuilder.json("bar", new HashMap<String, Object>()).build()).get();
+        client.appendToStream(streamName, EventDataBuilder.json("bar", "data".getBytes()).build()).get();
 
         StreamMetadata got = client.getStreamMetadata(streamName).get();
 
@@ -54,7 +54,7 @@ public interface MetadataTests extends ConnectionAware {
     default void testReadMetadataAfterStreamDeletion() throws Throwable {
         KurrentDBClient client = getDatabase().defaultClient();
         String streamName = generateName();
-        client.appendToStream(streamName, EventDataBuilder.json("bar", new HashMap<String, Object>()).build()).get();
+        client.appendToStream(streamName, EventDataBuilder.json("bar", "data".getBytes()).build()).get();
 
         client.deleteStream(streamName).get();
         client.getStreamMetadata(streamName).get();

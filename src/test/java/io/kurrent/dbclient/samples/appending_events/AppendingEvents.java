@@ -1,22 +1,26 @@
 package io.kurrent.dbclient.samples.appending_events;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.kurrent.dbclient.*;
 import io.kurrent.dbclient.samples.TestEvent;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 public class AppendingEvents {
-    private static void appendToStream(KurrentDBClient client) throws ExecutionException, InterruptedException {
+    private static void appendToStream(KurrentDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
         // region append-to-stream
+        ObjectMapper objectMapper = new ObjectMapper();
+
         EventData eventData = EventData
                 .builderAsJson(
                         UUID.randomUUID(),
                         "some-event",
-                        new TestEvent(
-                                "1",
-                                "some value"
-                        ))
+                        objectMapper.writeValueAsBytes(new TestEvent("1", "some value"))
+                )
                 .build();
 
         AppendToStreamOptions options = AppendToStreamOptions.get()
@@ -27,16 +31,15 @@ public class AppendingEvents {
         // endregion append-to-stream
     }
 
-    private static void appendWithSameId(KurrentDBClient client) throws ExecutionException, InterruptedException {
+    private static void appendWithSameId(KurrentDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
         // region append-duplicate-event
+        ObjectMapper objectMapper = new ObjectMapper();
+
         EventData eventData = EventData
                 .builderAsJson(
                         UUID.randomUUID(),
                         "some-event",
-                        new TestEvent(
-                                "1",
-                                "some value"
-                        ))
+                        objectMapper.writeValueAsBytes(new TestEvent("1", "some value")))
                 .build();
 
         AppendToStreamOptions options = AppendToStreamOptions.get()
@@ -51,26 +54,22 @@ public class AppendingEvents {
         // endregion append-duplicate-event
     }
 
-    private static void appendWithNoStream(KurrentDBClient client) throws ExecutionException, InterruptedException {
+    private static void appendWithNoStream(KurrentDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
         // region append-with-no-stream
+        ObjectMapper objectMapper = new ObjectMapper();
+
         EventData eventDataOne = EventData
                 .builderAsJson(
                         UUID.randomUUID(),
                         "some-event",
-                        new TestEvent(
-                                "1",
-                                "some value"
-                        ))
+                        objectMapper.writeValueAsBytes(new TestEvent("1", "some value")))
                 .build();
 
         EventData eventDataTwo = EventData
                 .builderAsJson(
                         UUID.randomUUID(),
                         "some-event",
-                        new TestEvent(
-                                "2",
-                                "some other value"
-                        ))
+                        objectMapper.writeValueAsBytes(new TestEvent("2", "some other value")))
                 .build();
 
         AppendToStreamOptions options = AppendToStreamOptions.get()
@@ -85,8 +84,9 @@ public class AppendingEvents {
         // endregion append-with-no-stream
     }
 
-    private static void appendWithConcurrencyCheck(KurrentDBClient client) throws ExecutionException, InterruptedException {
+    private static void appendWithConcurrencyCheck(KurrentDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
         // region append-with-concurrency-check
+        ObjectMapper objectMapper = new ObjectMapper();
 
         ReadStreamOptions readStreamOptions = ReadStreamOptions.get()
                 .forwards()
@@ -99,20 +99,14 @@ public class AppendingEvents {
                 .builderAsJson(
                         UUID.randomUUID(),
                         "some-event",
-                        new TestEvent(
-                                "1",
-                                "clientOne"
-                        ))
+                        objectMapper.writeValueAsBytes(new TestEvent("1", "clientOne")))
                 .build();
 
         EventData clientTwoData = EventData
                 .builderAsJson(
                         UUID.randomUUID(),
                         "some-event",
-                        new TestEvent(
-                                "2",
-                                "clientTwo"
-                        ))
+                        objectMapper.writeValueAsBytes(new TestEvent("2", "clientTwo")))
                 .build();
 
 
@@ -127,15 +121,14 @@ public class AppendingEvents {
         // endregion append-with-concurrency-check
     }
 
-    public void appendOverridingUserCredentials(KurrentDBClient client) throws ExecutionException, InterruptedException {
+    public void appendOverridingUserCredentials(KurrentDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
         EventData eventData = EventData
                 .builderAsJson(
                         UUID.randomUUID(),
                         "some-event",
-                        new TestEvent(
-                                "1",
-                                "some value"
-                        ))
+                        objectMapper.writeValueAsBytes(new TestEvent("1", "some value")))
                 .build();
         //region overriding-user-credentials
         UserCredentials credentials = new UserCredentials("admin", "changeit");

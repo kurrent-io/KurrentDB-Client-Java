@@ -18,35 +18,6 @@ public class EventDataBuilder {
     EventDataBuilder(){}
 
     /**
-     * Configures builder to serialize event data as JSON.
-     * @param eventType event's type.
-     * @param eventData event's payload.
-     * @return an event data builder.
-     * @param <A> a type that can be serialized in JSON.
-     */
-    public static <A> EventDataBuilder json(String eventType, A eventData) {
-        return json(null, eventType, eventData);
-    }
-
-    /**
-     * Configures an event data builder to host a JSON payload.
-     * @param id event's id.
-     * @param eventType event's type.
-     * @param eventData event's payload.
-     * @return an event data builder.
-     * @param <A> a type that can be serialized in JSON.
-     */
-    @Deprecated
-    public static <A> EventDataBuilder json(UUID id, String eventType, A eventData) {
-        try {
-            JsonMapper mapper = new JsonMapper();
-            return json(id, eventType, mapper.writeValueAsBytes(eventData));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Configures an event data builder to host a JSON payload.
      * @param eventType event's type.
      * @param eventData event's payload.
@@ -112,22 +83,6 @@ public class EventDataBuilder {
      */
     public EventDataBuilder eventId(UUID id) {
         this.id = id;
-        return this;
-    }
-
-    /**
-     * Sets event's custom user metadata.
-     * @param <A> an object that can be serialized in JSON.
-     */
-    @Deprecated
-    public <A> EventDataBuilder metadataAsJson(A value) {
-        try {
-            JsonMapper mapper = new JsonMapper();
-            this.metadata = mapper.writeValueAsBytes(value);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
         return this;
     }
 
