@@ -1,4 +1,5 @@
 package io.kurrent.dbclient.samples.opentelemetry;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.kurrent.dbclient.*;
 import io.kurrent.dbclient.samples.TestEvent;
@@ -9,6 +10,7 @@ import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 // endregion import-required-packages
 
 import java.util.UUID;
@@ -17,7 +19,9 @@ import java.util.concurrent.ExecutionException;
 import static io.opentelemetry.semconv.ServiceAttributes.SERVICE_NAME;
 
 public class Instrumentation {
-    private static void tracing(KurrentDBClient client) throws ExecutionException, InterruptedException {
+    private static void tracing(KurrentDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
         Resource resource = Resource.getDefault().toBuilder()
                 .put(SERVICE_NAME, "sample")
                 .build();
@@ -47,10 +51,7 @@ public class Instrumentation {
                 .builderAsJson(
                         UUID.randomUUID(),
                         "some-event",
-                        new TestEvent(
-                                "1",
-                                "some value"
-                        ))
+                        objectMapper.writeValueAsBytes(new TestEvent("1", "some value")))
                 .build();
         // endregion setup-client-for-tracing
 
