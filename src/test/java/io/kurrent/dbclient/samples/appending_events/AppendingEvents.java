@@ -69,7 +69,7 @@ public class AppendingEvents {
                 .builderAsJson(
                         UUID.randomUUID(),
                         "some-event",
-                        objectMapper.writeValueAsBytes(new TestEvent("2", "some value")))
+                        objectMapper.writeValueAsBytes(new TestEvent("2", "some other value")))
                 .build();
 
         AppendToStreamOptions options = AppendToStreamOptions.get()
@@ -99,7 +99,7 @@ public class AppendingEvents {
                 .builderAsJson(
                         UUID.randomUUID(),
                         "some-event",
-                        objectMapper.writeValueAsBytes(new TestEvent("2", "clientOne")))
+                        objectMapper.writeValueAsBytes(new TestEvent("1", "clientOne")))
                 .build();
 
         EventData clientTwoData = EventData
