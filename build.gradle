@@ -295,12 +295,10 @@ jreleaser {
             name = 'kurrentdb-client'
             host = 'https://www.kurrent.io'
             username = 'w1am'
-            token = ENV.JAVA_CLIENT_GH_TOKEN
             sign = false
             branch = 'release-gradle'
             skipRelease = true
             skipTag = true
-            branchPush = '{{projectName}}-{{tagName}}'
         }
         github {
             enabled = false
@@ -319,6 +317,9 @@ jreleaser {
                 extraProperties.put('categorizeScopes', 'true')
             }
         }
+    }
+    upload {
+        active = 'NEVER'
     }
 }
 
