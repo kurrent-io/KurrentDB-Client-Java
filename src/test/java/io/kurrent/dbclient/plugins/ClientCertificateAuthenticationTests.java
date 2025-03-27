@@ -30,7 +30,7 @@ public interface ClientCertificateAuthenticationTests extends ConnectionAware {
     }
 
     static String buildCertPath(String user, String extension) {
-        String certsPath = Paths.get(System.getProperty("user.dir"), "..", "certs").toAbsolutePath().toString();
+        String certsPath = Paths.get(System.getProperty("user.dir"), "certs").toAbsolutePath().toString();
         return String.format("%s/user-%s/user-%s.%s", certsPath, user, user, extension);
     }
 }

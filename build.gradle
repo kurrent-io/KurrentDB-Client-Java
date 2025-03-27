@@ -101,22 +101,22 @@ tasks.withType(Test).configureEach {
 
 tasks.register("generateCertificates", Exec) {
     description = "Generates SSL certificates to start a secured ESDB server"
-    commandLine 'docker', 'compose', '--file', '../configure-tls-for-tests.yml', 'up'
+    commandLine 'docker', 'compose', '--file', './configure-tls-for-tests.yml', 'up'
 }
 
 tasks.register("generateUserCertificates", Exec) {
     description = "Generates X.509 certificates for Plugins tests"
-    commandLine 'docker', 'compose', '--file', '../configure-user-certs-for-tests.yml', 'up'
+    commandLine 'docker', 'compose', '--file', './configure-user-certs-for-tests.yml', 'up'
 }
 
 tasks.register("startDockerCompose", Exec) {
     description = "Starts ESDB cluster"
-    commandLine 'docker', 'compose', '--file', '../docker-compose.yml', 'up', '-d'
+    commandLine 'docker', 'compose', '--file', './docker-compose.yml', 'up', '-d'
 }
 
 tasks.register("stopDockerCompose", Exec) {
     description = "Stop ESDB cluster"
-    commandLine 'docker', 'compose', '--file', '../docker-compose.yml', 'down'
+    commandLine 'docker', 'compose', '--file', './docker-compose.yml', 'down'
 }
 
 
