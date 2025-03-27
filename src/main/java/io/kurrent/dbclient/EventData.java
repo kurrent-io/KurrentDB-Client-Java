@@ -60,30 +60,6 @@ public final class EventData {
      * @param eventType event's type.
      * @param eventData event's payload.
      * @return an event data builder.
-     * @param <A> a type that can be serialized in JSON.
-     */
-    @Deprecated
-    public static <A> EventDataBuilder builderAsJson(String eventType, A eventData) {
-        return builderAsJson(null, eventType, eventData);
-    }
-
-    /**
-     * Configures an event data builder to host a JSON payload.
-     * @param eventId event's id.
-     * @param eventType event's type.
-     * @param eventData event's payload.
-     * @return an event data builder.
-     * @param <A> a type that can be serialized in JSON.
-     */
-    public static <A> EventDataBuilder builderAsJson(UUID eventId, String eventType, A eventData) {
-        return EventDataBuilder.json(eventId, eventType, eventData);
-    }
-
-    /**
-     * Configures an event data builder to host a JSON payload.
-     * @param eventType event's type.
-     * @param eventData event's payload.
-     * @return an event data builder.
      */
     public static EventDataBuilder builderAsJson(String eventType, byte[] eventData) {
         return EventDataBuilder.json(eventType, eventData);
