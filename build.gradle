@@ -308,12 +308,8 @@ jreleaser {
                 enabled = false
                 formatted = 'ALWAYS'
                 preset = 'conventional-commits'
-                extraProperties.put('categorizeScopes', 'true')
             }
         }
-    }
-    upload {
-        active = 'NEVER'
     }
 }
 
