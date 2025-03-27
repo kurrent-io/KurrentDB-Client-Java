@@ -24,6 +24,9 @@ tasks.withType(JavaCompile) {
     options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
+group = 'io.kurrent'
+version = '1.0.0-alpha.5'
+
 java {
     withSourcesJar()
     withJavadocJar()
@@ -216,11 +219,11 @@ publish.mustRunAfter checkVersion
 
 publishing {
     publications {
-        register('maven', MavenPublication) {
+        maven(MavenPublication) {
             groupId = 'io.kurrent'
             artifactId = 'kurrentdb-client'
-            version = '1.0.0-alpha.5'
 
+            from components.java
             pom {
                 name = 'KurrentDB gRPC Java client'
                 description = 'KurrentDB gRPC Java client'
@@ -289,6 +292,9 @@ jreleaser {
             repoOwner = 'kurrent-io'
             name = 'kurrentdb-client'
             host = 'https://www.kurrent.io'
+            username = 'w1am'
+            sign = false
+            token = ENV.JRELEASER_GENERIC_TOKEN
             skipRelease = true
             skipTag = true
         }
@@ -297,8 +303,7 @@ jreleaser {
             repoOwner = 'kurrent-io'
             name = 'KurrentDB-Client-Java'
             host = 'github.com'
-            releaseName = '{{tagName}}'
-            token = ENV.GH_PAT
+            token = ENV.JRELEASER_GENERIC_TOKEN
             sign = true
             overwrite = true
             artifacts = true

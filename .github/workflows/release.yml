@@ -2,6 +2,12 @@ name: Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Perform a dry run release'
+        type: boolean
+        required: false
+        default: true
 
 jobs:
   publish:
@@ -29,4 +35,9 @@ jobs:
           JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.JRELEASER_MAVENCENTRAL_USERNAME }}
           JRELEASER_MAVENCENTRAL_PASSWORD: ${{ secrets.JRELEASER_MAVENCENTRAL_PASSWORD }}
           JRELEASER_GENERIC_TOKEN:  ${{ secrets.GH_PAT }}
-        run: ./gradlew publish jreleaserFullRelease -S
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ./gradlew publish jreleaserFullRelease -S --dryrun
+          else
+            ./gradlew publish jreleaserFullRelease -S
+          fi
