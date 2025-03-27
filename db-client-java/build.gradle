@@ -25,7 +25,7 @@ tasks.withType(JavaCompile) {
 }
 
 group = 'io.kurrent'
-version = '1.0.0-alpha.2'
+version = '1.0.0-alpha.3'
 
 archivesBaseName = 'kurrentdb-client'
 
@@ -206,6 +206,19 @@ javadoc {
     failOnError = false
 }
 
+tasks.register('checkVersion') {
+    doFirst {
+        def xml = new URL(
+                'https://repo.maven.apache.org/maven2/dev/aoqia/leaf/installer/maven-metadata.xml').text
+        def metadata = new groovy.xml.XmlSlurper().parseText(xml)
+        def versions = metadata.versioning.versions.version*.text();
+        if (versions.contains(version)) {
+            throw new RuntimeException("${version} has already been released!")
+        }
+    }
+}
+publish.mustRunAfter checkVersion
+
 publishing {
     publications {
         maven(MavenPublication) {
@@ -219,8 +232,8 @@ publishing {
                 url = 'https://kurrent.io'
 
                 scm {
-                    connection = 'https://github.com/kurrent-io/KurrentDB-Client-Java.git'
-                    developerConnection = 'https://github.com/kurrent-io/KurrentDB-Client-Java.git'
+                    connection = 'scm:git:https://github.com/kurrent-io/KurrentDB-Client-Java.git'
+                    developerConnection = 'scm:git:ssh:https://github.com/kurrent-io/KurrentDB-Client-Java.git'
                     url = 'https://github.com/kurrent-io/KurrentDB-Client-Java'
                 }
                 licenses {
