@@ -289,8 +289,35 @@ jreleaser {
         }
     }
     release {
+        generic {
+            enabled = true
+            repoOwner = 'kurrent-io'
+            name = 'kurrentdb-client'
+            host = 'https://www.kurrent.io'
+            username = 'w1am'
+            token = ENV.JAVA_CLIENT_GH_TOKEN
+            sign = false
+            branch = 'release-gradle'
+            skipRelease = true
+            skipTag = true
+            branchPush = '{{projectName}}-{{tagName}}'
+        }
         github {
             enabled = false
+            repoOwner = 'kurrent-io'
+            name = 'KurrentDB-Client-Java'
+            host = 'github.com'
+            releaseName = '{{tagName}}'
+            token = ENV.JAVA_CLIENT_GH_TOKEN
+            sign = true
+            overwrite = true
+            artifacts = true
+            changelog {
+                enabled = false
+                formatted = 'ALWAYS'
+                preset = 'conventional-commits'
+                extraProperties.put('categorizeScopes', 'true')
+            }
         }
     }
 }
