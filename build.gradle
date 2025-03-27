@@ -15,7 +15,6 @@ plugins {
 }
 
 def ENV = System.getenv()
-def isDryRunEnabled = (project.hasProperty('dryRun')? project.ext.dryRun: false).toBoolean()
 
 repositories {
     mavenCentral()
@@ -257,7 +256,6 @@ publishing {
 }
 
 jreleaser {
-    dryrun = isDryRunEnabled
     project {
         copyright = 'Kurrent, Inc'
         description = 'Kurrent gRPC Java client'
