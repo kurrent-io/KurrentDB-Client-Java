@@ -37,9 +37,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
-          gradle-version: 7.4
+          gradle-version: 8.13
 
       - name: Execute Gradle build
         run: ./gradlew ci --tests ${{ matrix.test }}Tests
@@ -78,9 +78,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
-          gradle-version: 7.4
+          gradle-version: 8.13
 
       - name: Execute Gradle build
         run: ./gradlew ci --tests ${{ matrix.test }}Tests
@@ -123,9 +123,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
-          gradle-version: 7.4
+          gradle-version: 8.13
 
       - name: Execute Gradle build
         run: ./gradlew ci --tests ${{ matrix.test }}Tests

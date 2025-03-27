@@ -79,7 +79,7 @@ public class DockerContainerDatabase extends GenericContainer<DockerContainerDat
 
         if (builder.secure) {
             verifyCertificatesExist();
-            String certsDir = Paths.get(System.getProperty("user.dir"), "..", "certs").toAbsolutePath().toString();
+            String certsDir = Paths.get(System.getProperty("user.dir"), "certs").toAbsolutePath().toString();
 
             withEnv("EVENTSTORE_CERTIFICATE_FILE", "/etc/eventstore/certs/node/node.crt");
             withEnv("EVENTSTORE_CERTIFICATE_PRIVATE_KEY_FILE", "/etc/eventstore/certs/node/node.key");
@@ -154,7 +154,7 @@ public class DockerContainerDatabase extends GenericContainer<DockerContainerDat
         };
 
         for (String[] strings : files) {
-            File file = Paths.get(currentDir, "..", "certs", strings[0], strings[1]).toAbsolutePath().toFile();
+            File file = Paths.get(currentDir, "certs", strings[0], strings[1]).toAbsolutePath().toFile();
 
             if (!file.exists())
                 throw new RuntimeException(new FileNotFoundException(file.getAbsolutePath()));
