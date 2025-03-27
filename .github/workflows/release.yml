@@ -1,6 +1,9 @@
 name: Publish
 
 on:
+  push:
+    tags:
+      - 'release/*'
   workflow_dispatch:
     inputs:
       dry_run:
