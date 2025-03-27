@@ -8,6 +8,8 @@
 
 # KurrentDB Java Client
 
+[![CI](https://github.com/kurrent-io/KurrentDB-Client-Java/actions/workflows/pull-requests.yml/badge.svg)](https://github.com/kurrent-io/KurrentDB-Client-Java/actions/workflows/pull-requests.yml)
+
 KurrentDB is the event-native database, where business events are immutably stored and streamed. Designed for event-sourced, event-driven, and microservices architectures.
 
 This repository contains an [KurrentDB][kurrent] Client SDK written in Java for use with languages on the JVM. It is
