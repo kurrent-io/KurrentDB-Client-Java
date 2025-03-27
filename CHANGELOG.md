@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- rebranding [EventStoreDB-Client-Java#294](https://github.com/kurrent-io/EventStoreDB-Client-Java/pull/294)
+
 ## [5.4.5] - 2025-03-24
 
 ### Fixed
