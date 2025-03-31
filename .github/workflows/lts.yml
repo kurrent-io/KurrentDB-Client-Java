@@ -1,0 +1,28 @@
+name: LTS
+on:
+  pull_request:
+  push:
+    branches:
+      - trunk
+  schedule:
+    - cron: '0 0 * * 0'  # Run every Sunday at midnight UTC
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  lts:
+    name: Tests (LTS)
+    uses: ./.github/workflows/tests.yml
+    with:
+      image: ${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES).lts.fullname }}
+    secrets: inherit
+
+  # Will be removed in the future
+  plugins-tests:
+    name: Plugins Tests
+
+    uses: ./.github/workflows/plugins-tests.yml
+    with:
+      image: "docker.eventstore.com/eventstore-ee/eventstoredb-commercial:24.2.0-jammy"
+    secrets: inherit

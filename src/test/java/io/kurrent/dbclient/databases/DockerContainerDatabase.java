@@ -12,32 +12,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DockerContainerDatabase extends GenericContainer<DockerContainerDatabase> implements Database {
-    public static final String DEFAULT_REGISTRY = "docker.eventstore.com";
-    public static final String DEFAULT_IMAGE = "eventstore-ce/eventstoredb-ce";
-    public static final String DEFAULT_VERSION = "latest";
+    public static final String DEFAULT_IMAGE = "docker.kurrent.io/eventstore/eventstoredb-ee:lts";
 
     public static class Builder {
-        String registry;
         String image;
-        String version;
         boolean secure;
         boolean anonymous;
         Map<String, String> env;
 
         public Builder() {
-            this.registry = DEFAULT_REGISTRY;
             this.image = DEFAULT_IMAGE;
-            this.version = DEFAULT_VERSION;
             this.env = new HashMap<>();
         }
 
         public Builder secure(boolean secure) {
             this.secure = secure;
-            return this;
-        }
-
-        public Builder version(String version) {
-            this.version = version;
             return this;
         }
 
@@ -50,12 +39,6 @@ public class DockerContainerDatabase extends GenericContainer<DockerContainerDat
             this.image = image;
             return this;
         }
-
-        public Builder registry(String registry) {
-            this.registry = registry;
-            return this;
-        }
-
         public Builder env(String envVar, String value) {
             this.env.put(envVar, value);
             return this;
@@ -70,7 +53,7 @@ public class DockerContainerDatabase extends GenericContainer<DockerContainerDat
     private final ClientTracker clientTracker;
 
     public DockerContainerDatabase(Builder builder) {
-        super(String.format("%s/%s:%s", builder.registry, builder.image, builder.version));
+        super(builder.image);
         addExposedPorts(1113, 2113);
 
         withEnv("EVENTSTORE_RUN_PROJECTIONS", "ALL");
