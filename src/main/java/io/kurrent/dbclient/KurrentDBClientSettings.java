@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Gathers all the settings related to a gRPC client with an KurrentDB database.
+ * Gathers all the settings related to a gRPC client with a KurrentDB database.
  * <i>EventStoreDBClientSettings}</i> can only be created when parsing a connection string.
  *
  * <i>KurrentDBClientSettings</i> supports a wide range of settings. If a setting is not mentioned in the connection
