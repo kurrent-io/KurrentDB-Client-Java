@@ -1,7 +1,7 @@
 package io.kurrent.dbclient;
 
 public class ClientTelemetryConstants {
-    public static final String INSTRUMENTATION_NAME = "kurrent";
+    public static final String INSTRUMENTATION_NAME = "kurrentdb";
 
     public static class Metadata {
         public static final String TRACE_ID = "$traceId";
