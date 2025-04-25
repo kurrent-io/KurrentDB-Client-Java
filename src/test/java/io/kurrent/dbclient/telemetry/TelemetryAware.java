@@ -21,7 +21,7 @@ public interface TelemetryAware extends ConnectionAware {
     default void assertAppendSpanHasExpectedAttributes(ReadableSpan span, String streamName) {
         assertSpanAttributeEquals(span, ClientTelemetryAttributes.Database.SYSTEM, ClientTelemetryConstants.INSTRUMENTATION_NAME);
         assertSpanAttributeEquals(span, ClientTelemetryAttributes.Database.OPERATION, ClientTelemetryConstants.Operations.APPEND);
-        assertSpanAttributeEquals(span, ClientTelemetryAttributes.Kurrent.STREAM, streamName);
+        assertSpanAttributeEquals(span, ClientTelemetryAttributes.KurrentDB.STREAM, streamName);
         assertSpanAttributeEquals(span, ClientTelemetryAttributes.Database.USER, "admin");
         Assertions.assertEquals(StatusCode.OK, span.toSpanData().getStatus().getStatusCode());
         Assertions.assertEquals(SpanKind.CLIENT, span.getKind());
@@ -42,10 +42,10 @@ public interface TelemetryAware extends ConnectionAware {
         assertSpanAttributeEquals(span, ClientTelemetryAttributes.Database.SYSTEM, ClientTelemetryConstants.INSTRUMENTATION_NAME);
         assertSpanAttributeEquals(span, ClientTelemetryAttributes.Database.OPERATION, ClientTelemetryConstants.Operations.SUBSCRIBE);
         assertSpanAttributeEquals(span, ClientTelemetryAttributes.Database.USER, "admin");
-        assertSpanAttributeEquals(span, ClientTelemetryAttributes.Kurrent.STREAM, streamName);
-        assertSpanAttributeEquals(span, ClientTelemetryAttributes.Kurrent.SUBSCRIPTION_ID, subscriptionId);
-        assertSpanAttributeEquals(span, ClientTelemetryAttributes.Kurrent.EVENT_ID, eventId);
-        assertSpanAttributeEquals(span, ClientTelemetryAttributes.Kurrent.EVENT_TYPE, eventType);
+        assertSpanAttributeEquals(span, ClientTelemetryAttributes.KurrentDB.STREAM, streamName);
+        assertSpanAttributeEquals(span, ClientTelemetryAttributes.KurrentDB.SUBSCRIPTION_ID, subscriptionId);
+        assertSpanAttributeEquals(span, ClientTelemetryAttributes.KurrentDB.EVENT_ID, eventId);
+        assertSpanAttributeEquals(span, ClientTelemetryAttributes.KurrentDB.EVENT_TYPE, eventType);
         Assertions.assertEquals(StatusCode.OK, span.toSpanData().getStatus().getStatusCode());
         Assertions.assertEquals(SpanKind.CONSUMER, span.getKind());
     }

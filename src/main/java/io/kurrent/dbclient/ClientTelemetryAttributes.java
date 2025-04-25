@@ -22,10 +22,10 @@ public class ClientTelemetryAttributes {
         public static final String STACK_TRACE = ExceptionAttributes.EXCEPTION_STACKTRACE.getKey();
     }
 
-    public static class Kurrent {
-        public static final String STREAM = "db.kurrent.stream";
-        public static final String SUBSCRIPTION_ID = "db.kurrent.subscription.id";
-        public static final String EVENT_ID = "db.kurrent.event.id";
-        public static final String EVENT_TYPE = "db.kurrent.event.type";
+    public static class KurrentDB {
+        public static final String STREAM = "db.kurrentdb.stream";
+        public static final String SUBSCRIPTION_ID = "db.kurrentdb.subscription.id";
+        public static final String EVENT_ID = "db.kurrentdb.event.id";
+        public static final String EVENT_TYPE = "db.kurrentdb.event.type";
     }
 }

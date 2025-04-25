@@ -94,7 +94,7 @@ class ClientTelemetry {
                 SpanKind.CLIENT,
                 null,
                 ClientTelemetryTags.builder()
-                        .withRequiredTag(ClientTelemetryAttributes.Kurrent.STREAM, streamId)
+                        .withRequiredTag(ClientTelemetryAttributes.KurrentDB.STREAM, streamId)
                         .withServerTagsFromGrpcChannel(channel)
                         .withServerTagsFromClientSettings(settings)
                         .withOptionalDatabaseUserTag(settings.getDefaultCredentials())
@@ -139,10 +139,10 @@ class ClientTelemetry {
                 SpanKind.CONSUMER,
                 remoteParentContext,
                 ClientTelemetryTags.builder()
-                        .withRequiredTag(ClientTelemetryAttributes.Kurrent.STREAM, event.getStreamId())
-                        .withRequiredTag(ClientTelemetryAttributes.Kurrent.SUBSCRIPTION_ID, subscriptionId)
-                        .withRequiredTag(ClientTelemetryAttributes.Kurrent.EVENT_ID, event.getEventId().toString())
-                        .withRequiredTag(ClientTelemetryAttributes.Kurrent.EVENT_TYPE, event.getEventType())
+                        .withRequiredTag(ClientTelemetryAttributes.KurrentDB.STREAM, event.getStreamId())
+                        .withRequiredTag(ClientTelemetryAttributes.KurrentDB.SUBSCRIPTION_ID, subscriptionId)
+                        .withRequiredTag(ClientTelemetryAttributes.KurrentDB.EVENT_ID, event.getEventId().toString())
+                        .withRequiredTag(ClientTelemetryAttributes.KurrentDB.EVENT_TYPE, event.getEventType())
                         .withServerTagsFromGrpcChannel(channel)
                         .withServerTagsFromClientSettings(settings)
                         .withOptionalDatabaseUserTag(settings.getDefaultCredentials())
