@@ -1,0 +1,19 @@
+name: Previous LTS
+on:
+  pull_request:
+  push:
+    branches:
+      - trunk
+  schedule:
+    - cron: '0 0 * * 0'  # Run every Sunday at midnight UTC
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  previous-lts:
+    name: Tests (Previous LTS)
+    uses: ./.github/workflows/tests.yml
+    with:
+      image: ${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)['previous-lts'].fullname }}
+    secrets: inherit

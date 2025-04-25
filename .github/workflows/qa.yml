@@ -1,0 +1,17 @@
+name: QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: Docker full image name
+        required: true
+        type: string
+        default: "docker.kurrent.io/eventstore/eventstoredb-ee:lts"
+
+jobs:
+  test:
+    name: Test
+    uses: ./.github/workflows/tests.yml
+    with:
+      image: ${{ inputs.image }}
