@@ -136,71 +136,70 @@ public class Metadata extends HashMap<String, Object> {
             return Optional.empty();
 
         // Handle common value types with parsing
+        if (type == Boolean.class || type == boolean.class) {
+            Boolean value = BooleanUtils.toBooleanObject(stringValue);
+
+            if (value == null)
+                return Optional.empty();
+
+            return Optional.of((T) value);
+        }
+
+        if (type == Byte.class || type == byte.class) {
+            byte value = NumberUtils.toByte(stringValue);
+            if (value == 0 && !stringValue.equalsIgnoreCase("0"))
+                return Optional.empty();
+
+            return Optional.of((T) Byte.valueOf(value));
+        }
+
+        if (type == Short.class || type == short.class) {
+            short value = NumberUtils.toShort(stringValue);
+            if (value == 0 && !stringValue.equalsIgnoreCase("0"))
+                return Optional.empty();
+
+            return Optional.of((T) Short.valueOf(stringValue));
+        }
+
+        if (type == Integer.class || type == int.class) {
+            int value = NumberUtils.toInt(stringValue);
+            if (value == 0 && !stringValue.equalsIgnoreCase("0"))
+                return Optional.empty();
+
+            return Optional.of((T) Integer.valueOf(stringValue));
+        }
+
+        if (type == Long.class || type == long.class) {
+            long value = NumberUtils.toLong(stringValue);
+            if (value == 0 && !stringValue.equalsIgnoreCase("0"))
+                return Optional.empty();
+
+            return Optional.of((T) Long.valueOf(stringValue));
+        }
+
+        if (type == Float.class || type == float.class) {
+            float value = NumberUtils.toFloat(stringValue, Float.NaN);
+            if (Float.isNaN(value))
+                return Optional.empty();
+
+            return Optional.of((T) Float.valueOf(value));
+        }
+
+        if (type == Double.class || type == double.class) {
+            double value = NumberUtils.toDouble(stringValue, Double.NaN);
+            if (Double.isNaN(value))
+                return Optional.empty();
+
+            return Optional.of((T) Double.valueOf(value));
+
+        }
+
+        if (type == Character.class || type == char.class) {
+            if (stringValue.length() == 1)
+                return Optional.of((T) Character.valueOf(stringValue.charAt(0)));
+        }
+
         try {
-            if (type == Boolean.class || type == boolean.class) {
-                Boolean value = BooleanUtils.toBooleanObject(stringValue);
-
-                if (value == null)
-                    return Optional.empty();
-
-                return Optional.of((T) value);
-            }
-
-            if (type == Byte.class || type == byte.class) {
-                byte value = NumberUtils.toByte(stringValue);
-                if (value == 0 && !stringValue.equalsIgnoreCase("0"))
-                    return Optional.empty();
-
-                return Optional.of((T) Byte.valueOf(value));
-            }
-
-            if (type == Short.class || type == short.class) {
-                short value = NumberUtils.toShort(stringValue);
-                if (value == 0 && !stringValue.equalsIgnoreCase("0"))
-                    return Optional.empty();
-
-                return Optional.of((T) Short.valueOf(stringValue));
-            }
-
-            if (type == Integer.class || type == int.class) {
-                int value = NumberUtils.toInt(stringValue);
-                if (value == 0 && !stringValue.equalsIgnoreCase("0"))
-                    return Optional.empty();
-
-                return Optional.of((T) Integer.valueOf(stringValue));
-            }
-
-            if (type == Long.class || type== long.class) {
-                long value = NumberUtils.toLong(stringValue);
-                if (value == 0 && !stringValue.equalsIgnoreCase("0"))
-                    return Optional.empty();
-
-                return Optional.of((T) Long.valueOf(stringValue));
-            }
-
-            if (type == Float.class || type == float.class) {
-                float value = NumberUtils.toFloat(stringValue, Float.NaN);
-                if (Float.isNaN(value))
-                    return Optional.empty();
-
-                return Optional.of((T) Float.valueOf(value));
-            }
-
-            if (type == Double.class || type == double.class) {
-                double value = NumberUtils.toDouble(stringValue, Double.NaN);
-                if (Double.isNaN(value))
-                    return Optional.empty();
-
-                return Optional.of((T) Double.valueOf(value));
-
-            }
-
-            if (type == Character.class || type == char.class) {
-                if (stringValue.length() == 1) {
-                    return Optional.of((T) Character.valueOf(stringValue.charAt(0)));
-                }
-            }
-
             if (type == UUID.class)
                 return Optional.of((T) UUID.fromString(stringValue));
 
