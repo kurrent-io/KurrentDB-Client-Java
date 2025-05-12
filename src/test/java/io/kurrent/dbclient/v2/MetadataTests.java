@@ -70,7 +70,9 @@ public class MetadataTests {
         metadata.put("intKey", 123);
         metadata.put("boolKey", true);
         metadata.put("uuidKey", UUID.fromString("00000000-0000-0000-0000-000000000001"));
-        metadata.put("instantKey", Instant.parse("2023-01-01T00:00:00Z"));
+
+        Instant instant = Instant.parse("2023-01-01T00:00:00Z");
+        metadata.put("instantKey", instant);
         
         // Test tryGet method with direct type match
         Optional<String> stringResult = metadata.tryGet("stringKey", String.class);
@@ -87,7 +89,11 @@ public class MetadataTests {
         Optional<Integer> stringIntResult = metadata.tryGet("stringIntKey", Integer.class);
         Assertions.assertTrue(stringIntResult.isPresent());
         Assertions.assertEquals(456, stringIntResult.get());
-        
+
+        Optional<Instant> instantResult = metadata.tryGet("instantKey", Instant.class);
+        Assertions.assertTrue(instantResult.isPresent());
+        Assertions.assertEquals(instant, instantResult.get());
+
         // Test tryGet method with a non-existent key
         Optional<String> nonExistentResult = metadata.tryGet("nonExistentKey", String.class);
         Assertions.assertFalse(nonExistentResult.isPresent());
