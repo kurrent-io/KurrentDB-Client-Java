@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -118,11 +119,21 @@ class ReadResponseObserver implements ClientResponseObserver<StreamsOuterClass.R
         else if (value.hasLastAllStreamPosition()) {
             Shared.AllStreamPosition position = value.getLastAllStreamPosition();
             consumer.onLastAllStreamPosition(position.getCommitPosition(), position.getPreparePosition());
-        } else if (value.hasCaughtUp())
-            consumer.onCaughtUp();
-        else if (value.hasFellBehind())
-            consumer.onFellBehind();
-        else {
+        } else if (value.hasCaughtUp()) {
+            StreamsOuterClass.ReadResp.CaughtUp caughtUp = value.getCaughtUp();
+            Instant timestamp = Instant.ofEpochSecond(caughtUp.getTimestamp().getSeconds(), caughtUp.getTimestamp().getNanos());
+            Long streamRevision = caughtUp.hasStreamRevision() ? caughtUp.getStreamRevision() : null;
+            Position position = caughtUp.hasPosition() ? new Position(caughtUp.getPosition().getCommitPosition(), caughtUp.getPosition().getPreparePosition()) : null;
+
+            consumer.onCaughtUp(timestamp, streamRevision, position);
+        } else if (value.hasFellBehind()) {
+            StreamsOuterClass.ReadResp.FellBehind fellBehind = value.getFellBehind();
+            Instant timestamp = Instant.ofEpochSecond(fellBehind.getTimestamp().getSeconds(), fellBehind.getTimestamp().getNanos());
+            Long streamRevision = fellBehind.hasStreamRevision() ? fellBehind.getStreamRevision() : null;
+            Position position = fellBehind.hasPosition() ? new Position(fellBehind.getPosition().getCommitPosition(), fellBehind.getPosition().getPreparePosition()) : null;
+
+            consumer.onFellBehind(timestamp, streamRevision, position);
+        } else {
             logger.warn("received unknown message variant");
         }
 

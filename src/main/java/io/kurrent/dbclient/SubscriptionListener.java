@@ -1,5 +1,7 @@
 package io.kurrent.dbclient;
 
+import java.time.Instant;
+
 /**
  * Listener used to handle catch-up subscription notifications raised throughout its lifecycle.
  */
@@ -28,12 +30,12 @@ public abstract class SubscriptionListener {
      * Called when the subscription has reached the head of the stream.
      * @param subscription handle to the subscription.
      */
-    public void onCaughtUp(Subscription subscription) {}
+    public void onCaughtUp(Subscription subscription, Instant timestamp, Long streamRevision, Position position) {}
 
     /**
      * Called when the subscription has fallen behind, meaning it's no longer keeping up with the
      * stream's pace.
      * @param subscription handle to the subscription.
      */
-    public void onFellBehind(Subscription subscription) {}
+    public void onFellBehind(Subscription subscription, Instant timestamp, Long streamRevision, Position position) {}
 }
