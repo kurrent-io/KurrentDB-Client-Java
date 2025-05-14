@@ -2,6 +2,8 @@ package io.kurrent.dbclient;
 
 import org.reactivestreams.Subscriber;
 
+import java.time.Instant;
+
 class ReadStreamConsumer implements StreamConsumer {
     private final Subscriber<? super ReadMessage> subscriber;
 
@@ -41,10 +43,10 @@ class ReadStreamConsumer implements StreamConsumer {
     }
 
     @Override
-    public void onCaughtUp() {}
+    public void onCaughtUp(Instant timestamp, Long streamRevision, Position position) {}
 
     @Override
-    public void onFellBehind() {}
+    public void onFellBehind(Instant timestamp, Long streamRevision, Position position) {}
 
     @Override
     public void onCancelled(Throwable exception) {

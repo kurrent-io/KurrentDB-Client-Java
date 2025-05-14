@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -176,7 +177,7 @@ public interface SubscriptionTests extends ConnectionAware {
 
         Subscription subscription = client.subscribeToStream(streamName, new SubscriptionListener() {
             @Override
-            public void onCaughtUp(Subscription subscription) {
+            public void onCaughtUp(Subscription subscription, Instant timestamp, Long streamRevision, Position position) {
                 caughtUp.countDown();
             }
         }, SubscribeToStreamOptions.get().fromStart()).get();

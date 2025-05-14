@@ -1,6 +1,7 @@
 package io.kurrent.dbclient;
 
 
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 
 class SubscriptionStreamConsumer implements StreamConsumer {
@@ -56,13 +57,13 @@ class SubscriptionStreamConsumer implements StreamConsumer {
     public void onLastAllStreamPosition(long commit, long prepare) {}
 
     @Override
-    public void onCaughtUp() {
-        this.listener.onCaughtUp(this.subscription);
+    public void onCaughtUp(Instant timestamp, Long streamRevision, Position position) {
+        this.listener.onCaughtUp(this.subscription, timestamp, streamRevision, position);
     }
 
     @Override
-    public void onFellBehind() {
-        this.listener.onFellBehind(this.subscription);
+    public void onFellBehind(Instant timestamp, Long streamRevision, Position position) {
+        this.listener.onFellBehind(this.subscription, timestamp, streamRevision, position);
     }
 
     @Override
