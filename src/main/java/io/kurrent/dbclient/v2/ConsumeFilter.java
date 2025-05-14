@@ -172,7 +172,7 @@ public class ConsumeFilter {
      * @throws IllegalArgumentException If the prefixes are invalid.
      */
     public static ConsumeFilter fromPrefixes(ConsumeFilterScope scope, String... prefixes) {
-        if (prefixes.length == 0)
+        if (prefixes == null || prefixes.length == 0)
             throw new IllegalArgumentException("Prefixes cannot be empty.");
 
         StringBuilder patternBuilder = new StringBuilder("^(");
@@ -188,7 +188,7 @@ public class ConsumeFilter {
             patternBuilder.append(Pattern.quote(prefix));
             first = false;
         }
-        patternBuilder.append(")");
+        patternBuilder.append(").*");
 
         String pattern = patternBuilder.toString();
         return new ConsumeFilter(
