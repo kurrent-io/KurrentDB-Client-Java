@@ -34,7 +34,7 @@ public class KurrentDBClientSettings {
     private final boolean tlsVerifyCert;
     private final UserCredentials defaultCredentials;
     private final ClientCertificate defaultClientCertificate;
-    private final InetSocketAddress[] hosts;
+    private final Endpoint[] hosts;
     private final long keepAliveTimeout;
     private final long keepAliveInterval;
     private final Long defaultDeadline;
@@ -117,7 +117,7 @@ public class KurrentDBClientSettings {
      * The list of endpoints that the client uses to connect.
      * @return hosts to connect to.
      */
-    public InetSocketAddress[] getHosts() {
+    public Endpoint[] getHosts() {
         return hosts;
     }
 
@@ -177,7 +177,7 @@ public class KurrentDBClientSettings {
             boolean tlsVerifyCert,
             UserCredentials defaultCredentials,
             ClientCertificate defaultClientCertificate,
-            InetSocketAddress[] hosts,
+            Endpoint[] hosts,
             long keepAliveTimeout,
             long keepAliveInterval,
             Long defaultDeadline,

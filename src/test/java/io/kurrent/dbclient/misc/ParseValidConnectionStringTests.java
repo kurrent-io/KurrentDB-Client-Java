@@ -145,7 +145,7 @@ public class ParseValidConnectionStringTests {
 
         Assertions.assertEquals(settings.getHosts().length, other.getHosts().length);
         IntStream.range(0, settings.getHosts().length).forEach((i) -> {
-            Assertions.assertEquals(settings.getHosts()[i].getHostName(), other.getHosts()[i].getHostName());
+            Assertions.assertEquals(settings.getHosts()[i].getHost(), other.getHosts()[i].getHost());
             Assertions.assertEquals(settings.getHosts()[i].getPort(), other.getHosts()[i].getPort());
         });
     }
@@ -227,7 +227,7 @@ public class ParseValidConnectionStringTests {
         }
 
         tree.get("hosts").elements().forEachRemaining((host) -> {
-            builder.addHost(new InetSocketAddress(host.get("address").asText(), host.get("port").asInt()));
+            builder.addHost(host.get("address").asText(), host.get("port").asInt());
         });
 
         if (tree.get("features") != null) {
