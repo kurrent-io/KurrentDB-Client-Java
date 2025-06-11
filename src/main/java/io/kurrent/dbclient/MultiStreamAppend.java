@@ -99,8 +99,6 @@ class MultiStreamAppend {
             }
         }
 
-        // Handle the response from the multi-stream append operation
-        // This could involve processing the results for each stream in the response
-        throw new RuntimeException("Not implemented");
+        return new MultiAppendWriteResult(successes, failures);
     }
 }
