@@ -10,7 +10,9 @@ import io.kurrentdb.v2.MultiStreamAppendResponse;
 import io.kurrentdb.v2.StreamsServiceGrpc;
 import kurrentdb.protobuf.DynamicValueOuterClass;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 class MultiStreamAppend {
@@ -80,6 +82,23 @@ class MultiStreamAppend {
     }
 
     public MultiAppendWriteResult onResponse(MultiStreamAppendResponse response) {
+        List<AppendStreamFailure> failures = null;
+        List<AppendStreamSuccess> successes = null;
+
+        if (response.hasFailure()) {
+            failures = new ArrayList<>(response.getFailure().getOutputCount());
+
+            for (io.kurrentdb.v2.AppendStreamFailure failure : response.getFailure().getOutputList()) {
+                failures.add(new AppendStreamFailure(failure));
+            }
+        } else {
+            successes = new ArrayList<>(response.getSuccess().getOutputCount());
+
+            for (io.kurrentdb.v2.AppendStreamSuccess success : response.getSuccess().getOutputList()) {
+                successes.add(new AppendStreamSuccess(success));
+            }
+        }
+
         // Handle the response from the multi-stream append operation
         // This could involve processing the results for each stream in the response
         throw new RuntimeException("Not implemented");
