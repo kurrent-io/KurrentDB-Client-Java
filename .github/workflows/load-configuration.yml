@@ -40,7 +40,7 @@ jobs:
       - name: Set KurrentDB Runtime Configuration Properties
         id: set
         run: |
-          echo "registry=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[input.runtime].registry }}" >> $GITHUB_OUTPUT
-          echo "tag=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[input.runtime].tag }}" >> $GITHUB_OUTPUT
-          echo "image=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[input.runtime].image }}" >> $GITHUB_OUTPUT
-          echo "full_image_name=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[input.runtime].fullname }}" >> $GITHUB_OUTPUT
+          echo "registry=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].registry }}" >> $GITHUB_OUTPUT
+          echo "tag=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].tag }}" >> $GITHUB_OUTPUT
+          echo "image=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].image }}" >> $GITHUB_OUTPUT
+          echo "full_image_name=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].fullname }}" >> $GITHUB_OUTPUT
