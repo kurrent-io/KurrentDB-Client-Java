@@ -13,19 +13,19 @@ on:
 
       registry:
         description: The Docker registry
-        value: $${{ jobs.load.outputs.registry }}
+        value: ${{ jobs.load.outputs.registry }}
 
       image:
         description: The Docker image
-        value: $${{ jobs.load.outputs.image }}
+        value: ${{ jobs.load.outputs.image }}
 
       tag:
         description: The Docker image tag
-        value: $${{ jobs.load.outputs.tag }}
+        value: ${{ jobs.load.outputs.tag }}
 
       full_image_name:
         description: The full Docker image name (including registry, image, and tag)
-        value: $${{ jobs.load.outputs.full_image_name }}
+        value: ${{ jobs.load.outputs.full_image_name }}
 
 jobs:
   load:
@@ -40,7 +40,7 @@ jobs:
       - name: Set KurrentDB Runtime Configuration Properties
         id: set
         run: |
-          echo "registry=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].registry }}" >> $GITHUB_OUTPUT
-          echo "tag=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].tag }}" >> $GITHUB_OUTPUT
-          echo "image=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].image }}" >> $GITHUB_OUTPUT
-          echo "full_image_name=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].fullname }}" >> $GITHUB_OUTPUT
+          echo "registry=${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].registry }}" >> $GITHUB_OUTPUT
+          echo "tag=${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].tag }}" >> $GITHUB_OUTPUT
+          echo "image=${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].image }}" >> $GITHUB_OUTPUT
+          echo "full_image_name=${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[inputs.runtime].fullname }}" >> $GITHUB_OUTPUT
