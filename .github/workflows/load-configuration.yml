@@ -9,7 +9,7 @@ on:
     outputs:
       runtime:
         description: The runtime's name
-        value: ${{ input.runtime }}
+        value: ${{ inputs.runtime }}
 
       registry:
         description: The Docker registry
