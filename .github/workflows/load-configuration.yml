@@ -1,6 +1,6 @@
 name: Load KurrentDB Runtime Configuration
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       runtime:
         description: "The runtime's name. Current options are: `ci`, `previous-lts`, `latest`"
