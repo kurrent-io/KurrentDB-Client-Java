@@ -24,7 +24,7 @@ services:
       - volumes-provisioner
 
   esdb-node1: &template
-    image: ${KURRENTDB_DOCKER_REGISTRY:-docker.kurrent.io}/${KURRENTDB_DOCKER_REPO:-eventstore}/${KURRENTDB_DOCKER_CONTAINER:-eventstoredb-ee}:${KURRENTDB_DOCKER_CONTAINER_VERSION:-lts}
+    image: ${KURRENTDB_DOCKER_REGISTRY:-docker.kurrent.io/eventstore}/${KURRENTDB_DOCKER_IMAGE:-eventstoredb-ee}:${KURRENTDB_DOCKER_TAG:-lts}
     env_file:
       - vars.env
     environment:

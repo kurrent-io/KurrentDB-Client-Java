@@ -1,0 +1,46 @@
+name: Load KurrentDB Runtime Configuration
+on:
+  workflow_dispatch:
+    inputs:
+      runtime:
+        description: "The runtime's name. Current options are: `ci`, `previous-lts`, `latest`"
+        type: string
+
+    outputs:
+      runtime:
+        description: The runtime's name
+        value: ${{ input.runtime }}
+
+      registry:
+        description: The Docker registry
+        value: $${{ jobs.load.outputs.registry }}
+
+      image:
+        description: The Docker image
+        value: $${{ jobs.load.outputs.image }}
+
+      tag:
+        description: The Docker image tag
+        value: $${{ jobs.load.outputs.tag }}
+
+      full_image_name:
+        description: The full Docker image name (including registry, image, and tag)
+        value: $${{ jobs.load.outputs.full_image_name }}
+
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    outputs:
+        registry: ${{ steps.set.outputs.registry }}
+        image: ${{ steps.set.outputs.image }}
+        tag: ${{ steps.set.outputs.tag }}
+        full_image_name: ${{ steps.set.outputs.full_image_name }}
+
+    steps:
+      - name: Set KurrentDB Runtime Configuration Properties
+        id: set
+        run: |
+          echo "registry=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[input.runtime].registry }}" >> $GITHUB_OUTPUT
+          echo "tag=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[input.runtime].tag }}" >> $GITHUB_OUTPUT
+          echo "image=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[input.runtime].image }}" >> $GITHUB_OUTPUT
+          echo "full_image_name=$${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)[input.runtime].fullname }}" >> $GITHUB_OUTPUT
