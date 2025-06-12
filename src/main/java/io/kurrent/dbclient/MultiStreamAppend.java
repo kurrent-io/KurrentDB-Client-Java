@@ -1,7 +1,6 @@
 package io.kurrent.dbclient;
 
 import com.google.protobuf.ByteString;
-import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
@@ -25,12 +24,18 @@ class MultiStreamAppend {
     }
 
     public CompletableFuture<MultiAppendWriteResult> execute() {
-        return this.client.run(this::append);
+        return this.client.runWithArgs(this::append);
     }
 
-    private CompletableFuture<MultiAppendWriteResult> append(ManagedChannel channel) {
+    private CompletableFuture<MultiAppendWriteResult> append(WorkItemArgs args) {
         CompletableFuture<MultiAppendWriteResult> result = new CompletableFuture<>();
-        StreamsServiceGrpc.StreamsServiceStub client =  GrpcUtils.configureStub(StreamsServiceGrpc.newStub(channel), this.client.getSettings(), new OptionsBase<>());
+
+        if (!args.supportFeature(FeatureFlags.MULTI_STREAM_APPEND)) {
+            result.completeExceptionally(new UnsupportedOperationException("Multi-stream append is not supported by the server"));
+            return result;
+        }
+
+        StreamsServiceGrpc.StreamsServiceStub client =  GrpcUtils.configureStub(StreamsServiceGrpc.newStub(args.getChannel()), this.client.getSettings(), new OptionsBase<>(), null, false);
         StreamObserver<io.kurrentdb.v2.AppendStreamRequest> requestStream = client.multiStreamAppendSession(GrpcUtils.convertSingleResponse(result, this::onResponse));
 
        try {
@@ -44,15 +49,15 @@ class MultiStreamAppend {
                      builder.addRecords(AppendRecord.newBuilder()
                              .setData(ByteString.copyFrom(event.getEventData()))
                                      .setRecordId(event.getEventId().toString())
-                                     .putProperties(SystemMetadataKeys.CONTENT_TYPE, DynamicValueOuterClass
+                                     .putProperties(SystemMetadataKeys.DATA_FORMAT, DynamicValueOuterClass
                                              .DynamicValue
                                              .newBuilder()
-                                             .setStringValue(event.getContentType())
+                                             .setBytesValue(ByteString.copyFromUtf8(event.getContentType()))
                                              .build())
-                                     .putProperties(SystemMetadataKeys.TYPE, DynamicValueOuterClass
+                                     .putProperties(SystemMetadataKeys.SCHEMA_NAME, DynamicValueOuterClass
                                              .DynamicValue
                                              .newBuilder()
-                                             .setStringValue(event.getEventType())
+                                             .setBytesValue(ByteString.copyFromUtf8(event.getEventType()))
                                              .build())
                                      .build());
                }
