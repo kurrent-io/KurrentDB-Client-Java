@@ -1,9 +1,6 @@
 package io.kurrent.dbclient;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +40,10 @@ public class MultiStreamAppendTests implements ConnectionAware {
 
         Optional<ServerVersion> version = client.getServerVersion().get();
 
-        if (!version.isPresent() || version.get().isLessThan(25, 0, 0))
-            return;
+        Assumptions.assumeTrue(
+                !version.isPresent() || version.get().isLessThan(25, 0, 0),
+                "Multi-stream append is not supported server versions below 25.0.0"
+        );
 
         List<AppendStreamRequest> requests = new ArrayList<>();
 
@@ -59,4 +58,31 @@ public class MultiStreamAppendTests implements ConnectionAware {
 
         Assertions.assertTrue(result.getSuccesses().isPresent());
     }
+
+    @Test
+    public void testMultiStreamAppendWhenUnsupported() throws ExecutionException, InterruptedException {
+        KurrentDBClient client = getDefaultClient();
+
+        Optional<ServerVersion> version = client.getServerVersion().get();
+        Assumptions.assumeTrue(
+                version.isPresent() && version.get().isGreaterOrEqualThan(25, 0),
+                "Multi-stream is supported server versions greater or equal to 25.0.0"
+        );
+
+        List<AppendStreamRequest> requests = new ArrayList<>();
+
+        List<EventData> events = new ArrayList<>();
+        for (int i = 0; i < 10; i++)
+            events.add(EventData.builderAsBinary("created", new byte[0]).build());
+
+        requests.add(new AppendStreamRequest("foobar", events.iterator(), StreamState.any()));
+        requests.add(new AppendStreamRequest("baz", events.iterator(), StreamState.any()));
+
+        ExecutionException e = Assertions.assertThrows(
+                ExecutionException.class,
+                () -> client.multiAppend(AppendToStreamOptions.get(), requests.iterator()).get());
+
+        Assertions.assertInstanceOf(UnsupportedOperationException.class, e.getCause());
+    }
 }
+

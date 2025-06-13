@@ -58,6 +58,17 @@ public class ServerVersion {
         return true;
     }
 
+    public boolean isGreaterOrEqualThan(int major, int minor) {
+        int cmp;
+        if ((cmp = Integer.compare(this.major, major)) != 0)
+            return cmp > 0;
+
+        if ((cmp = Integer.compare(this.minor, minor)) != 0)
+            return cmp > 0;
+
+        return true;
+    }
+
     @Override
     public String toString() {
         return "ServerVersion{" +
