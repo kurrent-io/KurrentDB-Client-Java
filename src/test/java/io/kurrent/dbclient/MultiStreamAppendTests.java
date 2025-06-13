@@ -41,7 +41,7 @@ public class MultiStreamAppendTests implements ConnectionAware {
         Optional<ServerVersion> version = client.getServerVersion().get();
 
         Assumptions.assumeTrue(
-                !version.isPresent() || version.get().isLessThan(25, 0, 0),
+                version.isPresent() && version.get().isGreaterOrEqualThan(25, 0),
                 "Multi-stream append is not supported server versions below 25.0.0"
         );
 
@@ -64,7 +64,7 @@ public class MultiStreamAppendTests implements ConnectionAware {
         KurrentDBClient client = getDefaultClient();
 
         Optional<ServerVersion> version = client.getServerVersion().get();
-        Assumptions.assumeTrue(
+        Assumptions.assumeFalse(
                 version.isPresent() && version.get().isGreaterOrEqualThan(25, 0),
                 "Multi-stream is supported server versions greater or equal to 25.0.0"
         );
