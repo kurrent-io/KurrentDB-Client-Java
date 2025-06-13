@@ -49,13 +49,6 @@ jobs:
         env:
           KURRENTDB_IMAGE: ${{ needs.load_configuration.outputs.full_image_name }}
 
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: esdb_logs.tar.gz
-          path: /tmp/esdb_logs.tar.gz
-          if-no-files-found: error
-
   secure:
     needs: load_configuration
     name: Secure
