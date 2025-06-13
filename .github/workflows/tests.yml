@@ -109,7 +109,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test: [Streams, PersistentSubscriptions, MultiStreamAppendTests]
+        test: [Streams, PersistentSubscriptions, MultiStreamAppend]
 
     runs-on: ubuntu-latest
     steps:
