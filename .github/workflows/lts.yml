@@ -24,5 +24,7 @@ jobs:
 
     uses: ./.github/workflows/plugins-tests.yml
     with:
-      image: "docker.eventstore.com/eventstore-ee/eventstoredb-commercial:24.2.0-jammy"
+      registry: "docker.eventstore.com/eventstore-ee
+      image: eventstoredb-commercial
+      tag: :24.2.0-jammy
     secrets: inherit

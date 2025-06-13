@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 public class MultiStreamAppendTests implements ConnectionAware {
@@ -39,6 +40,11 @@ public class MultiStreamAppendTests implements ConnectionAware {
     @Test
     public void testMultiStreamAppend() throws ExecutionException, InterruptedException {
         KurrentDBClient client = getDefaultClient();
+
+        Optional<ServerVersion> version = client.getServerVersion().get();
+
+        if (!version.isPresent() || version.get().isLessThan(25, 0, 0))
+            return;
 
         List<AppendStreamRequest> requests = new ArrayList<>();
 
