@@ -29,7 +29,7 @@ public class ConnectionSettingsBuilder {
     private boolean _tlsVerifyCert = true;
     private UserCredentials _defaultCredentials;
     private ClientCertificate _defaultClientCertificate;
-    private LinkedList<InetSocketAddress> _hosts = new LinkedList<>();
+    private LinkedList<Endpoint> _hosts = new LinkedList<>();
     private long _keepAliveTimeout = Consts.DEFAULT_KEEP_ALIVE_TIMEOUT_IN_MS;
     private long _keepAliveInterval = Consts.DEFAULT_KEEP_ALIVE_INTERVAL_IN_MS;
     private Long _defaultDeadline = null;
@@ -54,7 +54,7 @@ public class ConnectionSettingsBuilder {
                 _tlsVerifyCert,
                 _defaultCredentials,
                 _defaultClientCertificate,
-                _hosts.toArray(new InetSocketAddress[0]),
+                _hosts.toArray(new Endpoint[0]),
                 _keepAliveTimeout,
                 _keepAliveInterval,
                 _defaultDeadline,
@@ -155,14 +155,15 @@ public class ConnectionSettingsBuilder {
      * Adds an endpoint the client will use to connect.
      */
     public ConnectionSettingsBuilder addHost(String host, int port) {
-        return addHost(new InetSocketAddress(host, port));
+        this._hosts.add(new Endpoint(host, port));
+        return this;
     }
 
     /**
      * Adds an endpoint the client will use to connect.
      */
     public ConnectionSettingsBuilder addHost(InetSocketAddress host) {
-        this._hosts.push(host);
+        this._hosts.push(new Endpoint(host.getHostName(), host.getPort()));
         return this;
     }
 

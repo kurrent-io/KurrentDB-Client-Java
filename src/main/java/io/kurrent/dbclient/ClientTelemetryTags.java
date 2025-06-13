@@ -36,9 +36,9 @@ class ClientTelemetryTags extends HashMap<String, String> {
         Builder withServerTagsFromClientSettings(KurrentDBClientSettings settings) {
             if (settings == null || !settings.isDnsDiscover()) return this;
 
-            InetSocketAddress dns = settings.getHosts()[0];
+            Endpoint dns = settings.getHosts()[0];
 
-            return withServerTags(dns.getAddress().toString(), String.valueOf(dns.getPort()));
+            return withServerTags(dns.getHost(), String.valueOf(dns.getPort()));
         }
 
         private Builder withServerTags(String address, String port) {
