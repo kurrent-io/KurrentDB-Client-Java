@@ -2,6 +2,7 @@ package io.kurrent.dbclient;
 
 
 import io.grpc.ClientInterceptor;
+import io.kurrent.dbclient.serialization.KurrentDBClientSerializationSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,7 @@ public class ConnectionSettingsBuilder {
     private List<ClientInterceptor> _interceptors = new ArrayList<>();
     private String _tlsCaFile = null;
     private Set<String> _features = new HashSet<>();
+    private KurrentDBClientSerializationSettings _serializationSettings;
 
     ConnectionSettingsBuilder() {}
 
@@ -60,7 +62,9 @@ public class ConnectionSettingsBuilder {
                 _defaultDeadline,
                 _interceptors,
                 _tlsCaFile,
-                _features);
+                _features,
+                _serializationSettings
+        );
     }
 
     /**
@@ -239,6 +243,15 @@ public class ConnectionSettingsBuilder {
      */
     public ConnectionSettingsBuilder feature(String feature) {
         this._features.add(feature);
+        return this;
+    }
+
+    /**
+     * Provides configuration options for messages serialization and deserialization in the KurrentDB client.
+     * If null, default settings are used.
+     */
+    public ConnectionSettingsBuilder serialization(KurrentDBClientSerializationSettings serializationSettings) {
+        this._serializationSettings = serializationSettings;
         return this;
     }
 

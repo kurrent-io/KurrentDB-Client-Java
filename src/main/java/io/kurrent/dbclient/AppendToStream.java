@@ -17,12 +17,20 @@ import java.util.concurrent.CompletableFuture;
 class AppendToStream {
     private final GrpcClient client;
     private final String streamName;
-    private final List<EventData> events;
+    private final StreamState streamState;
+    private final List<MessageData> events;
     private final AppendToStreamOptions options;
 
-    public AppendToStream(GrpcClient client, String streamName, Iterator<EventData> events, AppendToStreamOptions options) {
+    public AppendToStream(
+            GrpcClient client, 
+            String streamName, 
+            StreamState streamState, 
+            Iterator<MessageData> events, 
+            AppendToStreamOptions options
+    ) {
         this.client = client;
         this.streamName = streamName;
+        this.streamState = streamState;
         this.events = new ArrayList<>();
         while (events.hasNext()) {
             this.events.add(events.next());
@@ -40,9 +48,9 @@ class AppendToStream {
                 this.options.getCredentials()));
     }
 
-    private CompletableFuture<WriteResult> append(ManagedChannel channel, List<EventData> events) {
+    private CompletableFuture<WriteResult> append(ManagedChannel channel, List<MessageData> events) {
         CompletableFuture<WriteResult> result = new CompletableFuture<>();
-        StreamsOuterClass.AppendReq.Options.Builder options = this.options.getStreamState().applyOnWire(StreamsOuterClass.AppendReq.Options.newBuilder()
+        StreamsOuterClass.AppendReq.Options.Builder options = this.streamState.applyOnWire(StreamsOuterClass.AppendReq.Options.newBuilder()
                 .setStreamIdentifier(Shared.StreamIdentifier.newBuilder()
                         .setStreamName(ByteString.copyFromUtf8(streamName))
                         .build()));
@@ -93,18 +101,18 @@ class AppendToStream {
         try {
             requestStream.onNext(StreamsOuterClass.AppendReq.newBuilder().setOptions(options).build());
 
-            for (EventData e : events) {
+            for (MessageData e : events) {
                 StreamsOuterClass.AppendReq.ProposedMessage.Builder msgBuilder = StreamsOuterClass.AppendReq.ProposedMessage.newBuilder()
                         .setId(Shared.UUID.newBuilder()
                                 .setStructured(Shared.UUID.Structured.newBuilder()
-                                        .setMostSignificantBits(e.getEventId().getMostSignificantBits())
-                                        .setLeastSignificantBits(e.getEventId().getLeastSignificantBits())))
-                        .setData(ByteString.copyFrom(e.getEventData()))
+                                        .setMostSignificantBits(e.getMessageId().getMostSignificantBits())
+                                        .setLeastSignificantBits(e.getMessageId().getLeastSignificantBits())))
+                        .setData(ByteString.copyFrom(e.getMessageData()))
                         .putMetadata(SystemMetadataKeys.CONTENT_TYPE, e.getContentType())
-                        .putMetadata(SystemMetadataKeys.TYPE, e.getEventType());
+                        .putMetadata(SystemMetadataKeys.TYPE, e.getMessageType());
 
-                if (e.getUserMetadata() != null) {
-                    msgBuilder.setCustomMetadata(ByteString.copyFrom(e.getUserMetadata()));
+                if (e.getMessageMetadata() != null) {
+                    msgBuilder.setCustomMetadata(ByteString.copyFrom(e.getMessageMetadata()));
                 }
 
                 requestStream.onNext(StreamsOuterClass.AppendReq.newBuilder()
@@ -117,7 +125,7 @@ class AppendToStream {
             String leaderPort = e.getTrailers().get(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER));
 
             if (leaderHost != null && leaderPort != null) {
-                NotLeaderException reason = new NotLeaderException(leaderHost, Integer.valueOf(leaderPort));
+                NotLeaderException reason = new NotLeaderException(leaderHost, Integer.parseInt(leaderPort));
                 result.completeExceptionally(reason);
             } else {
                 result.completeExceptionally(e);

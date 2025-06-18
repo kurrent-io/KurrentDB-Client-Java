@@ -10,7 +10,7 @@ class SubscribePersistentSubscriptionToStream extends AbstractSubscribePersisten
     public SubscribePersistentSubscriptionToStream(GrpcClient connection, String stream, String group,
                                                    SubscribePersistentSubscriptionOptions options,
                                                    PersistentSubscriptionListener listener) {
-        super(connection, group, options, listener);
+        super(connection, group, options, listener, connection.getSerializer(options.serializationSettings().orElse(null)));
 
         this.stream = stream;
     }

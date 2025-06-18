@@ -28,15 +28,15 @@ class ClientTelemetry {
                 ClientTelemetry.class.getPackage().getImplementationVersion());
     }
 
-    private static List<EventData> tryInjectTracingContext(Span span, List<EventData> events) {
-        List<EventData> injectedEvents = new ArrayList<>();
-        for (EventData event : events) {
+    private static List<MessageData> tryInjectTracingContext(Span span, List<MessageData> events) {
+        List<MessageData> injectedEvents = new ArrayList<>();
+        for (MessageData event : events) {
             boolean isJsonEvent = Objects.equals(event.getContentType(), ContentType.JSON);
 
-            injectedEvents.add(EventDataBuilder
-                    .binary(event.getEventId(), event.getEventType(), event.getEventData(), isJsonEvent)
-                    .metadataAsBytes(tryInjectTracingContext(span, event.getUserMetadata()))
-                    .build());
+            injectedEvents.add(
+                    MessageDataBuilder
+                            .with(event.getMessageType(), event.getMessageData(), tryInjectTracingContext(span, event.getMessageMetadata()), event.getMessageId(), isJsonEvent)
+                            .build());
         }
         return injectedEvents;
     }
@@ -85,9 +85,9 @@ class ClientTelemetry {
     }
 
     static CompletableFuture<WriteResult> traceAppend(
-            BiFunction<ManagedChannel, List<EventData>, CompletableFuture<WriteResult>> appendOperation,
+            BiFunction<ManagedChannel, List<MessageData>, CompletableFuture<WriteResult>> appendOperation,
             ManagedChannel channel,
-            List<EventData> events, String streamId, KurrentDBClientSettings settings,
+            List<MessageData> events, String streamId, KurrentDBClientSettings settings,
             UserCredentials optionalCallCredentials) {
         Span span = createSpan(
                 ClientTelemetryConstants.Operations.APPEND,

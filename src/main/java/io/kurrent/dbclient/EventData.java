@@ -96,5 +96,9 @@ public final class EventData {
     public static EventDataBuilder builderAsBinary(UUID eventId, String eventType, byte[] eventData) {
         return EventDataBuilder.binary(eventId, eventType, eventData);
     }
+    
+    public MessageData toMessageData() {
+        return new MessageData(eventType, eventData, userMetadata, eventId, contentType);
+    }
 }
 

@@ -1,14 +1,15 @@
 package io.kurrent.dbclient;
 
-import io.kurrent.dbclient.proto.persistentsubscriptions.Persistent;
-import io.kurrent.dbclient.proto.persistentsubscriptions.PersistentSubscriptionsGrpc;
-import io.kurrent.dbclient.proto.shared.Shared;
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
 import io.grpc.stub.StreamObserver;
+import io.kurrent.dbclient.proto.persistentsubscriptions.Persistent;
+import io.kurrent.dbclient.proto.persistentsubscriptions.PersistentSubscriptionsGrpc;
+import io.kurrent.dbclient.proto.shared.Shared;
+import io.kurrent.dbclient.serialization.MessageSerializer;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -18,6 +19,7 @@ abstract class AbstractSubscribePersistentSubscription {
     private final String group;
     private final PersistentSubscriptionListener listener;
     private final SubscribePersistentSubscriptionOptions options;
+    private final MessageSerializer messageSerializer;
 
     static {
         defaultReadOptions = Persistent.ReadReq.Options.newBuilder()
@@ -25,13 +27,18 @@ abstract class AbstractSubscribePersistentSubscription {
                         .setStructured(Shared.Empty.getDefaultInstance()));
     }
 
-    public AbstractSubscribePersistentSubscription(GrpcClient client, String group,
-                                                   SubscribePersistentSubscriptionOptions options,
-                                                   PersistentSubscriptionListener listener) {
+    public AbstractSubscribePersistentSubscription(
+            GrpcClient client,
+            String group,
+            SubscribePersistentSubscriptionOptions options,
+            PersistentSubscriptionListener listener,
+            MessageSerializer messageSerializer
+    ) {
         this.client = client;
         this.group = group;
         this.options = options;
         this.listener = listener;
+        this.messageSerializer = messageSerializer;
     }
 
     protected abstract Persistent.ReadReq.Options.Builder createOptions();
@@ -91,7 +98,7 @@ abstract class AbstractSubscribePersistentSubscription {
                         int retryCount = readResp.getEvent().hasNoRetryCount() ? 0 : readResp.getEvent().getRetryCount();
 
                         try {
-                            ResolvedEvent resolvedEvent = ResolvedEvent.fromWire(readResp.getEvent());
+                            ResolvedEvent resolvedEvent = ResolvedEvent.fromWire(readResp.getEvent(), messageSerializer);
                             ClientTelemetry.traceSubscribe(
                                     () -> listener.onEvent(this._subscription, retryCount, resolvedEvent),
                                     _subscription.getSubscriptionId(),

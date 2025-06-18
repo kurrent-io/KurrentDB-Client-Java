@@ -1,5 +1,7 @@
 package io.kurrent.dbclient;
 
+import io.kurrent.dbclient.serialization.MessageSerializer;
+import io.kurrent.dbclient.serialization.MessageSerializerBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

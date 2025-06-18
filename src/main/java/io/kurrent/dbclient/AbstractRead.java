@@ -10,9 +10,9 @@ abstract class AbstractRead implements Publisher<ReadMessage> {
     protected static final StreamsOuterClass.ReadReq.Options.Builder defaultReadOptions;
 
     private final GrpcClient client;
-    private final OptionsWithBackPressure<?> options;
+    private final OptionsWithBackPressureAndSerialization<?> options;
 
-    protected AbstractRead(GrpcClient client, OptionsWithBackPressure<?> options) {
+    protected AbstractRead(GrpcClient client, OptionsWithBackPressureAndSerialization<?> options) {
         this.client = client;
         this.options = options;
     }
@@ -27,13 +27,17 @@ abstract class AbstractRead implements Publisher<ReadMessage> {
 
     @Override
     public void subscribe(Subscriber<? super ReadMessage> subscriber) {
-        ReadResponseObserver observer = new ReadResponseObserver(options, new ReadStreamConsumer(subscriber));
+        ReadResponseObserver observer = new ReadResponseObserver(
+                options, 
+                new ReadStreamConsumer(subscriber), 
+                this.client.getSerializer(options.serializationSettings().orElse(null))
+        );
 
         this.client.getWorkItemArgs().whenComplete((args, error) -> {
-           if (error != null) {
-               observer.onError(error);
-               return;
-           }
+            if (error != null) {
+                observer.onError(error);
+                return;
+            }
 
             StreamsOuterClass.ReadReq request = StreamsOuterClass.ReadReq.newBuilder()
                     .setOptions(createOptions())

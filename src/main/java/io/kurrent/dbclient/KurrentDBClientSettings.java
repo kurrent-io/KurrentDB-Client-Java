@@ -1,6 +1,7 @@
 package io.kurrent.dbclient;
 
 import io.grpc.ClientInterceptor;
+import io.kurrent.dbclient.serialization.KurrentDBClientSerializationSettings;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -8,8 +9,6 @@ import java.util.Set;
 
 /**
  * Gathers all the settings related to a gRPC client with a KurrentDB database.
- * <i>EventStoreDBClientSettings}</i> can only be created when parsing a connection string.
- *
  * <i>KurrentDBClientSettings</i> supports a wide range of settings. If a setting is not mentioned in the connection
  * string, that setting default value is used.
  *
@@ -41,6 +40,7 @@ public class KurrentDBClientSettings {
     private final List<ClientInterceptor> interceptors;
     private final String tlsCaFile;
     private final Set<String> features;
+    private final KurrentDBClientSerializationSettings serializationSettings;
 
     /**
      * If the dns discovery is enabled.
@@ -167,6 +167,12 @@ public class KurrentDBClientSettings {
      */
     public Set<String> getFeatures() { return features; }
 
+    /**
+     * Provides configuration options for messages serialization and deserialization in the KurrentDB client.
+     * If null, default settings are used.
+     */
+    public KurrentDBClientSerializationSettings getSerializationSettings() { return serializationSettings; }
+
     KurrentDBClientSettings(
             boolean dnsDiscover,
             int maxDiscoverAttempts,
@@ -183,7 +189,8 @@ public class KurrentDBClientSettings {
             Long defaultDeadline,
             List<ClientInterceptor> interceptors,
             String tlsCaFile,
-            Set<String> features
+            Set<String> features,
+            KurrentDBClientSerializationSettings serializationSettings
     ) {
         this.dnsDiscover = dnsDiscover;
         this.maxDiscoverAttempts = maxDiscoverAttempts;
@@ -201,6 +208,7 @@ public class KurrentDBClientSettings {
         this.interceptors = interceptors;
         this.tlsCaFile = tlsCaFile;
         this.features = features;
+        this.serializationSettings = serializationSettings;
     }
 
     /**

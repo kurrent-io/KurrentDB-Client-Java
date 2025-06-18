@@ -8,7 +8,7 @@ public class UserCertificate {
     private static void tracing() {
         // region client-with-user-certificates
         KurrentDBClientSettings settings = KurrentDBConnectionString
-                .parseOrThrow("kurrentdb://admin:changeit@{endpoint}?tls=true&userCertFile={pathToCaFile}&userKeyFile={pathToKeyFile}");
+                .parseOrThrow("esdb://admin:changeit@{endpoint}?tls=true&userCertFile={pathToCaFile}&userKeyFile={pathToKeyFile}");
         KurrentDBClient client = KurrentDBClient.create(settings);
         // endregion client-with-user-certificates
     }

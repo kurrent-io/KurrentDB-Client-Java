@@ -7,6 +7,7 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
+import io.kurrent.dbclient.serialization.MessageSerializer;
 import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +26,16 @@ class ReadResponseObserver implements ClientResponseObserver<StreamsOuterClass.R
     private ClientCallStreamObserver<StreamsOuterClass.ReadReq> requestStream;
     private int outstandingRequests;
     private WorkItemArgs args;
-
-
-    public ReadResponseObserver(OptionsWithBackPressure<?> options, StreamConsumer consumer) {
+    private final MessageSerializer messageSerializer;
+    
+    public ReadResponseObserver(
+            OptionsWithBackPressure<?> options, 
+            StreamConsumer consumer, 
+            MessageSerializer messageSerializer
+    ) {
         this.options = options;
         this.consumer = consumer;
+        this.messageSerializer = messageSerializer;
     }
 
     public Subscription getSubscription() {
@@ -106,7 +112,7 @@ class ReadResponseObserver implements ClientResponseObserver<StreamsOuterClass.R
         }
 
         if (value.hasEvent())
-            consumer.onEvent(ResolvedEvent.fromWire(value.getEvent()));
+            consumer.onEvent(ResolvedEvent.fromWire(value.getEvent(), messageSerializer));
         else if (value.hasConfirmation())
             consumer.onSubscriptionConfirmation(value.getConfirmation().getSubscriptionId());
         else if (value.hasCheckpoint()) {

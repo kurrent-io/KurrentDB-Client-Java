@@ -7,7 +7,7 @@ class SubscribePersistentSubscriptionToAll extends AbstractSubscribePersistentSu
     public SubscribePersistentSubscriptionToAll(GrpcClient connection, String group,
                                                 SubscribePersistentSubscriptionOptions options,
                                                 PersistentSubscriptionListener listener) {
-        super(connection, group, options, listener);
+        super(connection, group, options, listener, connection.getSerializer(options.serializationSettings().orElse(null)));
     }
 
     @Override

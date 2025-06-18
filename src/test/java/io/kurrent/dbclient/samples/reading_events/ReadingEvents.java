@@ -3,12 +3,9 @@ package io.kurrent.dbclient.samples.reading_events;
 import io.kurrent.dbclient.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.reactivestreams.*;
-import org.reactivestreams.Subscription;
 
 import java.util.concurrent.ExecutionException;
 
-@SuppressWarnings("ALL")
 public class ReadingEvents {
     private static void readFromStream(KurrentDBClient client) throws ExecutionException, InterruptedException, JsonProcessingException {
         // region read-from-stream
@@ -19,9 +16,6 @@ public class ReadingEvents {
         ReadResult result = client.readStream("some-stream", options)
                 .get();
 
-
-        // or using read reactive
-        Publisher<ReadMessage> publisher = client.readStreamReactive("some-stream", options);
         // endregion read-from-stream
 
         // region iterate-stream
@@ -29,31 +23,6 @@ public class ReadingEvents {
             RecordedEvent recordedEvent = resolvedEvent.getOriginalEvent();
             System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
         }
-
-        // or using read reactive
-        publisher.subscribe(new Subscriber<ReadMessage>() {
-            @Override
-            public void onSubscribe(Subscription subscription) {
-            }
-
-            @Override
-            public void onNext(ReadMessage readMessage) {
-                RecordedEvent recordedEvent = readMessage.getEvent().getOriginalEvent();
-                try {
-                    System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
         // endregion iterate-stream
     }
 
@@ -67,8 +36,6 @@ public class ReadingEvents {
         ReadResult result = client.readStream("some-stream", options)
                 .get();
 
-        // or using read reactive
-        Publisher<ReadMessage> publisher = client.readStreamReactive("some-stream", options);
         // endregion read-from-stream-position
 
         // region iterate-stream
@@ -76,31 +43,6 @@ public class ReadingEvents {
             RecordedEvent recordedEvent = resolvedEvent.getOriginalEvent();
             System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
         }
-
-        // or using read reactive
-        publisher.subscribe(new Subscriber<ReadMessage>() {
-            @Override
-            public void onSubscribe(Subscription subscription) {
-            }
-
-            @Override
-            public void onNext(ReadMessage readMessage) {
-                RecordedEvent recordedEvent = readMessage.getEvent().getOriginalEvent();
-                try {
-                    System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
         // endregion iterate-stream
     }
 
@@ -113,9 +55,6 @@ public class ReadingEvents {
 
         ReadResult result = client.readStream("some-stream", options)
                 .get();
-
-        // Or using reactive stream
-        Publisher<ReadMessage> publisher = client.readStreamReactive("some-stream", options);
         // endregion overriding-user-credentials
     }
 
@@ -142,39 +81,6 @@ public class ReadingEvents {
             RecordedEvent recordedEvent = resolvedEvent.getOriginalEvent();
             System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
         }
-
-        // or using read reactive
-        Publisher<ReadMessage> publisher = client.readStreamReactive("some-stream", options);
-
-        publisher.subscribe(new Subscriber<ReadMessage>() {
-            @Override
-            public void onSubscribe(Subscription subscription) {
-            }
-
-            @Override
-            public void onNext(ReadMessage readMessage) {
-                RecordedEvent recordedEvent = readMessage.getEvent().getOriginalEvent();
-                try {
-                    System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                Throwable innerException = throwable.getCause();
-
-                if (innerException instanceof StreamNotFoundException) {
-                    return;
-                }
-                // Handle other errors
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
         // endregion checking-for-stream-presence
     }
 
@@ -191,33 +97,6 @@ public class ReadingEvents {
             RecordedEvent recordedEvent = resolvedEvent.getOriginalEvent();
             System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
         }
-
-        // or using read reactive
-        Publisher<ReadMessage> publisher = client.readStreamReactive("some-stream", options);
-
-        publisher.subscribe(new Subscriber<ReadMessage>() {
-            @Override
-            public void onSubscribe(Subscription subscription) {
-            }
-
-            @Override
-            public void onNext(ReadMessage readMessage) {
-                RecordedEvent recordedEvent = readMessage.getEvent().getOriginalEvent();
-                try {
-                    System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
         // endregion reading-backwards
     }
 
@@ -230,8 +109,6 @@ public class ReadingEvents {
         ReadResult result = client.readAll(options)
                 .get();
 
-        // or using read reactive
-        Publisher<ReadMessage> publisher = client.readAllReactive(options);
         // endregion read-from-all-stream
 
         // region read-from-all-stream-iterate
@@ -239,31 +116,6 @@ public class ReadingEvents {
             RecordedEvent recordedEvent = resolvedEvent.getOriginalEvent();
             System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
         }
-
-        // or using read reactive
-        publisher.subscribe(new Subscriber<ReadMessage>() {
-            @Override
-            public void onSubscribe(Subscription subscription) {
-            }
-
-            @Override
-            public void onNext(ReadMessage readMessage) {
-                RecordedEvent recordedEvent = readMessage.getEvent().getOriginalEvent();
-                try {
-                    System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
         // endregion read-from-all-stream-iterate
     }
 
@@ -276,9 +128,6 @@ public class ReadingEvents {
 
         ReadResult result = client.readAll(options)
                 .get();
-
-        // or using read reactive
-        Publisher<ReadMessage> publisher = client.readAllReactive(options);
         // endregion read-all-overriding-user-credentials
     }
 
@@ -298,38 +147,6 @@ public class ReadingEvents {
             }
             System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
         }
-
-        // or using read reactive
-        Publisher<ReadMessage> publisher = client.readAllReactive(options);
-
-        publisher.subscribe(new Subscriber<ReadMessage>() {
-            @Override
-            public void onSubscribe(Subscription subscription) {
-            }
-
-            @Override
-            public void onNext(ReadMessage readMessage) {
-                RecordedEvent recordedEvent = readMessage.getEvent().getOriginalEvent();
-
-                if (recordedEvent.getEventType().startsWith("$")) {
-                    return;
-                }
-
-                try {
-                    System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
         // endregion ignore-system-events
     }
 
@@ -342,8 +159,6 @@ public class ReadingEvents {
         ReadResult result = client.readAll(options)
                 .get();
 
-        // or using read reactive
-        Publisher<ReadMessage> publisher = client.readAllReactive(options);
         // endregion read-from-all-stream-backwards
 
         // region read-from-all-stream-iterate
@@ -351,31 +166,6 @@ public class ReadingEvents {
             RecordedEvent recordedEvent = resolvedEvent.getOriginalEvent();
             System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
         }
-
-        // or using read reactive
-        publisher.subscribe(new Subscriber<ReadMessage>() {
-            @Override
-            public void onSubscribe(Subscription subscription) {
-            }
-
-            @Override
-            public void onNext(ReadMessage readMessage) {
-                RecordedEvent recordedEvent = readMessage.getEvent().getOriginalEvent();
-                try {
-                    System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
         // endregion read-from-all-stream-iterate
     }
 
@@ -394,36 +184,6 @@ public class ReadingEvents {
             }
             System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
         }
-
-        // or using read reactive
-        Publisher<ReadMessage> publisher = client.readAllReactive(options);
-
-        publisher.subscribe(new Subscriber<ReadMessage>() {
-            @Override
-            public void onSubscribe(Subscription subscription) {
-            }
-
-            @Override
-            public void onNext(ReadMessage readMessage) {
-                RecordedEvent recordedEvent = readMessage.getEvent().getOriginalEvent();
-                if (!recordedEvent.getEventType().startsWith("$")) {
-                    return;
-                }
-                try {
-                    System.out.println(new ObjectMapper().writeValueAsString(recordedEvent.getEventData()));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
     }
 
     private static void readFromStreamResolvingLinkTos(KurrentDBClient client) throws JsonProcessingException, ExecutionException, InterruptedException {
@@ -435,9 +195,6 @@ public class ReadingEvents {
 
         ReadResult result = client.readAll(options)
                 .get();
-
-        // or using read reactive
-        Publisher<ReadMessage> publisher = client.readAllReactive(options);
 
         // endregion read-from-all-stream-resolving-link-Tos
         for (ResolvedEvent resolvedEvent : result.getEvents()) {

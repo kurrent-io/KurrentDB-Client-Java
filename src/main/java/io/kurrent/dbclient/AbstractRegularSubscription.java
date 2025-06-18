@@ -3,13 +3,6 @@ package io.kurrent.dbclient;
 import io.kurrent.dbclient.proto.shared.Shared;
 import io.kurrent.dbclient.proto.streams.StreamsGrpc;
 import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
-import io.grpc.Metadata;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
-import io.grpc.stub.ClientCallStreamObserver;
-import io.grpc.stub.ClientResponseObserver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import io.grpc.ManagedChannel;
 
 import java.util.concurrent.CompletableFuture;
@@ -21,9 +14,9 @@ abstract class AbstractRegularSubscription {
     protected SubscriptionListener listener;
     protected Checkpointer checkpointer = null;
     private final GrpcClient client;
-    private final OptionsWithBackPressure<?> options;
+    private final OptionsWithBackPressureAndSerialization<?> options;
 
-    protected AbstractRegularSubscription(GrpcClient client, OptionsWithBackPressure<?> options) {
+    protected AbstractRegularSubscription(GrpcClient client, OptionsWithBackPressureAndSerialization<?> options) {
         this.client = client;
         this.options = options;
     }
@@ -77,6 +70,10 @@ abstract class AbstractRegularSubscription {
                 }
         );
 
-        return new ReadResponseObserver(this.options, consumer);
+        return new ReadResponseObserver(
+                this.options, 
+                consumer, 
+                this.client.getSerializer(options.serializationSettings().orElse(null))
+        );
     }
 }
