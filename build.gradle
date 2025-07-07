@@ -25,7 +25,7 @@ tasks.withType(JavaCompile) {
 }
 
 group = 'io.kurrent'
-version = '1.0.2'
+version = '1.0.3'
 
 java {
     withSourcesJar()
