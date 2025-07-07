@@ -29,6 +29,9 @@ class ClientTelemetry {
     }
 
     private static List<EventData> tryInjectTracingContext(Span span, List<EventData> events) {
+        if (!span.getSpanContext().isValid() || !span.getSpanContext().isSampled())
+            return events;
+
         List<EventData> injectedEvents = new ArrayList<>();
         for (EventData event : events) {
             boolean isJsonEvent = Objects.equals(event.getContentType(), ContentType.JSON);
