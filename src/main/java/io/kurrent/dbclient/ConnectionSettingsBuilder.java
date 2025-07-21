@@ -17,7 +17,7 @@ import java.util.*;
 public class ConnectionSettingsBuilder {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionSettingsBuilder.class);
     private static final Set<String> SUPPORTED_PROTOCOLS = new HashSet<>(Arrays.asList(
-            "esdb", "esdb+discover", "kurrent", "kurrent+discover", "kdb", "kdb+discover", "kurrentdb", "kurrentdb+discover"
+            "esdb", "esdb+discover", "kurrentdb", "kurrent+discover", "kdb", "kdb+discover", "kurrentdb", "kurrentdb+discover"
     ));
 
     private boolean _dnsDiscover = false;
