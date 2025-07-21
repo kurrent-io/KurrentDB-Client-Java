@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class ParseValidConnectionStringTests {
     private final JsonMapper mapper = new JsonMapper();
 
-    private static final List<String> PROTOCOLS = Arrays.asList("esdb", "kurrent", "kdb");
+    private static final List<String> PROTOCOLS = Arrays.asList("esdb", "kurrentdb", "kdb");
 
     public static Stream<Arguments> validConnectionStrings() {
         List<Arguments> baseConnectionStrings = Arrays.asList(

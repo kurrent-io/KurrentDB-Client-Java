@@ -1,9 +1,9 @@
 package io.kurrent.dbclient;
 
 public class AppendStreamSuccess {
-    private final io.kurrentdb.v2.AppendStreamSuccess inner;
+    private final io.kurrentdb.protocol.streams.v2.AppendStreamSuccess inner;
 
-    AppendStreamSuccess(io.kurrentdb.v2.AppendStreamSuccess inner) {
+    AppendStreamSuccess(io.kurrentdb.protocol.streams.v2.AppendStreamSuccess inner) {
         this.inner = inner;
     }
 

@@ -4,10 +4,10 @@ import com.google.protobuf.ByteString;
 import io.grpc.Metadata;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
-import io.kurrentdb.v2.AppendRecord;
-import io.kurrentdb.v2.MultiStreamAppendResponse;
-import io.kurrentdb.v2.StreamsServiceGrpc;
-import kurrentdb.protobuf.DynamicValueOuterClass;
+import io.kurrentdb.protocol.DynamicValue;
+import io.kurrentdb.protocol.streams.v2.AppendRecord;
+import io.kurrentdb.protocol.streams.v2.MultiStreamAppendResponse;
+import io.kurrentdb.protocol.streams.v2.StreamsServiceGrpc;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,12 +36,12 @@ class MultiStreamAppend {
         }
 
         StreamsServiceGrpc.StreamsServiceStub client =  GrpcUtils.configureStub(StreamsServiceGrpc.newStub(args.getChannel()), this.client.getSettings(), new OptionsBase<>(), null, false);
-        StreamObserver<io.kurrentdb.v2.AppendStreamRequest> requestStream = client.multiStreamAppendSession(GrpcUtils.convertSingleResponse(result, this::onResponse));
+        StreamObserver<io.kurrentdb.protocol.streams.v2.AppendStreamRequest> requestStream = client.multiStreamAppendSession(GrpcUtils.convertSingleResponse(result, this::onResponse));
 
        try {
            while (this.requests.hasNext()) {
                 AppendStreamRequest request = this.requests.next();
-                io.kurrentdb.v2.AppendStreamRequest.Builder builder = io.kurrentdb.v2.AppendStreamRequest.newBuilder()
+                io.kurrentdb.protocol.streams.v2.AppendStreamRequest.Builder builder = io.kurrentdb.protocol.streams.v2.AppendStreamRequest.newBuilder()
                         .setStream(request.getStreamName());
 
                while (request.getEvents().hasNext()) {
@@ -49,15 +49,13 @@ class MultiStreamAppend {
                      builder.addRecords(AppendRecord.newBuilder()
                              .setData(ByteString.copyFrom(event.getEventData()))
                                      .setRecordId(event.getEventId().toString())
-                                     .putProperties(SystemMetadataKeys.DATA_FORMAT, DynamicValueOuterClass
-                                             .DynamicValue
+                                     .putProperties(SystemMetadataKeys.DATA_FORMAT, DynamicValue
                                              .newBuilder()
-                                             .setBytesValue(ByteString.copyFromUtf8(event.getContentType()))
+                                             .setStringValue(ContentTypeMapper.toSchemaDataFormat(event.getContentType()))
                                              .build())
-                                     .putProperties(SystemMetadataKeys.SCHEMA_NAME, DynamicValueOuterClass
-                                             .DynamicValue
+                                     .putProperties(SystemMetadataKeys.SCHEMA_NAME, DynamicValue
                                              .newBuilder()
-                                             .setBytesValue(ByteString.copyFromUtf8(event.getEventType()))
+                                             .setStringValue(event.getEventType())
                                              .build())
                                      .build());
                }
@@ -93,13 +91,13 @@ class MultiStreamAppend {
         if (response.hasFailure()) {
             failures = new ArrayList<>(response.getFailure().getOutputCount());
 
-            for (io.kurrentdb.v2.AppendStreamFailure failure : response.getFailure().getOutputList()) {
+            for (io.kurrentdb.protocol.streams.v2.AppendStreamFailure failure : response.getFailure().getOutputList()) {
                 failures.add(new AppendStreamFailure(failure));
             }
         } else {
             successes = new ArrayList<>(response.getSuccess().getOutputCount());
 
-            for (io.kurrentdb.v2.AppendStreamSuccess success : response.getSuccess().getOutputList()) {
+            for (io.kurrentdb.protocol.streams.v2.AppendStreamSuccess success : response.getSuccess().getOutputList()) {
                 successes.add(new AppendStreamSuccess(success));
             }
         }

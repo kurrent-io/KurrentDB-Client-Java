@@ -1,9 +1,9 @@
 package io.kurrent.dbclient;
 
 public class AppendStreamFailure {
-    private final io.kurrentdb.v2.AppendStreamFailure inner;
+    private final io.kurrentdb.protocol.streams.v2.AppendStreamFailure inner;
 
-    AppendStreamFailure(io.kurrentdb.v2.AppendStreamFailure inner) {
+    AppendStreamFailure(io.kurrentdb.protocol.streams.v2.AppendStreamFailure inner) {
         this.inner = inner;
     }
 
@@ -12,21 +12,21 @@ public class AppendStreamFailure {
     }
 
     public void visit(MultiAppendStreamErrorVisitor visitor) {
-        if (this.inner.getErrorCase() == io.kurrentdb.v2.AppendStreamFailure.ErrorCase.WRONG_EXPECTED_REVISION) {
-            visitor.onWrongExpectedRevision(this.inner.getWrongExpectedRevision().getStreamRevision());
+        if (this.inner.getErrorCase() == io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase.STREAM_REVISION_CONFLICT) {
+            visitor.onWrongExpectedRevision(this.inner.getStreamRevisionConflict().getStreamRevision());
             return;
         }
 
-        if (this.inner.getErrorCase() == io.kurrentdb.v2.AppendStreamFailure.ErrorCase.ACCESS_DENIED) {
-            visitor.onAccessDenied(this.inner.getAccessDenied().getReason());
+        if (this.inner.getErrorCase() == io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase.ACCESS_DENIED) {
+            visitor.onAccessDenied(this.inner.getAccessDenied());
         }
 
-        if (this.inner.getErrorCase() == io.kurrentdb.v2.AppendStreamFailure.ErrorCase.STREAM_DELETED) {
+        if (this.inner.getErrorCase() == io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase.STREAM_DELETED) {
             visitor.onStreamDeleted();
             return;
         }
 
-       if (this.inner.getErrorCase() == io.kurrentdb.v2.AppendStreamFailure.ErrorCase.TRANSACTION_MAX_SIZE_EXCEEDED) {
+       if (this.inner.getErrorCase() == io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase.TRANSACTION_MAX_SIZE_EXCEEDED) {
             visitor.onTransactionMaxSizeExceeded(this.inner.getTransactionMaxSizeExceeded().getMaxSize());
             return;
        }

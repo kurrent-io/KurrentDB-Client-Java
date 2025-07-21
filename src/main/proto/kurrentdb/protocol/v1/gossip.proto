@@ -2,7 +2,7 @@ syntax = "proto3";
 package event_store.client.gossip;
 option java_package = "io.kurrent.dbclient.proto.gossip";
 
-import "shared.proto";
+import "kurrentdb/protocol/v1/shared.proto";
 
 service Gossip {
 	rpc Read (event_store.client.Empty) returns (ClusterInfo);
