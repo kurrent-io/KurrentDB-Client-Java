@@ -113,10 +113,14 @@ final class GrpcUtils {
     }
 
     static public <S extends AbstractAsyncStub<S>, O> S configureStub(S stub, KurrentDBClientSettings settings, OptionsBase<O> options) {
-        return configureStub(stub, settings, options, null);
+        return configureStub(stub, settings, options, null, true);
     }
 
-    static public <S extends AbstractAsyncStub<S>, O> S configureStub(S stub, KurrentDBClientSettings settings, OptionsBase<O> options, Long forceDeadlineInMs) {
+    static public <S extends AbstractAsyncStub<S>, O> S configureStub(S stub, KurrentDBClientSettings settings, OptionsBase<O> options, long forceDeadlineInMs) {
+        return configureStub(stub, settings, options, forceDeadlineInMs, true);
+    }
+
+    static public <S extends AbstractAsyncStub<S>, O> S configureStub(S stub, KurrentDBClientSettings settings, OptionsBase<O> options, Long forceDeadlineInMs, boolean forwardRequiresLeader) {
         S finalStub = stub;
         ConnectionMetadata metadata = new ConnectionMetadata();
 
@@ -146,7 +150,7 @@ final class GrpcUtils {
             metadata.authenticated(credentials);
         }
 
-        if (options.isLeaderRequired() || settings.getNodePreference() == NodePreference.LEADER) {
+        if (forwardRequiresLeader && (options.isLeaderRequired() || settings.getNodePreference() == NodePreference.LEADER)) {
             metadata.requiresLeader();
         }
 

@@ -15,5 +15,5 @@ jobs:
     name: Tests (Previous LTS)
     uses: ./.github/workflows/tests.yml
     with:
-      image: ${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES)['previous-lts'].fullname }}
+      runtime: previous-lts
     secrets: inherit
