@@ -173,3 +173,7 @@ fabric.properties
 
 # Generated certificates
 certs/
+
+.temp
+.cache
+node_modules
