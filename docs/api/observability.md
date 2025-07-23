@@ -3,7 +3,7 @@ order: 8
 head:
   - - title
     - {}
-    - Observability | Java | Clients | EventStore Docs
+    - Observability | Java | Clients | Kurrent Docs
 ---
 
 # Observability
@@ -97,10 +97,10 @@ public class EventStoreObservability {
                 .setTracerProvider(sdkTracerProvider)
                 .buildAndRegisterGlobal();
 
-        // Your EventStoreDB client operations will now be traced
-        EventStoreDBClientSettings settings = EventStoreDBConnectionString
-                .parseOrThrow("esdb://localhost:2113?tls=false");
-        EventStoreDBClient client = EventStoreDBClient.create(settings);
+        // Your KurrentDB client operations will now be traced
+        KurrentDBClientSettings settings = KurrentDBConnectionString
+                .parseOrThrow("kurrentdb://localhost:2113?tls=false");
+        KurrentDBClient client = KurrentDBClient.create(settings);
     }
 }
 ```
@@ -175,8 +175,8 @@ Each trace includes metadata to help with debugging and monitoring:
 | `db.eventstoredb.subscription.id` | Subscription identifier                | `user-events-123-sub`                 |
 | `db.eventstoredb.event.id`        | Event identifier                       | `event-456`                           |
 | `db.eventstoredb.event.type`      | Event type identifier                  | `user.created`                        |
-| `server.address`                  | EventStoreDB server address            | `localhost`                           |
-| `server.port`                     | EventStoreDB server port               | `2113`                                |
+| `server.address`                  | KurrentDB server address            | `localhost`                           |
+| `server.port`                     | KurrentDB server port               | `2113`                                |
 | `exception.type`                  | Exception type if an error occurred    |                                       |
 | `exception.message`               | Exception message if an error occurred |                                       |
 | `exception.stacktrace`            | Stack trace of the exception           |                                       |

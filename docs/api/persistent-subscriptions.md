@@ -3,7 +3,7 @@ order: 5
 head:
   - - title
     - {}
-    - Persistent Subscriptions | Java | Clients | EventStore Docs
+    - Persistent Subscriptions | Java | Clients | Kurrent Docs
 ---
 
 # Persistent Subscriptions
@@ -29,7 +29,7 @@ You can read more about persistent subscriptions in the [server documentation](@
 The Java client provides a `PersistentSubscriptionsClient` that you can use to manage persistent subscriptions.
 
 ```java
-EventStoreDBClientSettings settings = EventStoreDBConnectionString.parseOrThrow("esdb://localhost:2113?tls=false");
+KurrentDBClientSettings settings = KurrentDBConnectionString.parseOrThrow("kurrentdb://localhost:2113?tls=false");
 PersistentSubscriptionsClient client = PersistentSubscriptionsClient.create(settings);
 ```
 
@@ -212,7 +212,7 @@ resources.
 
 For use with an indexing projection such as the system `$by_category` projection.
 
-EventStoreDB inspects the event for its source stream id, hashing the id to one
+KurrentDB inspects the event for its source stream id, hashing the id to one
 of 1024 buckets assigned to individual clients. When a client disconnects, its
 buckets are assigned to other clients. When a client connects, it is assigned
 some existing buckets. This naively attempts to maintain a balanced workload.

@@ -4,7 +4,7 @@ order: 7
 head:
   - - title
     - {}
-    - Authentication | Java | Clients | EventStore Docs
+    - Authentication | Java | Clients | Kurrent Docs
 ---
 
 # Client x.509 certificate 
@@ -15,7 +15,7 @@ X.509 certificates are digital certificates that use the X.509 public key infras
 
 ## Prerequisites
 
-1. KurrentDB 25.0 or greater, or EventStoreDB 24.10 or later.
+1. KurrentDB 25.0 or greater, or KurrentDB 24.10 or later.
 2. A valid X.509 certificate configured on the Database. See [configuration steps](@server/security/user-authentication.html#user-x-509-certificates) for more details.
 
 ## Connect using an x.509 certificate
@@ -36,8 +36,8 @@ The client supports the following parameters:
 To authenticate, include these two parameters in your connection string or constructor when initializing the client:
 
 ```java
-EventStoreDBClientSettings settings = EventStoreDBConnectionString
-  .parseOrThrow("esdb://admin:changeit@{endpoint}?tls=true&userCertFile={pathToCaFile}&userKeyFile={pathToKeyFile}");
+KurrentDBClientSettings settings = KurrentDBConnectionString
+  .parseOrThrow("kurrentdb://admin:changeit@{endpoint}?tls=true&userCertFile={pathToCaFile}&userKeyFile={pathToKeyFile}");
 
-EventStoreDBClient client = EventStoreDBClient.create(settings);
+KurrentDBClient client = KurrentDBClient.create(settings);
 ```

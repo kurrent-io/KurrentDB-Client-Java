@@ -4,7 +4,7 @@ order: 2
 
 # Appending events
 
-When you start working with EventStoreDB, your application streams are empty. The first meaningful operation is to add one or more events to the database using this API.
+When you start working with KurrentDB, your application streams are empty. The first meaningful operation is to add one or more events to the database using this API.
 
 ::: tip
 Check the [Getting Started](getting-started.md) guide to learn how to configure and use the client SDK.
@@ -12,7 +12,7 @@ Check the [Getting Started](getting-started.md) guide to learn how to configure 
 
 ## Append your first event
 
-The simplest way to append an event to EventStoreDB is to create an `EventData` object and call `appendToStream` method.
+The simplest way to append an event to KurrentDB is to create an `EventData` object and call `appendToStream` method.
 
 ```java {32-43}
 class OrderPlaced {
@@ -54,7 +54,7 @@ EventData eventData = EventData
         .build();
 
 AppendToStreamOptions options = AppendToStreamOptions.get()
-        .expectedRevision(ExpectedRevision.noStream());
+        .streamState(StreamState.noStream());
 
 client.appendToStream("orders", options, eventData)
         .get();
@@ -71,11 +71,11 @@ If you are new to Event Sourcing, please study the [Handling concurrency](#handl
 
 ## Working with EventData
 
-Events appended to EventStoreDB must be wrapped in an `EventData` object. This allows you to specify the event's content, the type of event, and whether it's in JSON format. In its simplest form, you need three arguments: **eventId**, **eventType**, and **eventData**.
+Events appended to KurrentDB must be wrapped in an `EventData` object. This allows you to specify the event's content, the type of event, and whether it's in JSON format. In its simplest form, you need three arguments: **eventId**, **eventType**, and **eventData**.
 
 ### eventId
 
-This takes the format of a `UUID` and is used to uniquely identify the event you are trying to append. If two events with the same `UUID` are appended to the same stream in quick succession, EventStoreDB will only append one of the events to the stream. 
+This takes the format of a `UUID` and is used to uniquely identify the event you are trying to append. If two events with the same `UUID` are appended to the same stream in quick succession, KurrentDB will only append one of the events to the stream. 
 
 For example, the following code will only append a single event:
 
@@ -88,7 +88,7 @@ EventData eventData = EventData
         .build();
 
 AppendToStreamOptions options = AppendToStreamOptions.get()
-        .expectedRevision(ExpectedRevision.any());
+        .streamState(StreamState.any());
 
 client.appendToStream("orders", options, eventData)
         .get();
@@ -106,11 +106,11 @@ It is common to see the explicit event code type name used as the type as it mak
 
 ### eventData
 
-Representation of your event data. It is recommended that you store your events as JSON objects. This allows you to take advantage of all of EventStoreDB's functionality, such as projections. That said, you can save events using whatever format suits your workflow. Eventually, the data will be stored as encoded bytes.
+Representation of your event data. It is recommended that you store your events as JSON objects. This allows you to take advantage of all of KurrentDB's functionality, such as projections. That said, you can save events using whatever format suits your workflow. Eventually, the data will be stored as encoded bytes.
 
 ### userMetadata
 
-Storing additional information alongside your event that is part of the event itself is standard practice. This can be correlation IDs, timestamps, access information, etc. EventStoreDB allows you to store a separate byte array containing this information to keep it separate.
+Storing additional information alongside your event that is part of the event itself is standard practice. This can be correlation IDs, timestamps, access information, etc. KurrentDB allows you to store a separate byte array containing this information to keep it separate.
 
 ### contentType
 
@@ -118,7 +118,7 @@ The content type indicates whether the event is stored as JSON or binary format.
 
 ## Handling concurrency
 
-When appending events to a stream, you can supply an *expected revision*. Your client uses this to inform EventStoreDB of the state or version you expect the stream to be in when appending an event. If the stream isn't in that state, an exception will be thrown. 
+When appending events to a stream, you can supply a *stream state*. Your client uses this to inform KurrentDB of the state or version you expect the stream to be in when appending an event. If the stream isn't in that state, an exception will be thrown. 
 
 For example, if you try to append the same record twice, expecting both times that the stream doesn't exist, you will get an exception on the second:
 
@@ -138,7 +138,7 @@ EventData eventDataTwo = EventData
         .build();
 
 AppendToStreamOptions options = AppendToStreamOptions.get()
-        .expectedRevision(ExpectedRevision.noStream());
+        .streamState(StreamState.noStream());
 
 client.appendToStream("no-stream-stream", options, eventDataOne)
         .get();
@@ -149,12 +149,14 @@ client.appendToStream("no-stream-stream", options, eventDataTwo)
 ```
 
 There are several available expected revision options: 
-- `ExpectedRevision.any()` - No concurrency check
-- `ExpectedRevision.noStream()` - Stream should not exist
-- `ExpectedRevision.streamExists()` - Stream should exist
-- `ExpectedRevision.expectedRevision(long revision)` - Stream should be at specific revision
+- `StreamState.any()` - No concurrency check
+- `StreamState.noStream()` - Stream should not exist
+- `StreamState.streamExists()` - Stream should exist
+- `StreamState.streamRevision(long revision)` - Stream should be at specific revision
 
-This check can be used to implement optimistic concurrency. When retrieving a stream from EventStoreDB, note the current version number. When you save it back, you can determine if somebody else has modified the record in the meantime.
+This check can be used to implement optimistic concurrency. When retrieving a
+stream from KurrentDB, note the current version number. When you save it back,
+you can determine if somebody else has modified the record in the meantime.
 
 First, let's define the event classes for our ecommerce example:
 
@@ -218,14 +220,14 @@ EventData orderCancelledEvent = EventData
 
 // Process payment (succeeds)
 AppendToStreamOptions appendOptions = AppendToStreamOptions.get()
-        .streamRevision(currentRevision);
+        .streamState(currentRevision);
 
 WriteResult paymentResult = client.appendToStream("order-12345", appendOptions, paymentProcessedEvent)
         .get();
 
 // Cancel order (fails due to concurrency conflict)
 AppendToStreamOptions cancelOptions = AppendToStreamOptions.get()
-        .streamRevision(currentRevision);
+        .streamState(currentRevision);
 
 client.appendToStream("order-12345", cancelOptions, orderCancelledEvent)
         .get();
