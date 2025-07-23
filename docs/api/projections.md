@@ -4,22 +4,22 @@ title: Projections
 head:
   - - title
     - {}
-    - Projections | Java | Clients | EventStore Docs
+    - Projections | Java | Clients | Kurrent Docs
 ---
 
 # Projection management
 
-The client provides a way to manage projections in EventStoreDB. 
+The client provides a way to manage projections in KurrentDB. 
 
 For a detailed explanation of projections, see the [server documentation](@server/features/projections/README.md).
 
 ## Creating a client
 
-The Java client provides a `EventStoreDBProjectionManagementClient` that you can use to manage persistent subscriptions.
+The Java client provides a `KurrentDBProjectionManagementClient` that you can use to manage persistent subscriptions.
 
 ```java
-EventStoreDBClientSettings settings = EventStoreDBConnectionString.parseOrThrow("esdb://localhost:2113?tls=false");
-EventStoreDBProjectionManagementClient client = EventStoreDBProjectionManagementClient.create(settings);
+KurrentDBClientSettings settings = KurrentDBConnectionString.parseOrThrow("kurrentdb://localhost:2113?tls=false");
+KurrentDBProjectionManagementClient client = KurrentDBProjectionManagementClient.create(settings);
 ```
 
 ## Create a projection
