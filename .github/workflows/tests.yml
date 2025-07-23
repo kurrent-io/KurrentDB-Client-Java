@@ -1,6 +1,12 @@
 name: tests workflow
 
 on:
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "samples/**"
+      - "**.md"
+
   workflow_call:
     inputs:
       runtime_env:
