@@ -38,8 +38,8 @@ To connect your application to KurrentDB, you need to configure and create a cli
 ::: tip Insecure clusters
 The recommended way to connect to KurrentDB is using secure mode (which is
 the default). However, if your KurrentDB instance is running in insecure
-mode, you must explicitly set `tls=false` in your [connection
-string](#connection-string) or client configuration.
+mode, you must explicitly set `tls=false` in your connection
+string or client configuration.
 :::
 
 KurrentDB uses connection strings to configure the client connection. The connection string supports two protocols:
@@ -93,7 +93,6 @@ There are a number of query parameters that can be used in the connection string
 | `keepAliveTimeout`    | Number                                            | `10`     | Keep-alive ping call timeout, in seconds.                                                                                                      |
 | `userCertFile`        | String, file path                                 | None     | User certificate file for X.509 authentication.                                                                                                |
 | `userKeyFile`         | String, file path                                 | None     | Key file for the user certificate used for X.509 authentication.                                                                               |
-| `dnsDiscover`         | `true`, `false`                                   | `false`  | Enable DNS-based cluster discovery. When `true`, resolves hostnames to discover cluster nodes. Use with `feature=dns-lookup` for full DNS resolution. |
 | `feature`             | `dns-lookup`                                      | None     | Enable specific client features. Use `dns-lookup` with `dnsDiscover=true` to resolve hostnames to multiple IP addresses for cluster discovery. |
 
 When connecting to an insecure instance, specify `tls=false` parameter. For example, for a node running locally use `kurrentdb://localhost:2113?tls=false`. Note that usernames and passwords aren't provided there because insecure deployments don't support authentication and authorisation.
