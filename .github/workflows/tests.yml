@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test: [Streams, PersistentSubscriptions, Telemetry, MultiStreamAppend]
+        test: [Streams, PersistentSubscriptions, Telemetry, MultiStreamAppend, Connection]
 
     runs-on: ubuntu-latest
     steps:

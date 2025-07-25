@@ -132,6 +132,7 @@ tasks.register("singleNodeTests", Test) {
         include("**/PersistentSubscriptionsTests.class")
         include("**/TelemetryTests.class")
         include("**/ConnectionShutdownTests.class")
+        include("**/ConnectionTests.class")
     }
 }
 
@@ -155,6 +156,7 @@ tasks.register("clusterTests", Test) {
         include("**/StreamsTests.class")
         include("**/PersistentSubscriptionsTests.class")
         include("**/ConnectionShutdownTests.class")
+        include("**/ConnectionTests.class")
     }
 }
 
