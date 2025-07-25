@@ -1,6 +1,10 @@
 name: LTS
 on:
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "samples/**"
+      - "**.md"
   push:
     branches:
       - trunk
