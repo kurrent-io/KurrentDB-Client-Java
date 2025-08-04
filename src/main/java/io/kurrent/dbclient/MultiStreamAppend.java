@@ -12,6 +12,7 @@ import io.kurrentdb.protocol.streams.v2.StreamsServiceGrpc;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 class MultiStreamAppend {
@@ -42,22 +43,29 @@ class MultiStreamAppend {
            while (this.requests.hasNext()) {
                 AppendStreamRequest request = this.requests.next();
                 io.kurrentdb.protocol.streams.v2.AppendStreamRequest.Builder builder = io.kurrentdb.protocol.streams.v2.AppendStreamRequest.newBuilder()
+                        .setExpectedRevision(request.getExpectedState().toRawLong())
                         .setStream(request.getStreamName());
 
                while (request.getEvents().hasNext()) {
                      EventData event = request.getEvents().next();
-                     builder.addRecords(AppendRecord.newBuilder()
+                     AppendRecord.Builder recordBuilder = AppendRecord.newBuilder()
                              .setData(ByteString.copyFrom(event.getEventData()))
-                                     .setRecordId(event.getEventId().toString())
-                                     .putProperties(SystemMetadataKeys.DATA_FORMAT, DynamicValue
-                                             .newBuilder()
-                                             .setStringValue(ContentTypeMapper.toSchemaDataFormat(event.getContentType()))
-                                             .build())
-                                     .putProperties(SystemMetadataKeys.SCHEMA_NAME, DynamicValue
-                                             .newBuilder()
-                                             .setStringValue(event.getEventType())
-                                             .build())
+                             .setRecordId(event.getEventId().toString())
+                             .putProperties(SystemMetadataKeys.DATA_FORMAT, DynamicValue
+                                     .newBuilder()
+                                     .setStringValue(ContentTypeMapper.toSchemaDataFormat(event.getContentType()))
+                                     .build())
+                             .putProperties(SystemMetadataKeys.SCHEMA_NAME, DynamicValue
+                                     .newBuilder()
+                                     .setStringValue(event.getEventType())
                                      .build());
+
+                     if (event.getUserMetadata() != null) {
+                         Map<String, DynamicValue> userMetadataProperties = DynamicValueMapper.mapJsonToDynamicValueMap(event.getUserMetadata());
+                         recordBuilder.putAllProperties(userMetadataProperties);
+                     }
+
+                     builder.addRecords(recordBuilder.build());
                }
 
                requestStream.onNext(builder.build());
