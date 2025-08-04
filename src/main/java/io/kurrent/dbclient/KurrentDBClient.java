@@ -75,7 +75,7 @@ public class KurrentDBClient extends KurrentDBClientBase {
         return new AppendToStream(this.getGrpcClient(), streamName, events, options).execute();
     }
 
-    public CompletableFuture<MultiAppendWriteResult> multiAppend(AppendToStreamOptions options, Iterator<AppendStreamRequest> requests) {
+    public CompletableFuture<MultiAppendWriteResult> multiStreamAppend(Iterator<AppendStreamRequest> requests) {
         return new MultiStreamAppend(this.getGrpcClient(), requests).execute();
     }
 
