@@ -10,13 +10,11 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.sdk.trace.ReadableSpan;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -299,6 +297,14 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
     @Test
     default void testMultiStreamAppendIsInstrumentedWithTracingAsExpected() throws Throwable {
         KurrentDBClient client = getDefaultClient();
+
+        Optional<ServerVersion> version = client.getServerVersion().get();
+
+        Assumptions.assumeTrue(
+                version.isPresent() && version.get().isGreaterOrEqualThan(25, 0),
+                "Multi-stream append is not supported server versions below 25.0.0"
+        );
+
         String streamName1 = generateName();
         String streamName2 = generateName();
 
@@ -352,6 +358,14 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
     @Test
     default void testMultiStreamAppendIsInstrumentedWithFailures() throws Throwable {
         KurrentDBClient client = getDefaultClient();
+
+        Optional<ServerVersion> version = client.getServerVersion().get();
+
+        Assumptions.assumeTrue(
+                version.isPresent() && version.get().isGreaterOrEqualThan(25, 0),
+                "Multi-stream append is not supported server versions below 25.0.0"
+        );
+
         String streamName1 = generateName();
         String streamName2 = generateName();
 
