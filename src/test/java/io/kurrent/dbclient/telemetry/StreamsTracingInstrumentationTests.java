@@ -3,12 +3,18 @@ package io.kurrent.dbclient.telemetry;
 import io.kurrent.dbclient.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase;
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.SpanContext;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.sdk.trace.ReadableSpan;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -288,5 +294,114 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
         List<ReadableSpan> subscribeSpans = getSpansForOperation(ClientTelemetryConstants.Operations.SUBSCRIBE);
         Assertions.assertTrue(subscribeSpans.isEmpty(), "No spans should be recorded for deleted events");
+    }
+
+    @Test
+    default void testMultiStreamAppendIsInstrumentedWithTracingAsExpected() throws Throwable {
+        KurrentDBClient client = getDefaultClient();
+        String streamName1 = generateName();
+        String streamName2 = generateName();
+
+        EventData event1 = EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
+                .eventId(UUID.randomUUID())
+                .build();
+
+        EventData event2 = EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
+                .eventId(UUID.randomUUID())
+                .build();
+
+        AppendStreamRequest request1 = new AppendStreamRequest(
+                streamName1,
+                Collections.singletonList(event1).iterator(),
+                StreamState.noStream()
+        );
+
+        AppendStreamRequest request2 = new AppendStreamRequest(
+                streamName2,
+                Collections.singletonList(event2).iterator(),
+                StreamState.noStream()
+        );
+
+        MultiAppendWriteResult result = client.multiStreamAppend(
+                Arrays.asList(request1, request2).iterator()
+        ).get();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.getSuccesses().isPresent());
+
+        List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.APPEND);
+        Assertions.assertEquals(2, spans.size());
+
+        ReadableSpan span1 = spans.stream()
+                .filter(span -> streamName1.equals(span.getAttribute(AttributeKey.stringKey(ClientTelemetryAttributes.KurrentDB.STREAM))))
+                .findFirst()
+                .orElse(null);
+
+        ReadableSpan span2 = spans.stream()
+                .filter(span -> streamName2.equals(span.getAttribute(AttributeKey.stringKey(ClientTelemetryAttributes.KurrentDB.STREAM))))
+                .findFirst()
+                .orElse(null);
+
+        Assertions.assertNotNull(span1);
+        Assertions.assertNotNull(span2);
+
+        assertAppendSpanHasExpectedAttributes(span1, streamName1);
+        assertAppendSpanHasExpectedAttributes(span2, streamName2);
+    }
+
+    @Test
+    default void testMultiStreamAppendIsInstrumentedWithFailures() throws Throwable {
+        KurrentDBClient client = getDefaultClient();
+        String streamName1 = generateName();
+        String streamName2 = generateName();
+
+        EventData event1 = EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
+                .eventId(UUID.randomUUID())
+                .build();
+
+        EventData event2 = EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
+                .eventId(UUID.randomUUID())
+                .build();
+
+        AppendStreamRequest request1 = new AppendStreamRequest(
+                streamName1,
+                Collections.singletonList(event1).iterator(),
+                StreamState.noStream()
+        );
+
+        AppendStreamRequest request2 = new AppendStreamRequest(
+                streamName2,
+                Collections.singletonList(event2).iterator(),
+                StreamState.streamExists()
+        );
+
+        MultiAppendWriteResult result = client.multiStreamAppend(
+                Arrays.asList(request1, request2).iterator()
+        ).get();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.getSuccesses().isPresent());
+
+        List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.APPEND);
+        Assertions.assertEquals(2, spans.size());
+
+        ReadableSpan span1 = spans.stream()
+                .filter(span -> streamName1.equals(span.getAttribute(AttributeKey.stringKey(ClientTelemetryAttributes.KurrentDB.STREAM))))
+                .findFirst()
+                .orElse(null);
+
+        ReadableSpan span2 = spans.stream()
+                .filter(span -> streamName2.equals(span.getAttribute(AttributeKey.stringKey(ClientTelemetryAttributes.KurrentDB.STREAM))))
+                .findFirst()
+                .orElse(null);
+
+        Assertions.assertNotNull(span1);
+        Assertions.assertNotNull(span2);
+
+        Assertions.assertEquals(StatusCode.ERROR, span1.toSpanData().getStatus().getStatusCode());
+        Assertions.assertEquals("", span1.toSpanData().getStatus().getDescription());
+
+        Assertions.assertEquals(StatusCode.ERROR, span2.toSpanData().getStatus().getStatusCode());
+        Assertions.assertEquals(ErrorCase.STREAM_REVISION_CONFLICT.toString(), span2.toSpanData().getStatus().getDescription());
     }
 }

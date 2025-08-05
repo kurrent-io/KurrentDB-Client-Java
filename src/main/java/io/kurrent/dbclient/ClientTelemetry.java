@@ -4,15 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.grpc.ManagedChannel;
+import io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.*;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.BiFunction;
@@ -120,6 +118,104 @@ class ClientTelemetry {
                         }
                     }));
         }
+    }
+
+    static CompletableFuture<MultiAppendWriteResult> traceMultiStreamAppend(
+            BiFunction<WorkItemArgs, Iterator<AppendStreamRequest>, CompletableFuture<MultiAppendWriteResult>> multiAppendOperation,
+            WorkItemArgs args,
+            Iterator<AppendStreamRequest> requests, KurrentDBClientSettings settings) {
+
+        List<AppendStreamRequest> requestsWithTracing = new ArrayList<>();
+        Map<String, Span> spanMap = new HashMap<>();
+
+        while (requests.hasNext()) {
+            AppendStreamRequest request = requests.next();
+
+            Span span = createSpan(
+                    ClientTelemetryConstants.Operations.APPEND,
+                    SpanKind.CLIENT,
+                    null,
+                    ClientTelemetryTags.builder()
+                            .withRequiredTag(ClientTelemetryAttributes.KurrentDB.STREAM, request.getStreamName())
+                            .withServerTagsFromGrpcChannel(args.getChannel())
+                            .withServerTagsFromClientSettings(settings)
+                            .withOptionalDatabaseUserTag(settings.getDefaultCredentials())
+                            .build());
+
+            spanMap.put(request.getStreamName(), span);
+
+            List<EventData> eventsWithTracing = new ArrayList<>();
+            while (request.getEvents().hasNext())
+                eventsWithTracing.add(request.getEvents().next());
+
+            List<EventData> tracedEvents = tryInjectTracingContext(span, eventsWithTracing);
+
+            requestsWithTracing.add(new AppendStreamRequest(
+                    request.getStreamName(),
+                    tracedEvents.iterator(),
+                    request.getExpectedState()
+            ));
+        }
+
+        return multiAppendOperation.apply(args, requestsWithTracing.iterator())
+                .handle((result, throwable) -> {
+                    if (throwable != null) {
+                        for (Span span : spanMap.values()) {
+                            span.setStatus(StatusCode.ERROR);
+                            span.recordException(throwable);
+                            span.end();
+                        }
+                        throw new CompletionException(throwable);
+                    } else {
+                        if (result.getFailures().isPresent()) {
+                            Set<String> processedStreams = new HashSet<>();
+
+                            for (AppendStreamFailure failure : result.getFailures().get()) {
+                                Span span = spanMap.get(failure.getStreamName());
+                                if (span != null) {
+                                    StringBuilder statusDescription = new StringBuilder();
+                                    failure.visit(new MultiAppendStreamErrorVisitor() {
+                                        @Override
+                                        public void onWrongExpectedRevision(long streamRevision) {
+                                            statusDescription.append(ErrorCase.STREAM_REVISION_CONFLICT);
+                                        }
+
+                                        @Override
+                                        public void onAccessDenied(io.kurrentdb.protocol.streams.v2.ErrorDetails.AccessDenied detail) {
+                                            statusDescription.append(ErrorCase.ACCESS_DENIED);
+                                        }
+
+                                        @Override
+                                        public void onStreamDeleted() {
+                                            statusDescription.append(ErrorCase.STREAM_DELETED);
+                                        }
+
+                                        @Override
+                                        public void onTransactionMaxSizeExceeded(int maxSize) {
+                                            statusDescription.append(ErrorCase.TRANSACTION_MAX_SIZE_EXCEEDED);
+                                        }
+                                    });
+
+                                    span.setStatus(StatusCode.ERROR, statusDescription.toString());
+                                    span.end();
+                                    processedStreams.add(failure.getStreamName());
+                                }
+                            }
+
+                            spanMap.entrySet().stream().filter(entry -> !processedStreams.contains(entry.getKey())).forEach(entry -> {
+                                entry.getValue().setStatus(StatusCode.ERROR);
+                                entry.getValue().end();
+                            });
+                        } else if (result.getSuccesses().isPresent()) {
+                            result.getSuccesses().get().stream().map(success -> spanMap.get(success.getStreamName())).filter(Objects::nonNull).forEach(span -> {
+                                span.setStatus(StatusCode.OK);
+                                span.end();
+                            });
+                        }
+
+                        return result;
+                    }
+                });
     }
 
     static void traceSubscribe(Runnable tracedOperation, String subscriptionId, ManagedChannel channel,
