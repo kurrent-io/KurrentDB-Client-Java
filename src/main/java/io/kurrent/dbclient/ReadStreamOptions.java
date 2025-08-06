@@ -8,7 +8,6 @@ public class ReadStreamOptions extends OptionsWithStartRevisionAndResolveLinkTos
     private long maxCount;
 
     private ReadStreamOptions() {
-        super(OperationKind.Streaming);
         this.direction = Direction.Forwards;
         this.maxCount = Long.MAX_VALUE;
     }

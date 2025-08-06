@@ -8,7 +8,6 @@ public class ReadAllOptions extends OptionsWithPositionAndResolveLinkTosBase<Rea
     private long maxCount;
 
     private ReadAllOptions() {
-        super(OperationKind.Streaming);
         this.direction = Direction.Forwards;
         this.maxCount = Long.MAX_VALUE;
     }
