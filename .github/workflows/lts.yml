@@ -1,6 +1,10 @@
 name: LTS
 on:
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "samples/**"
+      - "**.md"
   push:
     branches:
       - trunk
@@ -15,7 +19,7 @@ jobs:
     name: Tests (LTS)
     uses: ./.github/workflows/tests.yml
     with:
-      image: ${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES).lts.fullname }}
+      runtime: lts
     secrets: inherit
 
   # Will be removed in the future
@@ -24,5 +28,7 @@ jobs:
 
     uses: ./.github/workflows/plugins-tests.yml
     with:
-      image: "docker.eventstore.com/eventstore-ee/eventstoredb-commercial:24.2.0-jammy"
+      registry: docker.eventstore.com/eventstore-ee
+      image: eventstoredb-commercial
+      tag: 24.2.0-jammy
     secrets: inherit

@@ -1,6 +1,10 @@
 name: CI
 on:
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "samples/**"
+      - "**.md"
   push:
     branches:
       - trunk
@@ -15,5 +19,5 @@ jobs:
     name: Tests (CI)
     uses: ./.github/workflows/tests.yml
     with:
-      image: ${{ fromJSON(vars.KURRENTDB_DOCKER_IMAGES).ci.fullname }}
+      runtime: ci
     secrets: inherit

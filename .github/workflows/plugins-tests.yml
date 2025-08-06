@@ -3,7 +3,13 @@ name: enterprise plugins tests workflow
 on:
   workflow_call:
     inputs:
+      registry:
+        required: true
+        type: string
       image:
+        required: true
+        type: string
+      tag:
         required: true
         type: string
 
@@ -46,7 +52,7 @@ jobs:
       - name: Execute Gradle build
         run: ./gradlew ci --tests ${{ matrix.test }}Tests
         env:
-          KURRENTDB_IMAGE: ${{ inputs.image }}
+          KURRENTDB_IMAGE: ${{inputs.registry}}/${{ inputs.image }}:${{ inputs.tag }}
           SECURE: true
 
       - uses: actions/upload-artifact@v4
@@ -81,7 +87,9 @@ jobs:
       - name: Set up cluster with Docker Compose
         run: docker compose up -d
         env:
-          KURRENTDB_IMAGE: ${{ inputs.image }}
+          KURRENTDB_DOCKER_REGISTRY: ${{ inputs.registry }}
+          KURRENTDB_DOCKER_IMAGE: ${{ inputs.image }}
+          KURRENTDB_DOCKER_TAG: ${{ inputs.tag }}
 
       - name: Generate user certificates
         run: docker compose --file configure-user-certs-for-tests.yml up
