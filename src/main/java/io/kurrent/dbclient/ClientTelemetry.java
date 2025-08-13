@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.grpc.ManagedChannel;
-import io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase;
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.*;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
@@ -14,6 +15,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.BiFunction;
+
+import static io.kurrentdb.protocol.streams.v2.AppendStreamFailure.*;
 
 class ClientTelemetry {
     private static final ClientTelemetryTags DEFAULT_ATTRIBUTES = new ClientTelemetryTags() {{
@@ -126,7 +129,7 @@ class ClientTelemetry {
             Iterator<AppendStreamRequest> requests, KurrentDBClientSettings settings) {
 
         List<AppendStreamRequest> requestsWithTracing = new ArrayList<>();
-        Map<String, Span> spanMap = new HashMap<>();
+        List<Span> spans = new ArrayList<>();
 
         while (requests.hasNext()) {
             AppendStreamRequest request = requests.next();
@@ -142,7 +145,7 @@ class ClientTelemetry {
                             .withOptionalDatabaseUserTag(settings.getDefaultCredentials())
                             .build());
 
-            spanMap.put(request.getStreamName(), span);
+            spans.add(span);
 
             List<EventData> eventsWithTracing = new ArrayList<>();
             while (request.getEvents().hasNext())
@@ -160,7 +163,7 @@ class ClientTelemetry {
         return multiAppendOperation.apply(args, requestsWithTracing.iterator())
                 .handle((result, throwable) -> {
                     if (throwable != null) {
-                        for (Span span : spanMap.values()) {
+                        for (Span span : spans) {
                             span.setStatus(StatusCode.ERROR);
                             span.recordException(throwable);
                             span.end();
@@ -168,49 +171,48 @@ class ClientTelemetry {
                         throw new CompletionException(throwable);
                     } else {
                         if (result.getFailures().isPresent()) {
-                            Set<String> processedStreams = new HashSet<>();
-
-                            for (AppendStreamFailure failure : result.getFailures().get()) {
-                                Span span = spanMap.get(failure.getStreamName());
-                                if (span != null) {
-                                    StringBuilder statusDescription = new StringBuilder();
+                            for (Span span : spans) {
+                                for (AppendStreamFailure failure : result.getFailures().get()) {
                                     failure.visit(new MultiAppendStreamErrorVisitor() {
                                         @Override
                                         public void onWrongExpectedRevision(long streamRevision) {
-                                            statusDescription.append(ErrorCase.STREAM_REVISION_CONFLICT);
+                                            span.addEvent("exception", Attributes.of(
+                                                    AttributeKey.stringKey("exception.type"), ErrorCase.STREAM_REVISION_CONFLICT.toString(),
+                                                    AttributeKey.longKey("exception.revision"), streamRevision
+                                            ));
                                         }
 
                                         @Override
                                         public void onAccessDenied(io.kurrentdb.protocol.streams.v2.ErrorDetails.AccessDenied detail) {
-                                            statusDescription.append(ErrorCase.ACCESS_DENIED);
+                                            span.addEvent("exception", Attributes.of(
+                                                    AttributeKey.stringKey("exception.type"), ErrorCase.ACCESS_DENIED.toString()
+                                            ));
                                         }
 
                                         @Override
                                         public void onStreamDeleted() {
-                                            statusDescription.append(ErrorCase.STREAM_DELETED);
+                                            span.addEvent("exception", Attributes.of(
+                                                    AttributeKey.stringKey("exception.type"), ErrorCase.STREAM_DELETED.toString()
+                                            ));
                                         }
 
                                         @Override
                                         public void onTransactionMaxSizeExceeded(int maxSize) {
-                                            statusDescription.append(ErrorCase.TRANSACTION_MAX_SIZE_EXCEEDED);
+                                            span.addEvent("exception", Attributes.of(
+                                                    AttributeKey.stringKey("exception.type"), ErrorCase.TRANSACTION_MAX_SIZE_EXCEEDED.toString(),
+                                                    AttributeKey.longKey("exception.maxSize"), (long) maxSize
+                                            ));
                                         }
                                     });
-
-                                    span.setStatus(StatusCode.ERROR, statusDescription.toString());
-                                    span.end();
-                                    processedStreams.add(failure.getStreamName());
                                 }
+                                span.setStatus(StatusCode.ERROR);
+                                span.end();
                             }
-
-                            spanMap.entrySet().stream().filter(entry -> !processedStreams.contains(entry.getKey())).forEach(entry -> {
-                                entry.getValue().setStatus(StatusCode.ERROR);
-                                entry.getValue().end();
-                            });
                         } else if (result.getSuccesses().isPresent()) {
-                            result.getSuccesses().get().stream().map(success -> spanMap.get(success.getStreamName())).filter(Objects::nonNull).forEach(span -> {
+                            for (Span span : spans) {
                                 span.setStatus(StatusCode.OK);
                                 span.end();
-                            });
+                            }
                         }
 
                         return result;

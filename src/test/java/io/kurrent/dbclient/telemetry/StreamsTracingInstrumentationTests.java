@@ -395,6 +395,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
         Assertions.assertNotNull(result);
         Assertions.assertFalse(result.getSuccesses().isPresent());
+        Assertions.assertTrue(result.getFailures().isPresent());
 
         List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.APPEND);
         Assertions.assertEquals(2, spans.size());
@@ -414,8 +415,29 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
         Assertions.assertEquals(StatusCode.ERROR, span1.toSpanData().getStatus().getStatusCode());
         Assertions.assertEquals("", span1.toSpanData().getStatus().getDescription());
-
         Assertions.assertEquals(StatusCode.ERROR, span2.toSpanData().getStatus().getStatusCode());
-        Assertions.assertEquals(ErrorCase.STREAM_REVISION_CONFLICT.toString(), span2.toSpanData().getStatus().getDescription());
+        Assertions.assertEquals("", span2.toSpanData().getStatus().getDescription());
+
+        List<io.opentelemetry.sdk.trace.data.EventData> events1 = span1.toSpanData().getEvents();
+        List<io.opentelemetry.sdk.trace.data.EventData> events2 = span2.toSpanData().getEvents();
+
+        Assertions.assertEquals(1, events1.size());
+        Assertions.assertEquals(1, events2.size());
+
+        io.opentelemetry.sdk.trace.data.EventData failureEvent1 = events1.get(0);
+        io.opentelemetry.sdk.trace.data.EventData failureEvent2 = events2.get(0);
+
+        Assertions.assertEquals("exception", failureEvent1.getName());
+        Assertions.assertEquals("exception", failureEvent2.getName());
+
+        Assertions.assertEquals(ErrorCase.STREAM_REVISION_CONFLICT.toString(),
+                failureEvent1.getAttributes().get(AttributeKey.stringKey("exception.type")));
+        Assertions.assertEquals(ErrorCase.STREAM_REVISION_CONFLICT.toString(),
+                failureEvent2.getAttributes().get(AttributeKey.stringKey("exception.type")));
+
+        Assertions.assertNotNull(failureEvent1.getAttributes().get(AttributeKey.longKey("exception.revision")));
+        Assertions.assertNotNull(failureEvent2.getAttributes().get(AttributeKey.longKey("exception.revision")));
+        Assertions.assertEquals(-1L, failureEvent1.getAttributes().get(AttributeKey.longKey("exception.revision")));
+        Assertions.assertEquals(-1L, failureEvent2.getAttributes().get(AttributeKey.longKey("exception.revision")));
     }
 }
