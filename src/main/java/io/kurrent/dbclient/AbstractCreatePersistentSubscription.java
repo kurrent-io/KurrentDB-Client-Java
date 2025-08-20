@@ -5,6 +5,7 @@ import io.kurrent.dbclient.proto.persistentsubscriptions.PersistentSubscriptions
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 abstract class AbstractCreatePersistentSubscription<TPos, TSettings extends PersistentSubscriptionSettings> {
@@ -31,6 +32,8 @@ abstract class AbstractCreatePersistentSubscription<TPos, TSettings extends Pers
     @SuppressWarnings({"unchecked", "deprecation"})
     public CompletableFuture execute() {
         return this.client.runWithArgs(args -> {
+            Optional<ServerVersion> serverVersion = args.getServerVersion();
+
             CompletableFuture result = new CompletableFuture();
             PersistentSubscriptionsGrpc.PersistentSubscriptionsStub client =
                     GrpcUtils.configureStub(PersistentSubscriptionsGrpc.newStub(args.getChannel()), this.client.getSettings(), this.options);
@@ -56,8 +59,15 @@ abstract class AbstractCreatePersistentSubscription<TPos, TSettings extends Pers
                 settingsBuilder.setNamedConsumerStrategy(Persistent.CreateReq.ConsumerStrategy.RoundRobin);
             } else if (settings.getNamedConsumerStrategy().isPinned()) {
                 settingsBuilder.setNamedConsumerStrategy(Persistent.CreateReq.ConsumerStrategy.Pinned);
+            } else if (settings.getNamedConsumerStrategy().isPinnedByCorrelation()) {
+                if (serverVersion.get().isGreaterThan(21, 10, 0)) {
+                    settingsBuilder.setConsumerStrategy(settings.getNamedConsumerStrategy().toString());
+                } else {
+                    logger.error("Consumer strategy: '{}' is only available on server 21.10.1 and above", NamedConsumerStrategy.PINNED_BY_CORRELATION);
+                    throw new UnsupportedFeatureException();
+                }
             } else {
-                logger.error(String.format("Unsupported named consumer strategy: '%s'", settings.getNamedConsumerStrategy().toString()));
+                logger.error("Unsupported named consumer strategy: '{}'", settings.getNamedConsumerStrategy().toString());
                 throw new UnsupportedFeatureException();
             }
 
