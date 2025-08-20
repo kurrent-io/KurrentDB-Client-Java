@@ -28,6 +28,11 @@ public class NamedConsumerStrategy {
      */
     public static final NamedConsumerStrategy PINNED = new NamedConsumerStrategy("Pinned");
 
+    /**
+     * This is similar to the Pinned strategy, but instead of using the source stream id to bucket the messages, it distributes the events based on the event's correlationId.
+     */
+    public static final NamedConsumerStrategy PINNED_BY_CORRELATION = new NamedConsumerStrategy("PinnedByCorrelation");
+
     NamedConsumerStrategy(String value) {
         this.value = value;
     }
@@ -51,6 +56,14 @@ public class NamedConsumerStrategy {
      */
     public boolean isPinned() {
         return isNamed("Pinned");
+    }
+
+
+    /**
+     * Checks if it's a <i>PinnedByCorrelation</i> strategy.
+     */
+    public boolean isPinnedByCorrelation() {
+        return isNamed("PinnedByCorrelation");
     }
 
     /**
