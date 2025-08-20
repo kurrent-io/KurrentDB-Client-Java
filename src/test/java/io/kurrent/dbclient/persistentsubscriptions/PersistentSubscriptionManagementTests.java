@@ -3,11 +3,15 @@ package io.kurrent.dbclient.persistentsubscriptions;
 import io.kurrent.dbclient.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SuppressWarnings("unchecked")
@@ -29,7 +33,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
         List<PersistentSubscriptionInfo> subs = client.listAll().get();
 
         int count = 0;
-        for (PersistentSubscriptionInfo info: subs) {
+        for (PersistentSubscriptionInfo info : subs) {
             if (info.getEventSource().equals(streamA) || info.getEventSource().equals(streamB)) {
                 count++;
             }
@@ -122,7 +126,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
 
     @Test
     @Order(6)
-     default void testGetPersistentSubscriptionInfoNotExisting() throws Throwable {
+    default void testGetPersistentSubscriptionInfoNotExisting() throws Throwable {
         KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         Optional<PersistentSubscriptionToStreamInfo> result = client.getInfoToStream(generateName(), generateName()).get();
 
@@ -147,6 +151,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
 
         client.subscribeToStream(streamName, groupName, new PersistentSubscriptionListener() {
             int count = 0;
+
             @Override
             public void onEvent(PersistentSubscription subscription, int retryCount, ResolvedEvent event) {
                 if (count < 2)
@@ -206,6 +211,7 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
 
         client.subscribeToAll(groupName, new PersistentSubscriptionListener() {
             int count = 0;
+
             @Override
             public void onEvent(PersistentSubscription subscription, int retryCount, ResolvedEvent event) {
                 if (count < 2 && event.getOriginalEvent().getStreamId().equals(streamName))
@@ -268,9 +274,9 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
             break;
         }
 
-       Assertions.assertTrue(info.isPresent());
-       Assertions.assertEquals(info.get().getEventSource(), streamName);
-       Assertions.assertEquals(info.get().getGroupName(), groupName);
+        Assertions.assertTrue(info.isPresent());
+        Assertions.assertEquals(info.get().getEventSource(), streamName);
+        Assertions.assertEquals(info.get().getGroupName(), groupName);
     }
 
     @Test
@@ -278,5 +284,54 @@ public interface PersistentSubscriptionManagementTests extends ConnectionAware {
     default void testRestartSubsystem() throws Throwable {
         KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
         client.restartSubsystem().get();
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(NamedConsumerStrategyProvider.class)
+    default void testCreatePersistentSubscriptionToAllWithConsumerStrategies(NamedConsumerStrategy strategy) throws Throwable {
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        String groupName = String.format("/foo/%s/group", generateName());
+
+        CreatePersistentSubscriptionToAllOptions options = CreatePersistentSubscriptionToAllOptions.get()
+                .namedConsumerStrategy(strategy);
+
+        client.createToAll(groupName, options).get();
+
+        Optional<PersistentSubscriptionToAllInfo> result = client.getInfoToAll(groupName).get();
+        Assertions.assertTrue(result.isPresent(), "Subscription should be created");
+
+        Assertions.assertEquals(groupName, result.get().getGroupName());
+        Assertions.assertEquals(strategy.toString(), result.get().getSettings().getNamedConsumerStrategy().toString());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(NamedConsumerStrategyProvider.class)
+    default void testCreatePersistentSubscriptionToStreamWithConsumerStrategies(NamedConsumerStrategy strategy) throws Throwable {
+        KurrentDBPersistentSubscriptionsClient client = getDefaultPersistentSubscriptionClient();
+        String streamName = String.format("/foo/%s/stream", generateName());
+        String groupName = String.format("/foo/%s/group", generateName());
+
+        CreatePersistentSubscriptionToStreamOptions options = CreatePersistentSubscriptionToStreamOptions.get()
+                .namedConsumerStrategy(strategy);
+
+        client.createToStream(streamName, groupName, options).get();
+
+        Optional<PersistentSubscriptionToStreamInfo> result = client.getInfoToStream(streamName, groupName).get();
+        Assertions.assertTrue(result.isPresent(), "Subscription should be created");
+
+        Assertions.assertEquals(groupName, result.get().getGroupName());
+        Assertions.assertEquals(strategy.toString(), result.get().getSettings().getNamedConsumerStrategy().toString());
+    }
+}
+
+class NamedConsumerStrategyProvider implements ArgumentsProvider {
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+        return Stream.of(
+                Arguments.of(NamedConsumerStrategy.DISPATCH_TO_SINGLE),
+                Arguments.of(NamedConsumerStrategy.ROUND_ROBIN),
+                Arguments.of(NamedConsumerStrategy.PINNED),
+                Arguments.of(NamedConsumerStrategy.PINNED_BY_CORRELATION)
+        );
     }
 }
