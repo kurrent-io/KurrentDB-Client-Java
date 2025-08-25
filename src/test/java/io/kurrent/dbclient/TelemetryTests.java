@@ -6,9 +6,12 @@ import io.kurrent.dbclient.telemetry.StreamsTracingInstrumentationTests;
 import io.kurrent.dbclient.telemetry.TracingContextInjectionTests;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.ReadableSpan;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static io.opentelemetry.semconv.ServiceAttributes.SERVICE_NAME;
 
 public class TelemetryTests implements StreamsTracingInstrumentationTests, PersistentSubscriptionsTracingInstrumentationTests, TracingContextInjectionTests {
     static private Database database;
@@ -39,10 +44,20 @@ public class TelemetryTests implements StreamsTracingInstrumentationTests, Persi
         GlobalOpenTelemetry.resetForTest();
         spanEndedHooks.add(recordedSpans::add);
 
+        OtlpGrpcSpanExporter otlpExporter = OtlpGrpcSpanExporter.builder()
+                .setEndpoint("http://localhost:4317")
+                .build();
+
+        Resource resource = Resource.getDefault().toBuilder()
+                .put(SERVICE_NAME, "kurrentdb")
+                .build();
+
         OpenTelemetrySdk.builder()
                 .setTracerProvider(SdkTracerProvider
                         .builder()
                         .addSpanProcessor(new SpanProcessorSpy(spanEndedHooks))
+                        .addSpanProcessor(SimpleSpanProcessor.create(otlpExporter))
+                        .setResource(resource)
                         .build())
                 .buildAndRegisterGlobal();
     }

@@ -1,5 +1,7 @@
 package io.kurrent.dbclient;
 
+import io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase;
+
 public class AppendStreamFailure {
     private final io.kurrentdb.protocol.streams.v2.AppendStreamFailure inner;
 
@@ -12,21 +14,21 @@ public class AppendStreamFailure {
     }
 
     public void visit(MultiAppendStreamErrorVisitor visitor) {
-        if (this.inner.getErrorCase() == io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase.STREAM_REVISION_CONFLICT) {
+        if (this.inner.getErrorCase() == ErrorCase.STREAM_REVISION_CONFLICT) {
             visitor.onWrongExpectedRevision(this.inner.getStreamRevisionConflict().getStreamRevision());
             return;
         }
 
-        if (this.inner.getErrorCase() == io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase.ACCESS_DENIED) {
+        if (this.inner.getErrorCase() == ErrorCase.ACCESS_DENIED) {
             visitor.onAccessDenied(this.inner.getAccessDenied());
         }
 
-        if (this.inner.getErrorCase() == io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase.STREAM_DELETED) {
+        if (this.inner.getErrorCase() == ErrorCase.STREAM_DELETED) {
             visitor.onStreamDeleted();
             return;
         }
 
-       if (this.inner.getErrorCase() == io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase.TRANSACTION_MAX_SIZE_EXCEEDED) {
+       if (this.inner.getErrorCase() == ErrorCase.TRANSACTION_MAX_SIZE_EXCEEDED) {
             visitor.onTransactionMaxSizeExceeded(this.inner.getTransactionMaxSizeExceeded().getMaxSize());
             return;
        }
