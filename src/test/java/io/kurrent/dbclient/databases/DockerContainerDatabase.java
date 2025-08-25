@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DockerContainerDatabase extends GenericContainer<DockerContainerDatabase> implements Database {
-    public static final String DEFAULT_IMAGE = "docker.kurrent.io/eventstore/eventstoredb-ee:lts";
+    public static final String DEFAULT_IMAGE = "docker.cloudsmith.io/eventstore/kurrent-staging/kurrentdb:ci";
 
     public static class Builder {
         String image;

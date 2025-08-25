@@ -3,14 +3,18 @@ package io.kurrent.dbclient.telemetry;
 import io.kurrent.dbclient.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase;
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.SpanContext;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.sdk.trace.ReadableSpan;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -288,5 +292,121 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
         List<ReadableSpan> subscribeSpans = getSpansForOperation(ClientTelemetryConstants.Operations.SUBSCRIBE);
         Assertions.assertTrue(subscribeSpans.isEmpty(), "No spans should be recorded for deleted events");
+    }
+
+    @Test
+    default void testMultiStreamAppendIsInstrumentedWithTracingAsExpected() throws Throwable {
+        KurrentDBClient client = getDefaultClient();
+
+        Optional<ServerVersion> version = client.getServerVersion().get();
+
+        Assumptions.assumeTrue(
+                version.isPresent() && version.get().isGreaterOrEqualThan(25, 0),
+                "Multi-stream append is not supported server versions below 25.0.0"
+        );
+
+        String streamName1 = generateName();
+        String streamName2 = generateName();
+
+        EventData event1 = EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
+                .eventId(UUID.randomUUID())
+                .build();
+
+        EventData event2 = EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
+                .eventId(UUID.randomUUID())
+                .build();
+
+        AppendStreamRequest request1 = new AppendStreamRequest(
+                streamName1,
+                Collections.singletonList(event1).iterator(),
+                StreamState.noStream()
+        );
+
+        AppendStreamRequest request2 = new AppendStreamRequest(
+                streamName2,
+                Collections.singletonList(event2).iterator(),
+                StreamState.noStream()
+        );
+
+        MultiAppendWriteResult result = client.multiStreamAppend(
+                Arrays.asList(request1, request2).iterator()
+        ).get();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.getSuccesses().isPresent());
+
+        List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.MULTI_APPEND);
+        Assertions.assertEquals(1, spans.size());
+
+        assertSpanAttributeEquals(spans.get(0), ClientTelemetryAttributes.Database.SYSTEM, ClientTelemetryConstants.INSTRUMENTATION_NAME);
+        assertSpanAttributeEquals(spans.get(0), ClientTelemetryAttributes.Database.OPERATION, ClientTelemetryConstants.Operations.MULTI_APPEND);
+        assertSpanAttributeEquals(spans.get(0), ClientTelemetryAttributes.Database.USER, "admin");
+        Assertions.assertEquals(StatusCode.OK, spans.get(0).toSpanData().getStatus().getStatusCode());
+        Assertions.assertEquals(SpanKind.CLIENT, spans.get(0).getKind());
+    }
+
+    @Test
+    default void testMultiStreamAppendIsInstrumentedWithFailures() throws Throwable {
+        KurrentDBClient client = getDefaultClient();
+
+        Optional<ServerVersion> version = client.getServerVersion().get();
+
+        Assumptions.assumeTrue(
+                version.isPresent() && version.get().isGreaterOrEqualThan(25, 0),
+                "Multi-stream append is not supported server versions below 25.0.0"
+        );
+
+        String streamName1 = generateName();
+        String streamName2 = generateName();
+
+        EventData event1 = EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
+                .eventId(UUID.randomUUID())
+                .build();
+
+        EventData event2 = EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
+                .eventId(UUID.randomUUID())
+                .build();
+
+        AppendStreamRequest request1 = new AppendStreamRequest(
+                streamName1,
+                Collections.singletonList(event1).iterator(),
+                StreamState.noStream()
+        );
+
+        AppendStreamRequest request2 = new AppendStreamRequest(
+                streamName2,
+                Collections.singletonList(event2).iterator(),
+                StreamState.streamExists()
+        );
+
+        MultiAppendWriteResult result = client.multiStreamAppend(
+                Arrays.asList(request1, request2).iterator()
+        ).get();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.getSuccesses().isPresent());
+        Assertions.assertTrue(result.getFailures().isPresent());
+
+        List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.MULTI_APPEND);
+        Assertions.assertEquals(1, spans.size());
+
+        ReadableSpan span = spans.get(0);
+
+        Assertions.assertEquals(StatusCode.ERROR, span.toSpanData().getStatus().getStatusCode());
+        Assertions.assertEquals("", span.toSpanData().getStatus().getDescription());
+
+        List<io.opentelemetry.sdk.trace.data.EventData> events = span.toSpanData().getEvents();
+
+        Assertions.assertEquals(1, events.size());
+
+        io.opentelemetry.sdk.trace.data.EventData failureEvent = events.get(0);
+
+        Assertions.assertEquals("exception", failureEvent.getName());
+
+        Assertions.assertEquals(ErrorCase.STREAM_REVISION_CONFLICT.toString(),
+                failureEvent.getAttributes().get(AttributeKey.stringKey("exception.type")));
+
+        Assertions.assertNotNull(failureEvent.getAttributes().get(AttributeKey.longKey("exception.revision")));
+        Assertions.assertEquals(-1L, failureEvent.getAttributes().get(AttributeKey.longKey("exception.revision")));
     }
 }

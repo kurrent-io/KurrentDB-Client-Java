@@ -25,10 +25,14 @@ class MultiStreamAppend {
     }
 
     public CompletableFuture<MultiAppendWriteResult> execute() {
-        return this.client.runWithArgs(this::append);
+        return this.client.runWithArgs(args -> ClientTelemetry.traceMultiStreamAppend(
+                this::append,
+                args,
+                this.requests,
+                this.client.getSettings()));
     }
 
-    private CompletableFuture<MultiAppendWriteResult> append(WorkItemArgs args) {
+    private CompletableFuture<MultiAppendWriteResult> append(WorkItemArgs args, Iterator<AppendStreamRequest> requests) {
         CompletableFuture<MultiAppendWriteResult> result = new CompletableFuture<>();
 
         if (!args.supportFeature(FeatureFlags.MULTI_STREAM_APPEND)) {
@@ -40,8 +44,8 @@ class MultiStreamAppend {
         StreamObserver<io.kurrentdb.protocol.streams.v2.AppendStreamRequest> requestStream = client.multiStreamAppendSession(GrpcUtils.convertSingleResponse(result, this::onResponse));
 
        try {
-           while (this.requests.hasNext()) {
-                AppendStreamRequest request = this.requests.next();
+           while (requests.hasNext()) {
+                AppendStreamRequest request = requests.next();
                 io.kurrentdb.protocol.streams.v2.AppendStreamRequest.Builder builder = io.kurrentdb.protocol.streams.v2.AppendStreamRequest.newBuilder()
                         .setExpectedRevision(request.getExpectedState().toRawLong())
                         .setStream(request.getStreamName());
