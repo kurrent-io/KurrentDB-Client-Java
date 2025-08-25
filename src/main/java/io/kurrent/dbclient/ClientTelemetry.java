@@ -129,23 +129,19 @@ class ClientTelemetry {
             Iterator<AppendStreamRequest> requests, KurrentDBClientSettings settings) {
 
         List<AppendStreamRequest> requestsWithTracing = new ArrayList<>();
-        List<Span> spans = new ArrayList<>();
+
+        Span span = createSpan(
+                ClientTelemetryConstants.Operations.MULTI_APPEND,
+                SpanKind.CLIENT,
+                null,
+                ClientTelemetryTags.builder()
+                        .withServerTagsFromGrpcChannel(args.getChannel())
+                        .withServerTagsFromClientSettings(settings)
+                        .withOptionalDatabaseUserTag(settings.getDefaultCredentials())
+                        .build());
 
         while (requests.hasNext()) {
             AppendStreamRequest request = requests.next();
-
-            Span span = createSpan(
-                    ClientTelemetryConstants.Operations.APPEND,
-                    SpanKind.CLIENT,
-                    null,
-                    ClientTelemetryTags.builder()
-                            .withRequiredTag(ClientTelemetryAttributes.KurrentDB.STREAM, request.getStreamName())
-                            .withServerTagsFromGrpcChannel(args.getChannel())
-                            .withServerTagsFromClientSettings(settings)
-                            .withOptionalDatabaseUserTag(settings.getDefaultCredentials())
-                            .build());
-
-            spans.add(span);
 
             List<EventData> eventsWithTracing = new ArrayList<>();
             while (request.getEvents().hasNext())
@@ -163,56 +159,50 @@ class ClientTelemetry {
         return multiAppendOperation.apply(args, requestsWithTracing.iterator())
                 .handle((result, throwable) -> {
                     if (throwable != null) {
-                        for (Span span : spans) {
-                            span.setStatus(StatusCode.ERROR);
-                            span.recordException(throwable);
-                            span.end();
-                        }
+                        span.setStatus(StatusCode.ERROR);
+                        span.recordException(throwable);
+                        span.end();
                         throw new CompletionException(throwable);
                     } else {
                         if (result.getFailures().isPresent()) {
-                            for (Span span : spans) {
-                                for (AppendStreamFailure failure : result.getFailures().get()) {
-                                    failure.visit(new MultiAppendStreamErrorVisitor() {
-                                        @Override
-                                        public void onWrongExpectedRevision(long streamRevision) {
-                                            span.addEvent("exception", Attributes.of(
-                                                    AttributeKey.stringKey("exception.type"), ErrorCase.STREAM_REVISION_CONFLICT.toString(),
-                                                    AttributeKey.longKey("exception.revision"), streamRevision
-                                            ));
-                                        }
+                            for (AppendStreamFailure failure : result.getFailures().get()) {
+                                failure.visit(new MultiAppendStreamErrorVisitor() {
+                                    @Override
+                                    public void onWrongExpectedRevision(long streamRevision) {
+                                        span.addEvent("exception", Attributes.of(
+                                                AttributeKey.stringKey("exception.type"), ErrorCase.STREAM_REVISION_CONFLICT.toString(),
+                                                AttributeKey.longKey("exception.revision"), streamRevision
+                                        ));
+                                    }
 
-                                        @Override
-                                        public void onAccessDenied(io.kurrentdb.protocol.streams.v2.ErrorDetails.AccessDenied detail) {
-                                            span.addEvent("exception", Attributes.of(
-                                                    AttributeKey.stringKey("exception.type"), ErrorCase.ACCESS_DENIED.toString()
-                                            ));
-                                        }
+                                    @Override
+                                    public void onAccessDenied(io.kurrentdb.protocol.streams.v2.ErrorDetails.AccessDenied detail) {
+                                        span.addEvent("exception", Attributes.of(
+                                                AttributeKey.stringKey("exception.type"), ErrorCase.ACCESS_DENIED.toString()
+                                        ));
+                                    }
 
-                                        @Override
-                                        public void onStreamDeleted() {
-                                            span.addEvent("exception", Attributes.of(
-                                                    AttributeKey.stringKey("exception.type"), ErrorCase.STREAM_DELETED.toString()
-                                            ));
-                                        }
+                                    @Override
+                                    public void onStreamDeleted() {
+                                        span.addEvent("exception", Attributes.of(
+                                                AttributeKey.stringKey("exception.type"), ErrorCase.STREAM_DELETED.toString()
+                                        ));
+                                    }
 
-                                        @Override
-                                        public void onTransactionMaxSizeExceeded(int maxSize) {
-                                            span.addEvent("exception", Attributes.of(
-                                                    AttributeKey.stringKey("exception.type"), ErrorCase.TRANSACTION_MAX_SIZE_EXCEEDED.toString(),
-                                                    AttributeKey.longKey("exception.maxSize"), (long) maxSize
-                                            ));
-                                        }
-                                    });
-                                }
-                                span.setStatus(StatusCode.ERROR);
-                                span.end();
+                                    @Override
+                                    public void onTransactionMaxSizeExceeded(int maxSize) {
+                                        span.addEvent("exception", Attributes.of(
+                                                AttributeKey.stringKey("exception.type"), ErrorCase.TRANSACTION_MAX_SIZE_EXCEEDED.toString(),
+                                                AttributeKey.longKey("exception.maxSize"), (long) maxSize
+                                        ));
+                                    }
+                                });
                             }
+                            span.setStatus(StatusCode.ERROR);
+                            span.end();
                         } else if (result.getSuccesses().isPresent()) {
-                            for (Span span : spans) {
-                                span.setStatus(StatusCode.OK);
-                                span.end();
-                            }
+                            span.setStatus(StatusCode.OK);
+                            span.end();
                         }
 
                         return result;

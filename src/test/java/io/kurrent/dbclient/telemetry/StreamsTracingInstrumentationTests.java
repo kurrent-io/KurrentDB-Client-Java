@@ -335,24 +335,14 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
         Assertions.assertNotNull(result);
         Assertions.assertTrue(result.getSuccesses().isPresent());
 
-        List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.APPEND);
-        Assertions.assertEquals(2, spans.size());
+        List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.MULTI_APPEND);
+        Assertions.assertEquals(1, spans.size());
 
-        ReadableSpan span1 = spans.stream()
-                .filter(span -> streamName1.equals(span.getAttribute(AttributeKey.stringKey(ClientTelemetryAttributes.KurrentDB.STREAM))))
-                .findFirst()
-                .orElse(null);
-
-        ReadableSpan span2 = spans.stream()
-                .filter(span -> streamName2.equals(span.getAttribute(AttributeKey.stringKey(ClientTelemetryAttributes.KurrentDB.STREAM))))
-                .findFirst()
-                .orElse(null);
-
-        Assertions.assertNotNull(span1);
-        Assertions.assertNotNull(span2);
-
-        assertAppendSpanHasExpectedAttributes(span1, streamName1);
-        assertAppendSpanHasExpectedAttributes(span2, streamName2);
+        assertSpanAttributeEquals(spans.get(0), ClientTelemetryAttributes.Database.SYSTEM, ClientTelemetryConstants.INSTRUMENTATION_NAME);
+        assertSpanAttributeEquals(spans.get(0), ClientTelemetryAttributes.Database.OPERATION, ClientTelemetryConstants.Operations.MULTI_APPEND);
+        assertSpanAttributeEquals(spans.get(0), ClientTelemetryAttributes.Database.USER, "admin");
+        Assertions.assertEquals(StatusCode.OK, spans.get(0).toSpanData().getStatus().getStatusCode());
+        Assertions.assertEquals(SpanKind.CLIENT, spans.get(0).getKind());
     }
 
     @Test
@@ -397,47 +387,26 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
         Assertions.assertFalse(result.getSuccesses().isPresent());
         Assertions.assertTrue(result.getFailures().isPresent());
 
-        List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.APPEND);
-        Assertions.assertEquals(2, spans.size());
+        List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.MULTI_APPEND);
+        Assertions.assertEquals(1, spans.size());
 
-        ReadableSpan span1 = spans.stream()
-                .filter(span -> streamName1.equals(span.getAttribute(AttributeKey.stringKey(ClientTelemetryAttributes.KurrentDB.STREAM))))
-                .findFirst()
-                .orElse(null);
+        ReadableSpan span = spans.get(0);
 
-        ReadableSpan span2 = spans.stream()
-                .filter(span -> streamName2.equals(span.getAttribute(AttributeKey.stringKey(ClientTelemetryAttributes.KurrentDB.STREAM))))
-                .findFirst()
-                .orElse(null);
+        Assertions.assertEquals(StatusCode.ERROR, span.toSpanData().getStatus().getStatusCode());
+        Assertions.assertEquals("", span.toSpanData().getStatus().getDescription());
 
-        Assertions.assertNotNull(span1);
-        Assertions.assertNotNull(span2);
+        List<io.opentelemetry.sdk.trace.data.EventData> events = span.toSpanData().getEvents();
 
-        Assertions.assertEquals(StatusCode.ERROR, span1.toSpanData().getStatus().getStatusCode());
-        Assertions.assertEquals("", span1.toSpanData().getStatus().getDescription());
-        Assertions.assertEquals(StatusCode.ERROR, span2.toSpanData().getStatus().getStatusCode());
-        Assertions.assertEquals("", span2.toSpanData().getStatus().getDescription());
+        Assertions.assertEquals(1, events.size());
 
-        List<io.opentelemetry.sdk.trace.data.EventData> events1 = span1.toSpanData().getEvents();
-        List<io.opentelemetry.sdk.trace.data.EventData> events2 = span2.toSpanData().getEvents();
+        io.opentelemetry.sdk.trace.data.EventData failureEvent = events.get(0);
 
-        Assertions.assertEquals(1, events1.size());
-        Assertions.assertEquals(1, events2.size());
-
-        io.opentelemetry.sdk.trace.data.EventData failureEvent1 = events1.get(0);
-        io.opentelemetry.sdk.trace.data.EventData failureEvent2 = events2.get(0);
-
-        Assertions.assertEquals("exception", failureEvent1.getName());
-        Assertions.assertEquals("exception", failureEvent2.getName());
+        Assertions.assertEquals("exception", failureEvent.getName());
 
         Assertions.assertEquals(ErrorCase.STREAM_REVISION_CONFLICT.toString(),
-                failureEvent1.getAttributes().get(AttributeKey.stringKey("exception.type")));
-        Assertions.assertEquals(ErrorCase.STREAM_REVISION_CONFLICT.toString(),
-                failureEvent2.getAttributes().get(AttributeKey.stringKey("exception.type")));
+                failureEvent.getAttributes().get(AttributeKey.stringKey("exception.type")));
 
-        Assertions.assertNotNull(failureEvent1.getAttributes().get(AttributeKey.longKey("exception.revision")));
-        Assertions.assertNotNull(failureEvent2.getAttributes().get(AttributeKey.longKey("exception.revision")));
-        Assertions.assertEquals(-1L, failureEvent1.getAttributes().get(AttributeKey.longKey("exception.revision")));
-        Assertions.assertEquals(-1L, failureEvent2.getAttributes().get(AttributeKey.longKey("exception.revision")));
+        Assertions.assertNotNull(failureEvent.getAttributes().get(AttributeKey.longKey("exception.revision")));
+        Assertions.assertEquals(-1L, failureEvent.getAttributes().get(AttributeKey.longKey("exception.revision")));
     }
 }
