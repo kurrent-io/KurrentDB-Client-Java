@@ -386,3 +386,16 @@ publisher.subscribe(new Subscriber<ReadMessage>() {
 latch.await();
 ```
 :::
+
+## Configuring Backpressure
+
+The client allows you to configure backpressure to control how many events are buffered on the client side before requesting more from the server.
+
+| Option         | Description                                                                 | Default Value |
+|----------------|-----------------------------------------------------------------------------|---------------|
+| batchSize      | The maximum number of events the client will request from the server in a single batch. | 512           |
+| thresholdRatio | The fraction of the `batchSize` at which the client will send a new request for more events. | 0.25          |
+
+By default, the client requests up to 512 events at a time. It will automatically
+request more events when the number of buffered (unprocessed) events falls below
+25% of the batch size.
