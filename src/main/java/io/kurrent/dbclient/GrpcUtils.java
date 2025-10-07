@@ -12,6 +12,26 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 final class GrpcUtils {
+    static boolean handleNotLeaderError(Throwable t, CompletableFuture<?> dest) {
+        if (t instanceof StatusRuntimeException) {
+            StatusRuntimeException e = (StatusRuntimeException) t;
+            Metadata trailers = e.getTrailers();
+
+            if (trailers != null) {
+                String leaderHost = trailers.get(Metadata.Key.of("leader-endpoint-host", Metadata.ASCII_STRING_MARSHALLER));
+                String leaderPort = trailers.get(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER));
+
+                if (leaderHost != null && leaderPort != null) {
+                    NotLeaderException reason = new NotLeaderException(leaderHost, Integer.parseInt(leaderPort));
+                    dest.completeExceptionally(reason);
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     static public <ReqT, RespT> ClientResponseObserver<ReqT, RespT> convertSingleResponse(
             CompletableFuture<RespT> dest) {
 
@@ -73,12 +93,7 @@ final class GrpcUtils {
                         }
                     }
 
-                    String leaderHost = e.getTrailers().get(Metadata.Key.of("leader-endpoint-host", Metadata.ASCII_STRING_MARSHALLER));
-                    String leaderPort = e.getTrailers().get(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER));
-
-                    if (leaderHost != null && leaderPort != null) {
-                        NotLeaderException reason = new NotLeaderException(leaderHost, Integer.valueOf(leaderPort));
-                        dest.completeExceptionally(reason);
+                    if (handleNotLeaderError(t, dest)) {
                         return;
                     }
                 }

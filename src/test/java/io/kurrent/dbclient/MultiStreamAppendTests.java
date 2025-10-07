@@ -76,11 +76,11 @@ public class MultiStreamAppendTests implements ConnectionAware {
         );
 
         // Act
-        MultiAppendWriteResult result = client.multiStreamAppend(requests.iterator()).get();
+        MultiStreamAppendResponse result = client.multiStreamAppend(requests.iterator()).get();
 
         // Assert
-        Assertions.assertTrue(result.getSuccesses().isPresent());
-        Assertions.assertFalse(result.getSuccesses().get().isEmpty());
+        Assertions.assertFalse(result.getResults().isEmpty());
+        Assertions.assertTrue(result.getPosition() > 0);
 
         List<ResolvedEvent> readEvents1 = client.readStream(streamName1, ReadStreamOptions.get()).get().getEvents();
         Assertions.assertEquals(1, readEvents1.size());
@@ -132,6 +132,7 @@ public class MultiStreamAppendTests implements ConnectionAware {
         Assertions.assertInstanceOf(UnsupportedOperationException.class, e.getCause());
     }
 
+    //
     @Test
     public void testMultiStreamAppendStreamRevisionConflict() throws ExecutionException, InterruptedException {
         KurrentDBClient client = getDefaultClient();
@@ -146,41 +147,30 @@ public class MultiStreamAppendTests implements ConnectionAware {
         // Arrange
         String streamName = generateName();
 
-        EventData event1 = EventData.builderAsJson("event-1", "{}".getBytes()).build();
-        EventData event2 = EventData.builderAsJson("event-2", "{}".getBytes()).build();
-        EventData event3 = EventData.builderAsJson("event-3", "{}".getBytes()).build();
+        EventData event = EventData.builderAsJson("event-1", "{}".getBytes()).build();
 
         client.appendToStream(
                 streamName,
                 AppendToStreamOptions.get().streamState(StreamState.noStream()),
-                event1, event2, event3
+                event
         ).get();
-
-        ResolvedEvent lastEvent = client.readStream(streamName, ReadStreamOptions.get().maxCount(1).fromEnd().backwards()).get().getEvents().get(0);
 
         List<AppendStreamRequest> requests = Collections.singletonList(
                 new AppendStreamRequest(
                         streamName,
-                        Collections.singletonList(EventData.builderAsBinary("event-4", "{}".getBytes()).build()).iterator(),
+                        Collections.singletonList(EventData.builderAsBinary("event-2", "{}".getBytes()).build()).iterator(),
                         StreamState.noStream()
                 )
         );
 
-        // Act
-        MultiAppendWriteResult result = client.multiStreamAppend(requests.iterator()).get();
-
-        // Assert
-        Assertions.assertTrue(result.getFailures().isPresent());
-        Assertions.assertFalse(result.getFailures().get().isEmpty());
-
-        AppendStreamFailure failure = result.getFailures().get().get(0);
-        Assertions.assertEquals(streamName, failure.getStreamName());
-
-        MultiAppendErrorVisitor visitor = new MultiAppendErrorVisitor();
-        failure.visit(visitor);
-
-        Assertions.assertTrue(visitor.wasWrongExpectedRevisionVisited());
-        Assertions.assertEquals(lastEvent.getOriginalEvent().getRevision(), visitor.getActualRevision());
+        // Act & Assert
+        Assertions.assertThrows(WrongExpectedVersionException.class, () -> {
+            try {
+                client.multiStreamAppend(requests.iterator()).get();
+            } catch (ExecutionException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test
@@ -216,47 +206,12 @@ public class MultiStreamAppendTests implements ConnectionAware {
         );
 
         // Act
-        MultiAppendWriteResult result = client.multiStreamAppend(requests.iterator()).get();
-
-        // Assert
-        Assertions.assertTrue(result.getFailures().isPresent());
-        Assertions.assertFalse(result.getFailures().get().isEmpty());
-
-        AppendStreamFailure failure = result.getFailures().get().get(0);
-        Assertions.assertEquals(streamName, failure.getStreamName());
-
-        MultiAppendErrorVisitor visitor = new MultiAppendErrorVisitor();
-        failure.visit(visitor);
-
-        Assertions.assertTrue(visitor.wasStreamDeletedVisited());
-    }
-
-    private static class MultiAppendErrorVisitor implements MultiAppendStreamErrorVisitor {
-        private boolean wrongExpectedRevisionVisited = false;
-        private boolean streamDeletedVisited = false;
-        private long actualRevision = -1;
-
-        @Override
-        public void onWrongExpectedRevision(long streamRevision) {
-            this.wrongExpectedRevisionVisited = true;
-            this.actualRevision = streamRevision;
-        }
-
-        @Override
-        public void onStreamDeleted() {
-            this.streamDeletedVisited = true;
-        }
-
-        public boolean wasWrongExpectedRevisionVisited() {
-            return wrongExpectedRevisionVisited;
-        }
-
-        public boolean wasStreamDeletedVisited() {
-            return streamDeletedVisited;
-        }
-
-        public long getActualRevision() {
-            return actualRevision;
-        }
+        Assertions.assertThrows(StreamTombstonedException.class, () -> {
+            try {
+                client.multiStreamAppend(requests.iterator()).get();
+            } catch (ExecutionException e) {
+                throw e.getCause();
+            }
+        });
     }
 }

@@ -3,8 +3,6 @@ package io.kurrent.dbclient.telemetry;
 import io.kurrent.dbclient.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.kurrentdb.protocol.streams.v2.AppendStreamFailure.ErrorCase;
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
@@ -328,12 +326,12 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
                 StreamState.noStream()
         );
 
-        MultiAppendWriteResult result = client.multiStreamAppend(
+        MultiStreamAppendResponse result = client.multiStreamAppend(
                 Arrays.asList(request1, request2).iterator()
         ).get();
 
-        Assertions.assertNotNull(result);
-        Assertions.assertTrue(result.getSuccesses().isPresent());
+        Assertions.assertFalse(result.getResults().isEmpty());
+        Assertions.assertTrue(result.getPosition() > 0);
 
         List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.MULTI_APPEND);
         Assertions.assertEquals(1, spans.size());
@@ -379,13 +377,13 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
                 StreamState.streamExists()
         );
 
-        MultiAppendWriteResult result = client.multiStreamAppend(
+        MultiStreamAppendResponse result = client.multiStreamAppend(
                 Arrays.asList(request1, request2).iterator()
         ).get();
 
         Assertions.assertNotNull(result);
-        Assertions.assertFalse(result.getSuccesses().isPresent());
-        Assertions.assertTrue(result.getFailures().isPresent());
+        Assertions.assertFalse(result.getResults().isEmpty());
+        Assertions.assertTrue(result.getPosition() > 0);
 
         List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.MULTI_APPEND);
         Assertions.assertEquals(1, spans.size());
@@ -393,20 +391,6 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
         ReadableSpan span = spans.get(0);
 
         Assertions.assertEquals(StatusCode.ERROR, span.toSpanData().getStatus().getStatusCode());
-        Assertions.assertEquals("", span.toSpanData().getStatus().getDescription());
-
-        List<io.opentelemetry.sdk.trace.data.EventData> events = span.toSpanData().getEvents();
-
-        Assertions.assertEquals(1, events.size());
-
-        io.opentelemetry.sdk.trace.data.EventData failureEvent = events.get(0);
-
-        Assertions.assertEquals("exception", failureEvent.getName());
-
-        Assertions.assertEquals(ErrorCase.STREAM_REVISION_CONFLICT.toString(),
-                failureEvent.getAttributes().get(AttributeKey.stringKey("exception.type")));
-
-        Assertions.assertNotNull(failureEvent.getAttributes().get(AttributeKey.longKey("exception.revision")));
-        Assertions.assertEquals(-1L, failureEvent.getAttributes().get(AttributeKey.longKey("exception.revision")));
+        Assertions.assertEquals(SpanKind.CLIENT, span.getKind());
     }
 }

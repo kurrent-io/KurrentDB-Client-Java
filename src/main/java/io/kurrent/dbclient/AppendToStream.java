@@ -5,8 +5,6 @@ import io.kurrent.dbclient.proto.streams.StreamsGrpc;
 import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
-import io.grpc.Metadata;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;
@@ -112,16 +110,6 @@ class AppendToStream {
                         .build());
             }
             requestStream.onCompleted();
-        } catch (StatusRuntimeException e) {
-            String leaderHost = e.getTrailers().get(Metadata.Key.of("leader-endpoint-host", Metadata.ASCII_STRING_MARSHALLER));
-            String leaderPort = e.getTrailers().get(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER));
-
-            if (leaderHost != null && leaderPort != null) {
-                NotLeaderException reason = new NotLeaderException(leaderHost, Integer.valueOf(leaderPort));
-                result.completeExceptionally(reason);
-            } else {
-                result.completeExceptionally(e);
-            }
         } catch (RuntimeException e) {
             result.completeExceptionally(e);
         }
