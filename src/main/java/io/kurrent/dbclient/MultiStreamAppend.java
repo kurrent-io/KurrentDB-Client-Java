@@ -2,6 +2,7 @@ package io.kurrent.dbclient;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Value;
+import com.google.rpc.ErrorInfo;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import io.grpc.stub.ClientResponseObserver;
