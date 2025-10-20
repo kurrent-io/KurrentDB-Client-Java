@@ -60,6 +60,7 @@ dependencies {
     implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
     implementation "io.grpc:grpc-stub:${grpcVersion}"
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "com.google.api.grpc:grpc-google-common-protos:2.61.3"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     implementation "org.slf4j:slf4j-api:2.0.17"
     implementation "org.bouncycastle:bcprov-jdk18on:1.80"

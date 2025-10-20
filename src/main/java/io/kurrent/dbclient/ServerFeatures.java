@@ -95,7 +95,7 @@ class ServerFeatures {
                         default:
                             break;
                     }
-                } else if (method.getMethodName().equals("multistreamappendsession")) {
+                } else if (method.getMethodName().equals("appendsession")) {
                     features |= FeatureFlags.MULTI_STREAM_APPEND;
                 }
             }
