@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -36,6 +35,46 @@ public class MultiStreamAppendTests implements ConnectionAware {
     }
 
     @Test
+    public void testBadEventMetadata() throws ExecutionException, InterruptedException, IOException {
+        KurrentDBClient client = getDefaultClient();
+
+        Optional<ServerVersion> version = client.getServerVersion().get();
+
+        Assumptions.assumeTrue(
+                version.isPresent() && version.get().isGreaterOrEqualThan(25, 0),
+                "Multi-stream append is not supported server versions below 25.0.0"
+        );
+
+        // Arrange
+        String streamName1 = generateName();
+
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("stringProperty", "hello world");
+        metadata.put("intProperty", 42);
+
+        byte[] metadataBytes = mapper.writeValueAsBytes(metadata);
+
+        EventData event1 = EventData.builderAsJson("event-a", "{\"data\":\"test1\"}".getBytes())
+                .metadataAsBytes(metadataBytes)
+                .build();
+
+        List<EventData> events1 = Collections.singletonList(event1);
+
+        List<AppendStreamRequest> requests = Collections.singletonList(
+                new AppendStreamRequest(streamName1, events1.iterator(), StreamState.noStream())
+        );
+
+        // Act & Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            try {
+                client.multiStreamAppend(requests.iterator()).get();
+            } catch (ExecutionException e) {
+                throw e.getCause();
+            }
+        });
+    }
+
+    @Test
     public void testMultiStreamAppend() throws ExecutionException, InterruptedException, IOException {
         KurrentDBClient client = getDefaultClient();
 
@@ -50,14 +89,8 @@ public class MultiStreamAppendTests implements ConnectionAware {
         String streamName1 = generateName();
         String streamName2 = generateName();
 
-        Map<String, Object> metadata = new HashMap<>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put("stringProperty", "hello world");
-        metadata.put("intProperty", 42);
-        metadata.put("longProperty", 9876543210L);
-        metadata.put("booleanProperty", true);
-        metadata.put("doubleProperty", 3.14159);
-        metadata.put("nullProperty", null);
-        metadata.put("timestampProperty", Instant.now().toString());
 
         byte[] metadataBytes = mapper.writeValueAsBytes(metadata);
 
@@ -94,12 +127,6 @@ public class MultiStreamAppendTests implements ConnectionAware {
 
         Map deserializedMetadata = mapper.readValue(readMetadata, Map.class);
         Assertions.assertEquals(metadata.get("stringProperty"), deserializedMetadata.get("stringProperty"));
-        Assertions.assertEquals(metadata.get("intProperty"), deserializedMetadata.get("intProperty"));
-        Assertions.assertEquals(metadata.get("longProperty"), ((Number) deserializedMetadata.get("longProperty")).longValue());
-        Assertions.assertEquals(metadata.get("booleanProperty"), deserializedMetadata.get("booleanProperty"));
-        Assertions.assertEquals((Double) metadata.get("doubleProperty"), ((Number) deserializedMetadata.get("doubleProperty")).doubleValue(), 0.00001);
-        Assertions.assertEquals(metadata.get("timestampProperty"), deserializedMetadata.get("timestampProperty"));
-        Assertions.assertNull(deserializedMetadata.get("nullProperty"));
 
         List<ResolvedEvent> readEvents2 = client.readStream(streamName2, ReadStreamOptions.get()).get().getEvents();
         Assertions.assertEquals(1, readEvents2.size());
