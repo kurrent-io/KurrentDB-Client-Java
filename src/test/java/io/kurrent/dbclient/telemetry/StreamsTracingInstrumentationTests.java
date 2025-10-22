@@ -344,7 +344,7 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
     }
 
     @Test
-    default void testMultiStreamAppendIsInstrumentedWithFailures() throws Throwable {
+    default void testMultiStreamAppendIsInstrumentedWithErrors() throws Throwable {
         KurrentDBClient client = getDefaultClient();
 
         Optional<ServerVersion> version = client.getServerVersion().get();
@@ -377,20 +377,22 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
                 StreamState.streamExists()
         );
 
-        MultiStreamAppendResponse result = client.multiStreamAppend(
-                Arrays.asList(request1, request2).iterator()
-        ).get();
+        WrongExpectedVersionException actualException = null;
+        try {
+            MultiStreamAppendResponse result = client.multiStreamAppend(
+                    Arrays.asList(request1, request2).iterator()
+            ).get();
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof WrongExpectedVersionException)
+                actualException = (WrongExpectedVersionException) e.getCause();
+        }
 
-        Assertions.assertNotNull(result);
-        Assertions.assertFalse(result.getResults().isEmpty());
-        Assertions.assertTrue(result.getPosition() > 0);
+        // Ensure WrongExpectedVersionException was thrown.
+        Assertions.assertNotNull(actualException);
 
         List<ReadableSpan> spans = getSpansForOperation(ClientTelemetryConstants.Operations.MULTI_APPEND);
         Assertions.assertEquals(1, spans.size());
 
-        ReadableSpan span = spans.get(0);
-
-        Assertions.assertEquals(StatusCode.ERROR, span.toSpanData().getStatus().getStatusCode());
-        Assertions.assertEquals(SpanKind.CLIENT, span.getKind());
+        assertErroneousSpanHasExpectedAttributes(spans.get(0), actualException);
     }
 }
