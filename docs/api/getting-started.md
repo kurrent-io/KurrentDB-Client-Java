@@ -19,14 +19,14 @@ Add the `kurrentdb-client` dependency to your project:
 ::: tabs
 @tab gradle
 ```groovy
-implementation 'io.kurrent:kurrentdb-client:1.0.x'
+implementation 'io.kurrent:kurrentdb-client:1.1.x'
 ```
 @tab maven
 ```xml
 <dependency>
     <groupId>io.kurrent</groupId>
     <artifactId>kurrentdb-client</artifactId>
-    <version>1.0.x</version>
+    <version>1.1.x</version>
 </dependency>
 ```
 :::
