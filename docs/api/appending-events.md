@@ -265,7 +265,7 @@ release.
 ```java
 JsonMapper mapper = new JsonMapper();
 
-Map<String, Object> metadata = new HashMap<>();
+Map<String, String> metadata = new HashMap<>();
 metadata.put("source", "OrderProcessingSystem");
 
 byte[] metadataBytes = mapper.writeValueAsBytes(metadata);
