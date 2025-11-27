@@ -1,4 +1,3 @@
-
 <a href="https://kurrent.io">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="KurrentLogo-White.png">
