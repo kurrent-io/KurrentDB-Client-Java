@@ -110,12 +110,32 @@ public class DockerContainerDatabase extends GenericContainer<DockerContainerDat
     @Override
     public void cleanup() {
         try {
-            ExecResult result = execInContainer("tar", "-czvf", "/tmp/esdb_logs.tar.gz", "/var/log/eventstore");
-            if (result.getExitCode() != 0) {
-                logger().error(result.getStderr());
-                throw new RuntimeException("Error when compressing server logs");
+            try {
+                ExecResult checkDir = execInContainer("sh", "-c", "[ -d /var/log/eventstore ] && echo 'eventstore' || [ -d /var/log/kurrentdb ] && echo 'kurrentdb' || echo 'none'");
+                String logDir = checkDir.getStdout().trim();
+                
+                if ("eventstore".equals(logDir)) {
+                    logger().info("Collecting logs from /var/log/eventstore");
+                    ExecResult result = execInContainer("tar", "-czvf", "/tmp/esdb_logs.tar.gz", "/var/log/eventstore");
+                    if (result.getExitCode() == 0) {
+                        copyFileFromContainer("/tmp/esdb_logs.tar.gz", "/tmp/esdb_logs.tar.gz");
+                    } else {
+                        logger().warn("Failed to compress logs: {}", result.getStderr());
+                    }
+                } else if ("kurrentdb".equals(logDir)) {
+                    logger().info("Collecting logs from /var/log/kurrentdb");
+                    ExecResult result = execInContainer("tar", "-czvf", "/tmp/esdb_logs.tar.gz", "/var/log/kurrentdb");
+                    if (result.getExitCode() == 0) {
+                        copyFileFromContainer("/tmp/esdb_logs.tar.gz", "/tmp/esdb_logs.tar.gz");
+                    } else {
+                        logger().warn("Failed to compress logs: {}", result.getStderr());
+                    }
+                } else {
+                    logger().warn("No log directory found at /var/log/eventstore or /var/log/kurrentdb, skipping log collection");
+                }
+            } catch (Exception logException) {
+                logger().warn("Could not collect container logs (this is not critical): {}", logException.getMessage());
             }
-            copyFileFromContainer("/tmp/esdb_logs.tar.gz", "/tmp/esdb_logs.tar.gz");
         } catch (Exception e) {
             logger().error("Error when cleanup docker container", e);
         } finally {
