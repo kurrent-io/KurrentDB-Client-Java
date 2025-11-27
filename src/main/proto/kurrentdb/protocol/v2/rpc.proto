@@ -12,7 +12,7 @@ option java_package        = "io.kurrent.rpc";
 option java_multiple_files = true;
 
 import "google/protobuf/descriptor.proto";
-import "kurrentdb/protocol/v1/code.proto";
+import "google/rpc/code.proto";
 
 // ErrorMetadata provides actionable information for error enum values to enable automated
 // code generation, documentation, and consistent error handling across the Kurrent platform.

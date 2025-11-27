@@ -3,7 +3,7 @@ package event_store.client.streams;
 option java_package = "io.kurrent.dbclient.proto.streams";
 
 import "kurrentdb/protocol/v1/shared.proto";
-import "kurrentdb/protocol/v1/status.proto";
+import "google/rpc/status.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
