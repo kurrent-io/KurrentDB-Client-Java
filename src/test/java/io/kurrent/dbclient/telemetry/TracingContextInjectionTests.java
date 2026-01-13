@@ -1,5 +1,6 @@
 package io.kurrent.dbclient.telemetry;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.kurrent.dbclient.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -64,5 +65,37 @@ public interface TracingContextInjectionTests extends TelemetryAware {
             Assertions.assertArrayEquals(sentEvent.getEventData(), receivedEvent.getEventData());
             Assertions.assertEquals(sentEvent.getContentType(), receivedEvent.getContentType());
         }
+    }
+
+    @Test
+    @Timeout(value = 2, unit = TimeUnit.MINUTES)
+    default void testExistingTracingContextIsPreserved() throws Throwable {
+        KurrentDBClient client = getDefaultClient();
+
+        String streamName = generateName();
+        String existingTraceId = "0af7651916cd43dd8448eb211c80319c";
+        String existingSpanId = "b7ad6b7169203331";
+
+        ObjectNode metadata = mapper.createObjectNode();
+        metadata.put(ClientTelemetryConstants.Metadata.TRACE_ID, existingTraceId);
+        metadata.put(ClientTelemetryConstants.Metadata.SPAN_ID, existingSpanId);
+
+        EventData event = EventData.builderAsJson("TestEvent", mapper.writeValueAsBytes(new Foo()))
+                .metadataAsBytes(mapper.writeValueAsBytes(metadata))
+                .eventId(UUID.randomUUID())
+                .build();
+
+        client.appendToStream(streamName, event).get();
+
+        ReadResult result = client.readStream(streamName, ReadStreamOptions.get()).get();
+
+        Assertions.assertEquals(1, result.getEvents().size());
+        RecordedEvent recordedEvent = result.getEvents().get(0).getEvent();
+        ObjectNode recordedMetadata = mapper.readValue(recordedEvent.getUserMetadata(), ObjectNode.class);
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(existingTraceId, recordedMetadata.get(ClientTelemetryConstants.Metadata.TRACE_ID).asText()),
+                () -> Assertions.assertEquals(existingSpanId, recordedMetadata.get(ClientTelemetryConstants.Metadata.SPAN_ID).asText())
+        );
     }
 }

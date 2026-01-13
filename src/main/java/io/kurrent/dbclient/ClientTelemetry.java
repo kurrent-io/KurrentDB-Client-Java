@@ -48,6 +48,9 @@ class ClientTelemetry {
                     ? objectMapper.readValue(userMetadataBytes, ObjectNode.class)
                     : objectMapper.createObjectNode();
 
+            if (hasValidTracingContext(userMetadata))
+                return userMetadataBytes;
+
             userMetadata.put(ClientTelemetryConstants.Metadata.TRACE_ID, span.getSpanContext().getTraceId());
             userMetadata.put(ClientTelemetryConstants.Metadata.SPAN_ID, span.getSpanContext().getSpanId());
 
@@ -56,6 +59,16 @@ class ClientTelemetry {
             // User metadata may not be a valid JSON object, or not JSON altogether.
             return userMetadataBytes;
         }
+    }
+
+    private static boolean hasValidTracingContext(ObjectNode metadata) {
+        JsonNode traceIdNode = metadata.get(ClientTelemetryConstants.Metadata.TRACE_ID);
+        JsonNode spanIdNode = metadata.get(ClientTelemetryConstants.Metadata.SPAN_ID);
+
+        if (traceIdNode == null || spanIdNode == null)
+            return false;
+
+        return TraceId.isValid(traceIdNode.asText()) && SpanId.isValid(spanIdNode.asText());
     }
 
     private static SpanContext tryExtractTracingContext(byte[] userMetadataBytes) {
