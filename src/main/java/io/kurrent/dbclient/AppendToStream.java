@@ -70,6 +70,8 @@ class AppendToStream {
                     expectedRevision = StreamState.any();
                 } else if (wev.getExpectedRevisionOptionCase() == StreamsOuterClass.AppendResp.WrongExpectedVersion.ExpectedRevisionOptionCase.EXPECTED_STREAM_EXISTS) {
                     expectedRevision = StreamState.streamExists();
+                } else if (wev.getExpectedRevisionOptionCase() == StreamsOuterClass.AppendResp.WrongExpectedVersion.ExpectedRevisionOptionCase.EXPECTED_NO_STREAM) {
+                    expectedRevision = StreamState.noStream();
                 } else {
                     expectedRevision = StreamState.streamRevision(wev.getExpectedRevision());
                 }
