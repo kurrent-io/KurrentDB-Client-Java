@@ -7,6 +7,7 @@ import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.StreamObserver;
 
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -69,6 +70,8 @@ class AppendToStream {
                     expectedRevision = StreamState.any();
                 } else if (wev.getExpectedRevisionOptionCase() == StreamsOuterClass.AppendResp.WrongExpectedVersion.ExpectedRevisionOptionCase.EXPECTED_STREAM_EXISTS) {
                     expectedRevision = StreamState.streamExists();
+                } else if (wev.getExpectedRevisionOptionCase() == StreamsOuterClass.AppendResp.WrongExpectedVersion.ExpectedRevisionOptionCase.EXPECTED_NO_STREAM) {
+                    expectedRevision = StreamState.noStream();
                 } else {
                     expectedRevision = StreamState.streamRevision(wev.getExpectedRevision());
                 }
