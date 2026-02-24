@@ -140,6 +140,100 @@ public interface SubscriptionTests extends ConnectionAware {
     }
 
     @Test
+    @Timeout(value = 2, unit = TimeUnit.MINUTES)
+    default void testSubscribeToAllByStreamPrefix() throws Throwable {
+        String streamPrefix = generateName();
+        String matchingStream = streamPrefix + "-matching";
+        String eventType = generateName();
+        int expectedCount = 5;
+
+        final CountDownLatch receivedEvents = new CountDownLatch(expectedCount);
+        final AtomicInteger count = new AtomicInteger(0);
+
+        Subscription subscription = getDefaultClient().subscribeToAll(new SubscriptionListener() {
+            @Override
+            public void onEvent(Subscription subscription, ResolvedEvent event) {
+                count.incrementAndGet();
+                receivedEvents.countDown();
+            }
+
+            @Override
+            public void onCancelled(Subscription subscription, Throwable throwable) {
+                if (throwable == null)
+                    return;
+
+                Assertions.fail(throwable);
+            }
+        }, SubscribeToAllOptions.get()
+                .filter(SubscriptionFilter
+                        .newBuilder()
+                        .addStreamNamePrefix(streamPrefix)
+                        .build())).get();
+
+        getDefaultClient().appendToStream(matchingStream, generateEvents(expectedCount, eventType).iterator()).get();
+
+        receivedEvents.await();
+        Assertions.assertEquals(expectedCount, count.get());
+        subscription.stop();
+    }
+
+    @Test
+    @Timeout(value = 2, unit = TimeUnit.MINUTES)
+    default void testSubscribeToAllByStreamPrefixExcludesNonPrefix() throws Throwable {
+        String streamPrefix = generateName();
+        String matchingStream = streamPrefix + "-matching";
+        String nonMatchingStream = "not-" + streamPrefix;
+        String eventType = generateName();
+        int expectedCount = 5;
+
+        final CountDownLatch receivedEvents = new CountDownLatch(expectedCount);
+        final AtomicInteger count = new AtomicInteger(0);
+        final ArrayList<String> receivedStreamIds = new ArrayList<>();
+
+        Subscription subscription = getDefaultClient().subscribeToAll(new SubscriptionListener() {
+            @Override
+            public void onEvent(Subscription subscription, ResolvedEvent event) {
+                synchronized (receivedStreamIds) {
+                    receivedStreamIds.add(event.getOriginalEvent().getStreamId());
+                }
+                count.incrementAndGet();
+                receivedEvents.countDown();
+            }
+
+            @Override
+            public void onCancelled(Subscription subscription, Throwable throwable) {
+                if (throwable == null)
+                    return;
+
+                Assertions.fail(throwable);
+            }
+        }, SubscribeToAllOptions.get()
+                .filter(SubscriptionFilter
+                        .newBuilder()
+                        .addStreamNamePrefix(streamPrefix)
+                        .build())).get();
+
+        getDefaultClient().appendToStream(matchingStream, generateEvents(expectedCount, eventType).iterator()).get();
+        getDefaultClient().appendToStream(nonMatchingStream, generateEvents(3, eventType).iterator()).get();
+
+        receivedEvents.await();
+
+        Thread.sleep(2000);
+
+        Assertions.assertEquals(expectedCount, count.get(),
+                "Filter should only match streams starting with the prefix, not streams containing it");
+
+        synchronized (receivedStreamIds) {
+            for (String streamId : receivedStreamIds) {
+                Assertions.assertTrue(streamId.startsWith(streamPrefix),
+                        "Received event from stream '" + streamId + "' which does not start with prefix '" + streamPrefix + "'");
+            }
+        }
+
+        subscription.stop();
+    }
+
+    @Test
     default void testCancellingSubscriptionShouldNotRaiseAnException() throws Throwable {
         KurrentDBClient client = getDefaultClient();
         String streamName = generateName();

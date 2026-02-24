@@ -81,7 +81,7 @@ public class SubscriptionFilter {
         }
 
         void addPrefix(Persistent.CreateReq.AllOptions.FilterOptions.Expression.Builder builder, String prefix) {
-            builder.setRegex(prefix);
+            builder.addPrefix(prefix);
         }
 
         void setNoFilter() {
@@ -133,7 +133,7 @@ public class SubscriptionFilter {
         }
 
         void addPrefix(StreamsOuterClass.ReadReq.Options.FilterOptions.Expression.Builder builder, String prefix) {
-            builder.setRegex(prefix);
+            builder.addPrefix(prefix);
         }
 
         void setNoFilter() {
