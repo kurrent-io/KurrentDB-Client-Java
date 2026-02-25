@@ -32,8 +32,8 @@ class SubscriptionStreamConsumer implements StreamConsumer {
     @Override
     public void onSubscriptionConfirmation(String subscriptionId) {
         this.subscription = new Subscription(this.internal, subscriptionId, this.checkpointer);
-        this.listener.onConfirmation(this.subscription);
         this.future.complete(this.subscription);
+        this.listener.onConfirmation(this.subscription);
     }
 
     @Override
