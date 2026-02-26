@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public interface SubscriptionTests extends ConnectionAware {
     @Test
@@ -185,4 +187,80 @@ public interface SubscriptionTests extends ConnectionAware {
         caughtUp.await();
         subscription.stop();
     }
+
+    @Test
+    @Timeout(value = 2, unit = TimeUnit.MINUTES)
+    default void testOnCancelledIsInvokedWhenSubscriptionIsStopped() throws Throwable {
+        KurrentDBClient client = getDefaultClient();
+        String streamName = generateName();
+
+        client.appendToStream(
+            streamName,
+            EventData.builderAsJson(generateName(), "{}".getBytes()).build()
+        ).get();
+
+        final CountDownLatch onEventReceived = new CountDownLatch(1);
+        final CountDownLatch onCancelledReceived = new CountDownLatch(1);
+        final AtomicReference<Throwable> cancelException = new AtomicReference<>();
+        final AtomicBoolean onCancelledInvoked = new AtomicBoolean(false);
+
+        Subscription subscription = client.subscribeToStream(streamName, new SubscriptionListener() {
+            @Override
+            public void onEvent(Subscription subscription, ResolvedEvent event) {
+                onEventReceived.countDown();
+            }
+
+            @Override
+            public void onCancelled(Subscription subscription, Throwable exception) {
+                onCancelledInvoked.set(true);
+                cancelException.set(exception);
+                onCancelledReceived.countDown();
+            }
+        }).get();
+
+        onEventReceived.await();
+        subscription.stop();
+        onCancelledReceived.await();
+
+        Assertions.assertTrue(onCancelledInvoked.get());
+        Assertions.assertNull(cancelException.get());
+    }
+
+    @Test
+    @Timeout(value = 2, unit = TimeUnit.MINUTES)
+    default void testOnCancelledIsInvokedWhenOnEventThrows() throws Throwable {
+        KurrentDBClient client = getDefaultClient();
+        String streamName = generateName();
+
+        final CountDownLatch onCancelledReceived = new CountDownLatch(1);
+        final AtomicReference<Throwable> cancelException = new AtomicReference<>();
+        final AtomicBoolean onCancelledInvoked = new AtomicBoolean(false);
+
+        client.subscribeToStream(streamName, new SubscriptionListener() {
+            @Override
+            public void onEvent(Subscription subscription, ResolvedEvent event) {
+                throw new RuntimeException("failure");
+            }
+
+            @Override
+            public void onCancelled(Subscription subscription, Throwable exception) {
+                onCancelledInvoked.set(true);
+                cancelException.set(exception);
+                onCancelledReceived.countDown();
+            }
+        }).get();
+
+        client.appendToStream(
+            streamName,
+            EventData.builderAsJson(generateName(), "{}".getBytes()).build()
+        ).get();
+
+        onCancelledReceived.await();
+
+        Assertions.assertTrue(onCancelledInvoked.get());
+        Assertions.assertNotNull(cancelException.get());
+        Assertions.assertInstanceOf(RuntimeException.class, cancelException.get());
+        Assertions.assertEquals("failure", cancelException.get().getMessage());
+    }
+
 }

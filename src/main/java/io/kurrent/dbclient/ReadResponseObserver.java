@@ -52,6 +52,8 @@ class ReadResponseObserver implements ClientResponseObserver<StreamsOuterClass.R
         this.requestStream.cancel(reason, cause);
         if (cause instanceof StreamNotFoundException)
             this.consumer.onStreamNotFound(((StreamNotFoundException) cause).getStreamName());
+        else
+            this.consumer.onCancelled(cause);
     }
 
     void manageFlowControl() {
@@ -105,6 +107,18 @@ class ReadResponseObserver implements ClientResponseObserver<StreamsOuterClass.R
             return;
         }
 
+        try {
+            handleMessage(value);
+        } catch (Exception ex) {
+            logger.error("Exception thrown by subscription handler", ex);
+            cancel("subscription handler threw an exception", ex);
+            return;
+        }
+
+        manageFlowControl();
+    }
+
+    private void handleMessage(StreamsOuterClass.ReadResp value) {
         if (value.hasEvent())
             consumer.onEvent(ResolvedEvent.fromWire(value.getEvent()));
         else if (value.hasConfirmation())
@@ -136,8 +150,6 @@ class ReadResponseObserver implements ClientResponseObserver<StreamsOuterClass.R
         } else {
             logger.warn("received unknown message variant");
         }
-
-        manageFlowControl();
     }
 
     @Override
@@ -149,6 +161,7 @@ class ReadResponseObserver implements ClientResponseObserver<StreamsOuterClass.R
             StatusRuntimeException e = (StatusRuntimeException) t;
 
             if (e.getStatus().getCode() == Status.Code.CANCELLED) {
+                this.consumer.onCancelled(null);
                 return;
             }
 
