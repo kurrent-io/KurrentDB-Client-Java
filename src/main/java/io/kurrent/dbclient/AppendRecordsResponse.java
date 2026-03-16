@@ -2,12 +2,11 @@ package io.kurrent.dbclient;
 
 import java.util.List;
 
-// TODO: Deprecate this class in favor of AppendRecordsResponse
-public class MultiStreamAppendResponse {
+public class AppendRecordsResponse {
     private final long position;
     private final List<AppendResponse> results;
 
-    public MultiStreamAppendResponse(long position, List<AppendResponse> results) {
+    public AppendRecordsResponse(long position, List<AppendResponse> results) {
         this.position = position;
         this.results = results;
     }
