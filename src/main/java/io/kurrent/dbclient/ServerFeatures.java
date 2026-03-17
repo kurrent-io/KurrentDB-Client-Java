@@ -97,6 +97,8 @@ class ServerFeatures {
                     }
                 } else if (method.getMethodName().equals("appendsession")) {
                     features |= FeatureFlags.MULTI_STREAM_APPEND;
+                } else if (method.getMethodName().equals("appendrecords") && method.getServiceName().equals("kurrentdb.protocol.v2.streams.streamsservice")) {
+                    features |= FeatureFlags.APPEND_RECORDS;
                 }
             }
 

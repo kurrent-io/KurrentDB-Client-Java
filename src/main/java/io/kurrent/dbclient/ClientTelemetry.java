@@ -167,6 +167,42 @@ class ClientTelemetry {
                 });
     }
 
+    static CompletableFuture<AppendRecordsResponse> traceAppendRecords(
+            BiFunction<WorkItemArgs, List<AppendRecord>, CompletableFuture<AppendRecordsResponse>> appendRecordsOperation,
+            WorkItemArgs args,
+            List<AppendRecord> records, KurrentDBClientSettings settings) {
+
+        Span span = createSpan(
+                ClientTelemetryConstants.Operations.MULTI_APPEND,
+                SpanKind.CLIENT,
+                null,
+                ClientTelemetryTags.builder()
+                        .withServerTagsFromGrpcChannel(args.getChannel())
+                        .withServerTagsFromClientSettings(settings)
+                        .withOptionalDatabaseUserTag(settings.getDefaultCredentials())
+                        .build());
+
+        List<AppendRecord> recordsWithTracing = new ArrayList<>();
+        for (AppendRecord record : records) {
+            List<EventData> traced = tryInjectTracingContext(span, Collections.singletonList(record.getRecord()));
+            recordsWithTracing.add(new AppendRecord(record.getStream(), traced.get(0)));
+        }
+
+        return appendRecordsOperation.apply(args, recordsWithTracing)
+                .handle((result, throwable) -> {
+                    if (throwable != null) {
+                        span.setStatus(StatusCode.ERROR);
+                        span.recordException(throwable);
+                        span.end();
+                        throw new CompletionException(throwable);
+                    } else {
+                        span.setStatus(StatusCode.OK);
+                        span.end();
+                        return result;
+                    }
+                });
+    }
+
     static void traceSubscribe(Runnable tracedOperation, String subscriptionId, ManagedChannel channel,
                                KurrentDBClientSettings settings,
                                UserCredentials optionalCallCredentials, RecordedEvent event) {
