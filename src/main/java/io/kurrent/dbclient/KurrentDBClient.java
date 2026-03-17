@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.reactivestreams.Publisher;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,6 +79,78 @@ public class KurrentDBClient extends KurrentDBClientBase {
 
     public CompletableFuture<MultiStreamAppendResponse> multiStreamAppend(Iterator<AppendStreamRequest> requests) {
         return new MultiStreamAppend(this.getGrpcClient(), requests).execute();
+    }
+
+    /**
+     * Appends records to one or more streams atomically with cross-stream consistency checks.
+     * Records can be interleaved across streams in any order and the global log preserves
+     * the exact sequence from the request.
+     *
+     * @param records the records to append, each specifying its target stream.
+     * @return a response with per-stream revisions and the global commit position.
+     */
+    public CompletableFuture<AppendRecordsResponse> appendRecords(List<AppendRecord> records) {
+        return appendRecords(records, null);
+    }
+
+    /**
+     * Appends records to one or more streams atomically with cross-stream consistency checks.
+     * Records can be interleaved across streams in any order and the global log preserves
+     * the exact sequence from the request.
+     *
+     * <p>Consistency checks are decoupled from writes: a check can reference any stream,
+     * whether or not the request writes to it. This enables Dynamic Consistency Boundary
+     * (DCB) patterns.</p>
+     *
+     * @param records the records to append, each specifying its target stream.
+     * @param checks optional consistency checks evaluated before commit.
+     * @return a response with per-stream revisions and the global commit position.
+     */
+    public CompletableFuture<AppendRecordsResponse> appendRecords(List<AppendRecord> records, List<ConsistencyCheck> checks) {
+        return new AppendRecords(this.getGrpcClient(), records, checks).execute();
+    }
+
+    /**
+     * Appends records to one or more streams atomically.
+     *
+     * @param records the records to append, each specifying its target stream.
+     * @return a response with per-stream revisions and the global commit position.
+     */
+    public CompletableFuture<AppendRecordsResponse> appendRecords(AppendRecord... records) {
+        return appendRecords(Arrays.asList(records), null);
+    }
+
+    /**
+     * Appends events to a single stream atomically.
+     *
+     * @param stream the target stream name.
+     * @param events the events to append.
+     * @return a response with per-stream revisions and the global commit position.
+     */
+    public CompletableFuture<AppendRecordsResponse> appendRecords(String stream, List<EventData> events) {
+        return appendRecords(stream, null, events);
+    }
+
+    /**
+     * Appends events to a single stream atomically with a consistency check.
+     *
+     * @param stream the target stream name.
+     * @param expectedState the expected state of the stream, or null for no check.
+     * @param events the events to append.
+     * @return a response with per-stream revisions and the global commit position.
+     */
+    public CompletableFuture<AppendRecordsResponse> appendRecords(String stream, StreamState expectedState, List<EventData> events) {
+        List<AppendRecord> records = new ArrayList<>(events.size());
+        for (EventData event : events) {
+            records.add(new AppendRecord(stream, event));
+        }
+
+        List<ConsistencyCheck> checks = null;
+        if (expectedState != null) {
+            checks = Collections.singletonList(new ConsistencyCheck.StreamStateCheck(stream, expectedState));
+        }
+
+        return appendRecords(records, checks);
     }
 
     /**

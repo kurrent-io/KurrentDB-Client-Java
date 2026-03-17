@@ -247,13 +247,15 @@ client.appendToStream("some-stream", options, eventData)
         .get();
 ```
 
-## Append to multiple streams
+## Atomic appends
 
-::: note
-This feature is only available in KurrentDB 25.1 and later.
-:::
+KurrentDB provides two operations for appending events to one or more streams in a single atomic transaction: `appendRecords` and `multiStreamAppend`. Both guarantee that either all writes succeed or the entire operation fails, but they differ in how records are organized, ordered, and validated.
 
-You can append events to multiple streams in a single atomic operation. Either all streams are updated, or the entire operation fails.
+|                        | `appendRecords`                                                                                                 | `multiStreamAppend`                                                                             |
+|------------------------|-----------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| **Available since**    | KurrentDB 26.1                                                                                                  | KurrentDB 25.1                                                                                  |
+| **Record ordering**    | Interleaved. Records from different streams can be mixed, and their exact order is preserved in the global log. | Grouped. All records for a stream are sent together; ordering across streams is not guaranteed. |
+| **Consistency checks** | Decoupled. Can validate the state of any stream, including streams not being written to.                        | Coupled. Expected state is specified per stream being written to.                               |
 
 ::: warning
 Metadata must be a valid JSON object, using string keys and string values only.
@@ -261,6 +263,88 @@ Binary metadata is not supported in this version to maintain compatibility with
 KurrentDB's metadata handling. This restriction will be lifted in the next major
 release.
 :::
+
+### AppendRecords
+
+::: note
+This feature is only available in KurrentDB 26.1 and later.
+:::
+
+`appendRecords` appends events to one or more streams atomically. Each record specifies which stream it targets, and the exact order of records is preserved in the global log across all streams.
+
+#### Single stream
+
+The simplest usage appends events to a single stream:
+
+```java
+EventData eventOne = EventData
+        .builderAsJson("OrderPlaced", "{\"orderId\": \"123\"}".getBytes())
+        .build();
+
+EventData eventTwo = EventData
+        .builderAsJson("OrderShipped", "{\"orderId\": \"123\"}".getBytes())
+        .build();
+
+client.appendRecords("order-123", Arrays.asList(eventOne, eventTwo)).get();
+```
+
+When no expected state is provided, no consistency check is performed, which is equivalent to `StreamState.any()`.
+
+You can also pass an expected stream state for optimistic concurrency:
+
+```java
+client.appendRecords("order-123", StreamState.noStream(), Arrays.asList(eventOne, eventTwo)).get();
+```
+
+#### Multiple streams
+
+Use `AppendRecord` to target different streams. Records can be interleaved freely, and the global log preserves the exact order you specify:
+
+```java
+List<AppendRecord> records = Arrays.asList(
+        new AppendRecord("order-stream", EventData
+                .builderAsJson("OrderCreated", "{\"orderId\": \"123\"}".getBytes())
+                .build()),
+        new AppendRecord("inventory-stream", EventData
+                .builderAsJson("ItemReserved", "{\"itemId\": \"abc\", \"quantity\": 2}".getBytes())
+                .build()),
+        new AppendRecord("order-stream", EventData
+                .builderAsJson("OrderConfirmed", "{\"orderId\": \"123\"}".getBytes())
+                .build())
+);
+
+client.appendRecords(records).get();
+```
+
+#### Consistency checks
+
+Consistency checks let you validate the state of any stream, including streams you are not writing to, before the append is committed. All checks are evaluated atomically: if any check fails, the entire operation is rejected and an `AppendConsistencyViolationException` is thrown with details about every failing check and the actual state observed.
+
+```java
+List<AppendRecord> records = Collections.singletonList(
+        new AppendRecord("order-stream", EventData
+                .builderAsJson("OrderConfirmed", "{\"orderId\": \"123\"}".getBytes())
+                .build())
+);
+
+// ensure the inventory stream exists before confirming the order,
+// even though we are not writing to it
+List<ConsistencyCheck> checks = Collections.singletonList(
+        new ConsistencyCheck.StreamStateCheck("inventory-stream", StreamState.streamExists())
+);
+
+client.appendRecords(records, checks).get();
+```
+
+Because checks are decoupled from writes, you can validate the state of streams you are not writing to, enabling patterns where a business decision depends on the state of multiple streams but the resulting event is written to only one of them.
+
+### MultiStreamAppend
+
+::: note
+This feature is only available in KurrentDB 25.1 and later.
+:::
+
+`multiStreamAppend` appends events to one or more streams atomically. Records are grouped per stream using `AppendStreamRequest`, where each request specifies a stream name, an expected state, and the events for that stream.
 
 ```java
 JsonMapper mapper = new JsonMapper();
@@ -293,6 +377,10 @@ List<AppendStreamRequest> requests = Arrays.asList(
         )
 );
 
-MultiAppendWriteResult result = client.multiStreamAppend(requests.iterator()).get();
+MultiStreamAppendResponse result = client.multiStreamAppend(requests.iterator()).get();
 ```
+
+Each stream can only appear once in the request. The expected state is validated per stream before the transaction is committed.
+
+The result returns the position of the last appended record in the transaction and a collection of responses for each stream.
 
