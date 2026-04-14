@@ -16,7 +16,7 @@ import java.util.Set;
  * <ul>
  *     <li>maxDiscoverAttempts: 3</li>
  *     <li>discoveryInterval: 500</li>
- *     <li>gossipTimeout: 3</li>
+ *     <li>gossipTimeout: 3000</li>
  *     <li>nodePreference: leader</li>
  *     <li>tls: true</li>
  *     <li>tlsVerifyCert: true</li>
