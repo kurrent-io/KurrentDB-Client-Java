@@ -52,7 +52,7 @@ public class CreateProjectionOptions extends OptionsBase<CreateProjectionOptions
      * {@code 2} selects the V2 engine, which provides partition-based parallel processing.
      * <p>
      * The engine version is pinned at create time and cannot be changed via update.
-     * V2 has limitations versus V1 — notably, {@code trackEmittedStreams} is rejected,
+     * V2 has limitations versus V1: {@code trackEmittedStreams} is rejected,
      * result streams are not emitted, and bi-state projections are not supported.
      */
     public CreateProjectionOptions engineVersion(int value) {
