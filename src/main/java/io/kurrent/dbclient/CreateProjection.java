@@ -12,6 +12,7 @@ class CreateProjection {
     private final String query;
     private final boolean trackEmittedStreams;
     private final boolean emitEnabled;
+    private final int engineVersion;
     private final CreateProjectionOptions options;
 
     public CreateProjection(final GrpcClient client, final String projectionName, final String query,
@@ -22,6 +23,7 @@ class CreateProjection {
         this.query = query;
         this.trackEmittedStreams = options.isTrackingEmittedStreams();
         this.emitEnabled = options.isEmitEnabled();
+        this.engineVersion = options.getEngineVersion();
         this.options = options;
     }
 
@@ -36,6 +38,7 @@ class CreateProjection {
             Projectionmanagement.CreateReq.Options.Builder optionsBuilder =
                 Projectionmanagement.CreateReq.Options.newBuilder()
                     .setQuery(query)
+                    .setEngineVersion(engineVersion)
                     .setContinuous(continuousBuilder);
 
             Projectionmanagement.CreateReq request = Projectionmanagement.CreateReq.newBuilder()
