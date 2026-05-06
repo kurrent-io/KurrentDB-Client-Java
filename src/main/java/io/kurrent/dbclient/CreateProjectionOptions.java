@@ -54,8 +54,14 @@ public class CreateProjectionOptions extends OptionsBase<CreateProjectionOptions
      * The engine version is pinned at create time and cannot be changed via update.
      * V2 has limitations versus V1: {@code trackEmittedStreams} is rejected,
      * result streams are not emitted, and bi-state projections are not supported.
+     *
+     * @throws IllegalArgumentException if {@code value} is not {@code 0}, {@code 1}, or {@code 2}.
      */
     public CreateProjectionOptions engineVersion(int value) {
+        if (value < 0 || value > 2) {
+            throw new IllegalArgumentException(
+                    "engineVersion must be 0, 1, or 2 (got " + value + ")");
+        }
         this.engineVersion = value;
         return this;
     }
