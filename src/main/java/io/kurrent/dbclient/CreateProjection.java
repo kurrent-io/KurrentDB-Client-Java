@@ -30,8 +30,10 @@ class CreateProjection {
     @SuppressWarnings("unchecked")
     public CompletableFuture execute() {
         if (engineVersion == 2 && trackEmittedStreams) {
-            throw new IllegalArgumentException(
-                    "trackEmittedStreams is not supported when engineVersion is 2 (V2)");
+            CompletableFuture<Projectionmanagement.CreateResp> failed = new CompletableFuture<>();
+            failed.completeExceptionally(new IllegalArgumentException(
+                    "trackEmittedStreams is not supported when engineVersion is 2 (V2)"));
+            return failed;
         }
 
         return this.client.run(channel -> {
