@@ -14,7 +14,13 @@ Check the [Getting Started](getting-started.md) guide to learn how to configure 
 
 The simplest way to append an event to KurrentDB is to create an `EventData` object and call `appendToStream` method.
 
-```java {32-43}
+```java {38-49}
+import io.kurrent.dbclient.AppendToStreamOptions;
+import io.kurrent.dbclient.EventData;
+import io.kurrent.dbclient.StreamState;
+
+import java.util.UUID;
+
 class OrderPlaced {
     private String orderId;
     private String customerId;
