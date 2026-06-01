@@ -102,6 +102,10 @@ When connecting to an insecure instance, specify `tls=false` parameter. For exam
 First, create a client and get it connected to the database.
 
 ```java
+import io.kurrent.dbclient.KurrentDBClient;
+import io.kurrent.dbclient.KurrentDBClientSettings;
+import io.kurrent.dbclient.KurrentDBConnectionString;
+
 KurrentDBClientSettings settings = KurrentDBConnectionString.parseOrThrow("kurrentdb://localhost:2113?tls=false");
 KurrentDBClient client = KurrentDBClient.create(settings);
 ```
@@ -115,6 +119,9 @@ You can write anything to KurrentDB as events. The client needs a byte array as 
 The code snippet below creates an event object instance, serializes it, and adds it as a payload to the `EventData` structure, which the client can then write to the database.
 
 ```java
+import io.kurrent.dbclient.EventData;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+
 public class OrderPlaced {
     private String orderId;
     private String customerId;
