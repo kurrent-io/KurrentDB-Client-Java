@@ -40,7 +40,7 @@ abstract class AbstractRegularSubscription {
     protected abstract StreamsOuterClass.ReadReq.Options.Builder createOptions();
 
     public CompletableFuture<Subscription> execute() {
-        return this.client.run(channel -> {
+        return this.client.runWithArgs(args -> {
             CompletableFuture<Subscription> future = new CompletableFuture<>();
 
             StreamsOuterClass.ReadReq readReq = StreamsOuterClass.ReadReq.newBuilder()
@@ -48,12 +48,13 @@ abstract class AbstractRegularSubscription {
                     .build();
 
             StreamsGrpc.StreamsStub streamsClient = GrpcUtils.configureStub(
-                    StreamsGrpc.newStub(channel),
+                    StreamsGrpc.newStub(args.getChannel()),
                     this.client.getSettings(),
                     this.options
             );
 
-            ReadResponseObserver observer = createObserver(channel, future);
+            ReadResponseObserver observer = createObserver(args.getChannel(), future);
+            observer.onConnected(args);
             streamsClient.read(readReq, observer);
 
             return future;
