@@ -9,10 +9,13 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
 import io.grpc.stub.StreamObserver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 
 abstract class AbstractSubscribePersistentSubscription {
+    private final static Logger logger = LoggerFactory.getLogger(AbstractSubscribePersistentSubscription.class);
     protected static final Persistent.ReadReq.Options.Builder defaultReadOptions;
     private final GrpcClient client;
     private final String group;
@@ -119,11 +122,20 @@ abstract class AbstractSubscribePersistentSubscription {
                                 return;
                             }
 
-                            String leaderHost = sre.getTrailers().get(Metadata.Key.of("leader-endpoint-host", Metadata.ASCII_STRING_MARSHALLER));
-                            String leaderPort = sre.getTrailers().get(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER));
+                            Metadata trailers = sre.getTrailers();
+                            if (trailers != null) {
+                                String leaderHost = trailers.get(Metadata.Key.of("leader-endpoint-host", Metadata.ASCII_STRING_MARSHALLER));
+                                String leaderPort = trailers.get(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER));
 
-                            if (leaderHost != null && leaderPort != null) {
-                                error = new NotLeaderException(leaderHost, Integer.valueOf(leaderPort));
+                                if (leaderHost != null && leaderPort != null) {
+                                    try {
+                                        int port = Integer.parseInt(leaderPort);
+                                        args.reportNewLeader(leaderHost, port);
+                                        error = new NotLeaderException(leaderHost, port);
+                                    } catch (RuntimeException ex) {
+                                        logger.warn("failed to handle leader change notification", ex);
+                                    }
+                                }
                             }
                         }
 

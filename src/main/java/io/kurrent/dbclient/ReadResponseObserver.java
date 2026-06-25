@@ -172,9 +172,14 @@ class ReadResponseObserver implements ClientResponseObserver<StreamsOuterClass.R
                 String leaderPort = trailers.get(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER));
 
                 if (leaderHost != null && leaderPort != null) {
-                    int port = Integer.parseInt(leaderPort);
-                    this.args.reportNewLeader(leaderHost, port);
-                    t = new NotLeaderException(leaderHost, port);
+                    try {
+                        int port = Integer.parseInt(leaderPort);
+                        if (this.args != null)
+                            this.args.reportNewLeader(leaderHost, port);
+                        t = new NotLeaderException(leaderHost, port);
+                    } catch (RuntimeException ex) {
+                        logger.warn("failed to handle leader change notification", ex);
+                    }
                 }
             }
         }
