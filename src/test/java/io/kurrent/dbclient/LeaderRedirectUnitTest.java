@@ -6,19 +6,16 @@ import io.grpc.StatusRuntimeException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Regression guard for the leader-change NPE. When a subscription's onError receives
- * leader-endpoint trailers (the NotLeader redirect), it must NOT throw and must still
- * deliver onCancelled to the listener so the application can react/reconnect.
- *
- * Before the fix, ReadResponseObserver.onError called this.args.reportNewLeader(...) with
- * args == null on the subscription path, throwing a NullPointerException before reaching
- * consumer.onCancelled(...) and swallowing the failure. This test constructs the observer
- * without onConnected (args == null, the worst case) to lock that behavior down.
+ * A NotLeader redirect on a subscription must not throw and must still deliver onCancelled.
+ * The bug: onError called reportNewLeader(...) on a null args, throwing before
+ * consumer.onCancelled(...) and swallowing the failure.
  */
 public class LeaderRedirectUnitTest {
     @Test
@@ -39,7 +36,7 @@ public class LeaderRedirectUnitTest {
             (id, ev, action) -> action.run()
         );
 
-        // Subscription path with args unset (worst case): must not NPE, must notify listener.
+        // no onConnected(): args stays null
         ReadResponseObserver observer = new ReadResponseObserver(SubscribeToStreamOptions.get(), consumer);
 
         Metadata trailers = new Metadata();
@@ -49,6 +46,42 @@ public class LeaderRedirectUnitTest {
 
         Assertions.assertDoesNotThrow(() -> observer.onError(leaderRedirect));
         Assertions.assertTrue(cancelledFired.get(), "onCancelled must fire on a leader redirect");
+        Assertions.assertTrue(cancelErr.get() instanceof NotLeaderException,
+            "listener should receive a NotLeaderException, got: " + cancelErr.get());
+    }
+
+    @Test
+    public void onErrorLeaderRedirectReportsNewLeaderWhenConnected() {
+        AtomicReference<Throwable> cancelErr = new AtomicReference<>();
+
+        SubscriptionStreamConsumer consumer = new SubscriptionStreamConsumer(
+            new SubscriptionListener() {
+                @Override
+                public void onCancelled(Subscription subscription, Throwable exception) {
+                    cancelErr.set(exception);
+                }
+            },
+            null,
+            new CompletableFuture<>(),
+            (id, ev, action) -> action.run()
+        );
+
+        LinkedBlockingQueue<Msg> queue = new LinkedBlockingQueue<>();
+        WorkItemArgs args = new WorkItemArgs(UUID.randomUUID(), null, null, null, queue);
+
+        ReadResponseObserver observer = new ReadResponseObserver(SubscribeToStreamOptions.get(), consumer);
+        observer.onConnected(args);
+
+        Metadata trailers = new Metadata();
+        trailers.put(Metadata.Key.of("leader-endpoint-host", Metadata.ASCII_STRING_MARSHALLER), "127.0.0.1");
+        trailers.put(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER), "2113");
+
+        Assertions.assertDoesNotThrow(() ->
+            observer.onError(new StatusRuntimeException(Status.UNAVAILABLE, trailers)));
+
+        Msg enqueued = queue.poll();
+        Assertions.assertTrue(enqueued instanceof CreateChannel,
+            "leader redirect should enqueue a CreateChannel for the new leader, got: " + enqueued);
         Assertions.assertTrue(cancelErr.get() instanceof NotLeaderException,
             "listener should receive a NotLeaderException, got: " + cancelErr.get());
     }
