@@ -37,7 +37,9 @@ public interface AppendTests extends ConnectionAware {
                 () -> Assertions.assertEquals(foo, mapper.readValue(first.getEventData(), Foo.class)),
                 () -> Assertions.assertEquals(foo, mapper.readValue(first.getUserMetadata(), Foo.class)),
                 () -> Assertions.assertFalse(userMetadata.has(ClientTelemetryConstants.Metadata.TRACE_ID)),
-                () -> Assertions.assertFalse(userMetadata.has(ClientTelemetryConstants.Metadata.SPAN_ID))
+                () -> Assertions.assertFalse(userMetadata.has(ClientTelemetryConstants.Metadata.SPAN_ID)),
+                () -> Assertions.assertFalse(userMetadata.has(ClientTelemetryConstants.Metadata.TRACE_PARENT)),
+                () -> Assertions.assertFalse(userMetadata.has(ClientTelemetryConstants.Metadata.TRACE_STATE))
         );
     }
 
