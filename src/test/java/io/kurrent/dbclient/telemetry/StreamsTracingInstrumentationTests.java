@@ -60,9 +60,11 @@ public interface StreamsTracingInstrumentationTests extends TelemetryAware {
 
         JsonNode traceIdNode = userMetadata.get(ClientTelemetryConstants.Metadata.TRACE_ID);
         JsonNode spanIdNode = userMetadata.get(ClientTelemetryConstants.Metadata.SPAN_ID);
+        JsonNode traceParentNode = userMetadata.get(ClientTelemetryConstants.Metadata.TRACE_PARENT);
 
         Assertions.assertNotNull(traceIdNode);
         Assertions.assertNotNull(spanIdNode);
+        Assertions.assertNotNull(traceParentNode);
     }
 
     @Test
