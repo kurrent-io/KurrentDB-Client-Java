@@ -6,5 +6,5 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @SelectPackages("io.kurrent.dbclient.misc")
-@SelectClasses({SubscriptionStreamConsumerTests.class, LeaderRedirectUnitTest.class})
+@SelectClasses({SubscriptionStreamConsumerTests.class, LeaderRedirectUnitTest.class, TracingContextPropagationTests.class})
 public class MiscTests {}

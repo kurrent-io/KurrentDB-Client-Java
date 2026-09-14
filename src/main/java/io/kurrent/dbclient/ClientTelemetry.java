@@ -6,8 +6,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.grpc.ManagedChannel;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.*;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
+import io.opentelemetry.context.propagation.TextMapGetter;
+import io.opentelemetry.context.propagation.TextMapSetter;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -19,14 +22,36 @@ class ClientTelemetry {
         put(ClientTelemetryAttributes.Database.SYSTEM, ClientTelemetryConstants.INSTRUMENTATION_NAME);
     }};
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private static final TextMapSetter<ObjectNode> METADATA_SETTER =
+            (userMetadata, key, value) -> userMetadata.put("$" + key, value);
+
+    private static final TextMapGetter<ObjectNode> METADATA_GETTER = new TextMapGetter<ObjectNode>() {
+        @Override
+        public Iterable<String> keys(ObjectNode userMetadata) {
+            return Arrays.asList("traceparent", "tracestate");
+        }
+
+        @Override
+        public String get(ObjectNode userMetadata, String key) {
+            return getTextField(userMetadata, "$" + key);
+        }
+    };
+
+    private static String getTextField(ObjectNode userMetadata, String fieldName) {
+        JsonNode field = userMetadata.get(fieldName);
+        return field != null && field.isTextual() ? field.asText() : null;
+    }
+
     private static Tracer getTracer() {
         return GlobalOpenTelemetry.getTracer(
                 ClientTelemetry.class.getPackage().getName(),
                 ClientTelemetry.class.getPackage().getImplementationVersion());
     }
 
-    private static List<EventData> tryInjectTracingContext(Span span, List<EventData> events) {
-        if (!span.getSpanContext().isValid() || !span.getSpanContext().isSampled())
+    static List<EventData> tryInjectTracingContext(Span span, List<EventData> events) {
+        if (!span.getSpanContext().isValid())
             return events;
 
         List<EventData> injectedEvents = new ArrayList<>();
@@ -41,47 +66,69 @@ class ClientTelemetry {
         return injectedEvents;
     }
 
-    private static byte[] tryInjectTracingContext(Span span, byte[] userMetadataBytes) {
+    static byte[] tryInjectTracingContext(Span span, byte[] userMetadataBytes) {
+        if (!span.getSpanContext().isValid())
+            return userMetadataBytes;
+
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             ObjectNode userMetadata = userMetadataBytes != null
-                    ? objectMapper.readValue(userMetadataBytes, ObjectNode.class)
-                    : objectMapper.createObjectNode();
+                    ? OBJECT_MAPPER.readValue(userMetadataBytes, ObjectNode.class)
+                    : OBJECT_MAPPER.createObjectNode();
 
-            userMetadata.put(ClientTelemetryConstants.Metadata.TRACE_ID, span.getSpanContext().getTraceId());
-            userMetadata.put(ClientTelemetryConstants.Metadata.SPAN_ID, span.getSpanContext().getSpanId());
+            userMetadata.remove(ClientTelemetryConstants.Metadata.TRACE_STATE);
 
-            return objectMapper.writeValueAsBytes(userMetadata);
+            W3CTraceContextPropagator.getInstance()
+                    .inject(Context.root().with(span), userMetadata, METADATA_SETTER);
+
+            // Legacy fields carry no sampling flag, so older readers would treat an
+            // unsampled trace as sampled. Only write them when sampled.
+            if (span.getSpanContext().isSampled()) {
+                userMetadata.put(ClientTelemetryConstants.Metadata.TRACE_ID, span.getSpanContext().getTraceId());
+                userMetadata.put(ClientTelemetryConstants.Metadata.SPAN_ID, span.getSpanContext().getSpanId());
+            } else {
+                userMetadata.remove(ClientTelemetryConstants.Metadata.TRACE_ID);
+                userMetadata.remove(ClientTelemetryConstants.Metadata.SPAN_ID);
+            }
+
+            return OBJECT_MAPPER.writeValueAsBytes(userMetadata);
         } catch (Throwable t) {
             // User metadata may not be a valid JSON object, or not JSON altogether.
             return userMetadataBytes;
         }
     }
 
-    private static SpanContext tryExtractTracingContext(byte[] userMetadataBytes) {
+    static SpanContext tryExtractTracingContext(byte[] userMetadataBytes) {
         if (userMetadataBytes == null)
             return null;
 
         try {
-            ObjectNode userMetadata = new ObjectMapper().readValue(userMetadataBytes, ObjectNode.class);
+            ObjectNode userMetadata = OBJECT_MAPPER.readValue(userMetadataBytes, ObjectNode.class);
 
-            JsonNode traceIdNode = userMetadata.get(ClientTelemetryConstants.Metadata.TRACE_ID);
-            JsonNode spanIdNode = userMetadata.get(ClientTelemetryConstants.Metadata.SPAN_ID);
+            Context extracted = W3CTraceContextPropagator.getInstance()
+                    .extract(Context.root(), userMetadata, METADATA_GETTER);
 
-            if (traceIdNode == null || spanIdNode == null)
-                return null;
+            SpanContext traceParentContext = Span.fromContext(extracted).getSpanContext();
+            if (traceParentContext.isValid())
+                return traceParentContext;
 
-            String traceId = traceIdNode.asText();
-            String spanId = spanIdNode.asText();
-
-            if (!TraceId.isValid(traceId) || !SpanId.isValid(spanId))
-                return null;
-
-            return SpanContext.createFromRemoteParent(traceId, spanId, TraceFlags.getSampled(),
-                    TraceState.getDefault());
+            return tryExtractLegacyTracingContext(userMetadata);
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    private static SpanContext tryExtractLegacyTracingContext(ObjectNode userMetadata) {
+        String traceId = getTextField(userMetadata, ClientTelemetryConstants.Metadata.TRACE_ID);
+        String spanId = getTextField(userMetadata, ClientTelemetryConstants.Metadata.SPAN_ID);
+
+        if (traceId == null || spanId == null)
+            return null;
+
+        if (!TraceId.isValid(traceId) || !SpanId.isValid(spanId))
+            return null;
+
+        return SpanContext.createFromRemoteParent(traceId, spanId, TraceFlags.getSampled(),
+                TraceState.getDefault());
     }
 
     static CompletableFuture<WriteResult> traceAppend(
