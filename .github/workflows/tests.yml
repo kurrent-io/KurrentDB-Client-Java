@@ -118,6 +118,7 @@ jobs:
       - name: Set up cluster with Docker Compose
         run: docker compose up -d
         env:
+          KURRENTDB_LICENSE_KEY: ${{ secrets.KURRENTDB_TEST_LICENSE_KEY }}
           KURRENTDB_DOCKER_REGISTRY: ${{ needs.load_configuration.outputs.registry }}
           KURRENTDB_DOCKER_IMAGE: ${{ needs.load_configuration.outputs.image }}
           KURRENTDB_DOCKER_TAG: ${{ needs.load_configuration.outputs.tag }}

@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -30,20 +30,15 @@ public class TelemetryTests implements StreamsTracingInstrumentationTests, Persi
     static private Database database;
     static private Logger logger;
 
-    private final List<Consumer<ReadableSpan>> spanEndedHooks = new ArrayList<>();
-    private final List<ReadableSpan> recordedSpans = new ArrayList<>();
+    private static final List<Consumer<ReadableSpan>> spanEndedHooks = new CopyOnWriteArrayList<>();
+    private static final List<ReadableSpan> recordedSpans = new CopyOnWriteArrayList<>();
 
     @BeforeAll
     public static void setup() {
         database = DatabaseFactory.spawn();
         logger = LoggerFactory.getLogger(StreamsTests.class);
-    }
 
-    @BeforeEach
-    public void beforeEach() {
         GlobalOpenTelemetry.resetForTest();
-        spanEndedHooks.add(recordedSpans::add);
-
         OtlpGrpcSpanExporter otlpExporter = OtlpGrpcSpanExporter.builder()
                 .setEndpoint("http://localhost:4317")
                 .build();
@@ -60,6 +55,13 @@ public class TelemetryTests implements StreamsTracingInstrumentationTests, Persi
                         .setResource(resource)
                         .build())
                 .buildAndRegisterGlobal();
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        spanEndedHooks.clear();
+        recordedSpans.clear();
+        spanEndedHooks.add(recordedSpans::add);
     }
 
     @Override
