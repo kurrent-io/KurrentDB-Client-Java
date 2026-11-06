@@ -32,7 +32,13 @@ final class GrpcUtils {
                 }
             }
 
-            com.google.rpc.Status status = StatusProto.fromThrowable(e);
+            com.google.rpc.Status status;
+            try {
+                status = StatusProto.fromThrowable(e);
+            } catch (IllegalArgumentException ignored) {
+                dest.completeExceptionally(t);
+                return true;
+            }
 
             if (status != null) {
                 for (Any detail : status.getDetailsList()) {
