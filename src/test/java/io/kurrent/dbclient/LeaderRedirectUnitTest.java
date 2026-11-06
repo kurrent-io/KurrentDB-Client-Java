@@ -5,6 +5,7 @@ import com.google.rpc.ErrorInfo;
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
+import io.grpc.protobuf.ProtoUtils;
 import io.grpc.protobuf.StatusProto;
 import io.kurrentdb.protocol.v2.common.errors.NotLeaderNodeErrorDetails;
 import org.junit.jupiter.api.Assertions;
@@ -111,5 +112,44 @@ public class LeaderRedirectUnitTest {
             "should complete with a NotLeaderException, got: " + error.getCause());
         Assertions.assertEquals(new InetSocketAddress("127.0.0.1", 2113),
             ((NotLeaderException) error.getCause()).getLeaderEndpoint());
+    }
+
+    @Test
+    public void handleNotLeaderErrorFailsWithOriginalErrorOnInvalidTrailerPort() {
+        Metadata trailers = new Metadata();
+        trailers.put(Metadata.Key.of("leader-endpoint-host", Metadata.ASCII_STRING_MARSHALLER), "127.0.0.1");
+        trailers.put(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER), "abc");
+
+        assertFailsWithOriginalError(new StatusRuntimeException(Status.NOT_FOUND, trailers));
+    }
+
+    @Test
+    public void handleNotLeaderErrorFailsWithOriginalErrorOnOutOfRangeDetailsPort() {
+        com.google.rpc.Status status = com.google.rpc.Status.newBuilder()
+            .setCode(Status.Code.FAILED_PRECONDITION.value())
+            .addDetails(Any.pack(NotLeaderNodeErrorDetails.newBuilder()
+                .setCurrentLeader(NotLeaderNodeErrorDetails.NodeInfo.newBuilder().setHost("127.0.0.1").setPort(99999))
+                .build()))
+            .build();
+
+        assertFailsWithOriginalError(StatusProto.toStatusRuntimeException(status));
+    }
+
+    @Test
+    public void handleNotLeaderErrorFailsWithOriginalErrorOnStatusCodeMismatch() {
+        Metadata trailers = new Metadata();
+        trailers.put(Metadata.Key.of("grpc-status-details-bin", ProtoUtils.metadataMarshaller(com.google.rpc.Status.getDefaultInstance())),
+            com.google.rpc.Status.newBuilder().setCode(Status.Code.FAILED_PRECONDITION.value()).build());
+
+        assertFailsWithOriginalError(new StatusRuntimeException(Status.INTERNAL, trailers));
+    }
+
+    private static void assertFailsWithOriginalError(StatusRuntimeException original) {
+        CompletableFuture<Object> dest = new CompletableFuture<>();
+
+        Assertions.assertTrue(GrpcUtils.handleNotLeaderError(original, dest));
+
+        ExecutionException error = Assertions.assertThrows(ExecutionException.class, dest::get);
+        Assertions.assertSame(original, error.getCause());
     }
 }
