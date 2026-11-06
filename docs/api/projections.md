@@ -81,7 +81,7 @@ You can only enable an existing projection. When you try to enable a non-existin
 
  ```java
 try {
-    client.disable("projection that does not exists").get();
+    client.enable("projection that does not exists").get();
 } catch (ExecutionException ex) {
     if (ex.getMessage().contains("NotFound")) {
         System.out.println(ex.getMessage());
