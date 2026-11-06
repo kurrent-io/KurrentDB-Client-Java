@@ -17,8 +17,12 @@ import java.util.concurrent.TimeUnit;
 
 final class GrpcUtils {
     static boolean handleNotLeaderError(Throwable t, CompletableFuture<?> dest) {
-        if (t instanceof StatusRuntimeException) {
-            StatusRuntimeException e = (StatusRuntimeException) t;
+        if (!(t instanceof StatusRuntimeException))
+            return false;
+
+        StatusRuntimeException e = (StatusRuntimeException) t;
+
+        try {
             Metadata trailers = e.getTrailers();
 
             if (trailers != null) {
@@ -26,35 +30,29 @@ final class GrpcUtils {
                 String leaderPort = trailers.get(Metadata.Key.of("leader-endpoint-port", Metadata.ASCII_STRING_MARSHALLER));
 
                 if (leaderHost != null && leaderPort != null) {
-                    NotLeaderException reason = new NotLeaderException(leaderHost, Integer.parseInt(leaderPort));
-                    dest.completeExceptionally(reason);
+                    dest.completeExceptionally(new NotLeaderException(leaderHost, Integer.parseInt(leaderPort)));
                     return true;
                 }
             }
 
-            com.google.rpc.Status status;
-            try {
-                status = StatusProto.fromThrowable(e);
-            } catch (IllegalArgumentException ignored) {
-                dest.completeExceptionally(t);
-                return true;
-            }
+            com.google.rpc.Status status = StatusProto.fromThrowable(e);
 
             if (status != null) {
                 for (Any detail : status.getDetailsList()) {
                     if (!detail.is(NotLeaderNodeErrorDetails.class))
                         continue;
 
-                    try {
-                        NotLeaderNodeErrorDetails.NodeInfo leader =
-                                detail.unpack(NotLeaderNodeErrorDetails.class).getCurrentLeader();
-                        dest.completeExceptionally(new NotLeaderException(leader.getHost(), leader.getPort()));
-                        return true;
-                    } catch (InvalidProtocolBufferException ignored) {
-                        return false;
-                    }
+                    NotLeaderNodeErrorDetails.NodeInfo leader =
+                            detail.unpack(NotLeaderNodeErrorDetails.class).getCurrentLeader();
+                    dest.completeExceptionally(new NotLeaderException(leader.getHost(), leader.getPort()));
+                    return true;
                 }
             }
+        } catch (IllegalArgumentException ignored) {
+            dest.completeExceptionally(t);
+            return true;
+        } catch (InvalidProtocolBufferException ignored) {
+            return false;
         }
 
         return false;
