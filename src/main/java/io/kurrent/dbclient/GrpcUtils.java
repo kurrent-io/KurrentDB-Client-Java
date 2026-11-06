@@ -2,10 +2,14 @@ package io.kurrent.dbclient;
 
 import io.kurrent.dbclient.proto.shared.Shared;
 import io.kurrent.dbclient.proto.streams.StreamsOuterClass;
+import io.kurrentdb.protocol.v2.common.errors.NotLeaderNodeErrorDetails;
+import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
+import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.*;
 
 import java.util.concurrent.CompletableFuture;
@@ -25,6 +29,24 @@ final class GrpcUtils {
                     NotLeaderException reason = new NotLeaderException(leaderHost, Integer.parseInt(leaderPort));
                     dest.completeExceptionally(reason);
                     return true;
+                }
+            }
+
+            com.google.rpc.Status status = StatusProto.fromThrowable(e);
+
+            if (status != null) {
+                for (Any detail : status.getDetailsList()) {
+                    if (!detail.is(NotLeaderNodeErrorDetails.class))
+                        continue;
+
+                    try {
+                        NotLeaderNodeErrorDetails.NodeInfo leader =
+                                detail.unpack(NotLeaderNodeErrorDetails.class).getCurrentLeader();
+                        dest.completeExceptionally(new NotLeaderException(leader.getHost(), leader.getPort()));
+                        return true;
+                    } catch (InvalidProtocolBufferException ignored) {
+                        return false;
+                    }
                 }
             }
         }

@@ -1,13 +1,19 @@
 package io.kurrent.dbclient;
 
+import com.google.protobuf.Any;
+import com.google.rpc.ErrorInfo;
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
+import io.grpc.protobuf.StatusProto;
+import io.kurrentdb.protocol.v2.common.errors.NotLeaderNodeErrorDetails;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.net.InetSocketAddress;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -84,5 +90,26 @@ public class LeaderRedirectUnitTest {
             "leader redirect should enqueue a CreateChannel for the new leader, got: " + enqueued);
         Assertions.assertTrue(cancelErr.get() instanceof NotLeaderException,
             "listener should receive a NotLeaderException, got: " + cancelErr.get());
+    }
+
+    @Test
+    public void handleNotLeaderErrorReadsNotLeaderNodeErrorDetails() {
+        com.google.rpc.Status status = com.google.rpc.Status.newBuilder()
+            .setCode(Status.Code.FAILED_PRECONDITION.value())
+            .setMessage("The server is not the leader node and cannot handle the request.")
+            .addDetails(Any.pack(ErrorInfo.newBuilder().setReason("SERVER_ERROR_NOT_LEADER_NODE").build()))
+            .addDetails(Any.pack(NotLeaderNodeErrorDetails.newBuilder()
+                .setCurrentLeader(NotLeaderNodeErrorDetails.NodeInfo.newBuilder().setHost("127.0.0.1").setPort(2113))
+                .build()))
+            .build();
+        CompletableFuture<Object> dest = new CompletableFuture<>();
+
+        Assertions.assertTrue(GrpcUtils.handleNotLeaderError(StatusProto.toStatusRuntimeException(status), dest));
+
+        ExecutionException error = Assertions.assertThrows(ExecutionException.class, dest::get);
+        Assertions.assertTrue(error.getCause() instanceof NotLeaderException,
+            "should complete with a NotLeaderException, got: " + error.getCause());
+        Assertions.assertEquals(new InetSocketAddress("127.0.0.1", 2113),
+            ((NotLeaderException) error.getCause()).getLeaderEndpoint());
     }
 }
